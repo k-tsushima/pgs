@@ -53,10 +53,10 @@ let rec comp_reverse n =
   else Compose(comp_reverse (n - 1), breverse)       
 
 (* phead *)
-let rec make_long_bx n =
+let rec comp_phead n =
   if n = 0
   then phead
-  else Compose(phead, make_long_bx (n - 1))  
+  else Compose(comp_phead (n - 1), phead)  
   
 
                  
@@ -226,3 +226,20 @@ let cont_replace_test n =
   let s = ks s in
   let v = kv v in
   (s, v)
+
+
+(* cont phead *) 
+let cont_phead_test n =
+  Cont.count := 0;
+  let ((ks, s), (kv, v)) = kpg (comp_phead n) id id (smallest_lst (n + 1)) (smallest_lst (n + 1)) [] dummy_id in
+  let s = ks s in
+  let v = kv v in
+  (s, v)
+
+(* original phead *) 
+let original_phead_test n =
+  count_g := 0;
+  count_p := 0;
+  count_c := 0;
+  let s = put (comp_phead n) (smallest_lst (n + 1)) (smallest_lst (n + 1)) [] in
+  (s, !count_c, !count_p, !count_g)
