@@ -32,7 +32,7 @@ let rec kpg (bx:bigul) (ks:(data->data)) (kv:(data->data)) s v env dummy_fun =
       with Not_found -> Printf.printf "%s is not found" name; assert false)
   | Skip (h) ->
      let r = ks s in
-     ((id, r), let t = kv v in if h r = t
+     ((id, r)(* (ks, s) *), let t = kv v in if h r = t
                                then (* (kv, v) *) (id, t)
                                else assert false)
   | Replace -> 
