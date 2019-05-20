@@ -40,13 +40,13 @@ let bfold_snoc_v = Con(Int 1, Con(Int 2, Unit))
 
 (* s = Con(Con(Int 2, Con(Int 1, Unit)), Unit), v = Con(Int 2, Con(Int 1, Unit))*)
 
-let rec make_composition num = match num with
+(* let rec make_composition num = match num with
   | 1 -> replaceAll
-  | n -> Compose(replaceAll, make_composition (n - 1))
+  | n -> Compose(replaceAll, make_composition (n - 1)) *)
 
-let rec comp_replaceall num = match num with
-  | 1 -> replaceAll
-  | n -> Compose(comp_replaceall (n - 1), replaceAll)
+let rec comp_replaceall n =
+  if n = 0 then replaceAll
+  else Compose(comp_replaceall (n - 1), replaceAll)
        
 let rec comp_replace n =
   if n = 0 then Replace
@@ -58,8 +58,7 @@ let rec comp_reverse n =
 
 (* phead *)
 let rec comp_phead n =
-  if n = 0
-  then phead
+  if n = 0 then phead
   else Compose(comp_phead (n - 1), phead)  
   
 
@@ -240,6 +239,12 @@ let cont_phead_test n =
   let v = kv v in
   (s, v)
 
+(* pg phead *)
+let pg_phead_test n =
+  Without_cont.count := 0;
+  let s = pg (comp_phead n) (smallest_lst (n + 1)) (Int 100) [] in
+  s
+
 (* original phead *) 
 let original_phead_test n =
   count_g := 0;
@@ -249,6 +254,7 @@ let original_phead_test n =
   (*  let v = get (comp_phead n) (smallest_lst (n + 1)) [] in *)
   (s, (), !count_c, !count_p, !count_g)
 
+(* original replaceall *) 
 let original_replaceall_test n =
   count_g := 0;
   count_p := 0;
@@ -257,6 +263,7 @@ let original_replaceall_test n =
   let v = get (comp_replaceall n) (smallest_lst (n + 1)) [] in
   (s, v, !count_c, !count_p, !count_g)  
 
+(* cont replaceall *)
 let cont_replaceall_test n =
   let ((ks, s), (kv, v)) = kpg (comp_replaceall n) id id (smallest_lst (n + 1)) (Int 100) [] dummy_id in
   let s = ks s in
