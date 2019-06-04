@@ -1,7 +1,7 @@
-open Syntax
+(* open Syntax
 open Original
 open Without_cont
-open Cont
+open Cont *)
 
 (* bx programs *)
 let skip1 = Skip (fun k -> Unit)
@@ -269,3 +269,27 @@ let cont_replaceall_test n =
   let s = ks s in
   let v = kv v in
   (s, v)
+
+  (* bMap :: Show a => BiGUL [a] [a]
+  bMap = $(rearrS [| \s -> (s,[]) |])$
+                    bFoldr bx
+    where bx = 
+            $(rearrV [| \(v:vs) -> (v,vs) |])$
+                 Replace `Prod` Replace  *)
+  
+  
+  let bx = Prod(Replace, Replace)
+  
+  let bx_def = Def("bx", bx, Var "bx")
+  
+  let bfoldr_bx = Case((fun (Con(x, _)) -> x = Unit), (fun (Con(x, _)) _ -> x = Unit), RearrV((fun v -> (Con(Unit, v))), (fun (Con(Unit, v)) -> v), Prod(skip1, Replace)), RearrS((fun (Con(Con(x, xs), e)) -> (Con(x, Con(xs, e)))), (fun (Con(x, Con(xs, e))) -> (Con(Con(x, xs), e))), Compose(Prod(Replace, Var "bfoldr_bx"), Var "bx")))
+  
+  let bfoldr_bx_def = Def("bfoldr_bx", bfoldr_bx,  Def("bx", bx,Var "bfoldr_bx"))
+  
+  let bmap = RearrS((fun s -> Con(s, Unit)), (fun (Con(s, Unit)) -> s), bfoldr_bx_def)
+  
+  let ((ks, s), (kv, v)) = kpg bx id id (Con(Int(1), Con(Int(2), Unit))) (Con(Int(3), Con(Int(4), Unit))) [] dummy_id in
+    let s = ks s in
+    let v = kv v in
+    (s, v)
+  ;;
