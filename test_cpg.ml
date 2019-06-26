@@ -57,10 +57,6 @@ let (ks, kv) = cpg bx (fun _ -> s) (fun _ -> v) [] in
    (ks s, kv v)
 
 (* test compostion of 2 phead *)
-(* Compose(bx1, bx2):
-      (ks1, kv1) = cpg bx1 ks id env in : Result is CORRECT
-      (ks1, kv1) = cpg bx1 ks kv env in : Result is INCORRECT
-*)
 let phead = RearrV((fun v -> Con(v, Unit)), (fun (Con(v, Unit)) -> v), Prod(Replace, skip1)) in
 let s = Con(Con(Int(1), Con(Int(2), Unit)), Con(Con(Int(3),Unit), Unit)) in
 let v = Int(100) in
