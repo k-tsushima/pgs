@@ -31,23 +31,23 @@ src
 ### For testing in Ocaml top-level
 1. use ```make```
 2. in Ocaml top-level:
-```sh
-	#load "syntax.cmo";;
-	#load "bxprog.cmo";;
-	#load "utils.cmo";;
+```
+#load "syntax.cmo";;
+#load "bxprog.cmo";;
+#load "utils.cmo";;
 
-	#load "minbigul.cmo";;
-	#use "test_minbigul.ml";;
+#load "minbigul.cmo";;
+#use "test_minbigul.ml";;
 
-	#load "pg.cmo";;
-	#use "test_pg.ml";;
+#load "pg.cmo";;
+#use "test_pg.ml";;
 
-	#load "kpg.cmo";;
-	#use "test_kpg.ml";;
+#load "kpg.cmo";;
+#use "test_kpg.ml";;
 
-	#load "cpg.cmo";;
-	#use "test_cpg.ml";;
+#load "cpg.cmo";;
+#use "test_cpg.ml";;
 
-	#load "xpg.cmo";;
-	#use "test_xpg.ml";;
+#load "xpg.cmo";;
+#use "test_xpg.ml";;
 ```
