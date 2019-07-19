@@ -1,3 +1,0 @@
-make
-rm *.cmi *.cmo
-rm -R ._d
