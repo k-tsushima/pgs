@@ -61,6 +61,19 @@ let put_bsnoc =
   let s' = put bsnoc_def s v [] in
     s'
 
+(* test put comp of n replace *)
+let put_lassoc_comp_replace n =
+  let s = Int 1 in
+  let v = Int 100 in
+  let s' = put (lassoc_comp Replace n) s v [] in
+   s'
+
+let put_rassoc_comp_replace n =
+let s = Int 1 in
+let v = Int 100 in
+let s' = put (rassoc_comp Replace n) s v [] in
+  s'
+
 (* test put comp of n phead *)
 let put_lassoc_comp_phead n =
   let s = make_smallest_nested_list (n + 1) in
@@ -130,6 +143,17 @@ let get_bsnoc =
   let s = (Con(Int 2, (Con(Int 1, Unit)))) in
 	let v = get bsnoc_def s [] in
     v
+
+(* test get comp of n replace *)
+let get_lassoc_comp_replace n =
+  let s = Int 1 in
+  let v = get (lassoc_comp Replace n) s [] in
+   v
+
+let get_rassoc_comp_replace n =
+let s = Int 1 in
+let v = get (rassoc_comp Replace n) s [] in
+  v
 
 (* test get comp of n phead *)
 let get_lassoc_comp_phead n =

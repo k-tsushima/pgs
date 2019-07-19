@@ -59,6 +59,19 @@ let kpg_bsnoc =
   let (ks, kv, s, v) = kpg bsnoc_def id id s v [] dummy_id in
     (ks s, kv v)
 
+(* test comp of n replace *)
+let kpg_lassoc_comp_replace n =
+  let s = Int 1 in
+  let v = Int 100 in
+  let (ks, kv, s, v) = kpg (lassoc_comp Replace n) id id s v [] dummy_id in
+   (ks s, kv v)
+
+let kpg_rassoc_comp_replace n =
+	let s = Int 1 in
+	let v = Int 100 in
+	let (ks, kv, s, v) = kpg (rassoc_comp Replace n) id id s v [] dummy_id in
+		(ks s, kv v)
+
 (* test comp of n phead *)
 let kpg_lassoc_comp_phead n =
   let s = make_smallest_nested_list (n + 1) in

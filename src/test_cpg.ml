@@ -59,6 +59,19 @@ let cpg_bsnoc =
   let (ks, kv) = cpg bsnoc_def (fun _ -> s) (fun _ -> v) [] in
     (ks s, kv v)
 
+(* test cpg comp of n replace *)
+let cpg_lassoc_comp_replace n =
+  let s = Int 1 in
+  let v = Int 100 in
+  let (ks, kv) = cpg (lassoc_comp Replace n) (fun _ -> s) (fun _ -> v) [] in
+   (ks s, kv v)
+
+let cpg_rassoc_comp_replace n =
+let s = Int 1 in
+let v = Int 100 in
+let (ks, kv) = cpg (rassoc_comp Replace n) (fun _ -> s) (fun _ -> v) [] in
+  (ks s, kv v)
+
 (* test cpg comp of n phead *)
 let cpg_lassoc_comp_phead n =
   let s = make_smallest_nested_list (n + 1) in

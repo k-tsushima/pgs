@@ -59,6 +59,19 @@ let xpg_bsnoc =
   let (ks, kv, ks', kv', s', v') = xpg bsnoc_def (fun _ -> s) (fun _ -> v) id id s v [] in
     (ks' s', kv' v')
 
+(* test comp of n replace *)
+let xpg_lassoc_comp_replace n =
+  let s = Int 1 in
+  let v = Int 100 in
+  let (ks, kv, ks', kv', s', v') = xpg (lassoc_comp Replace n) (fun _ -> s) (fun _ -> v) id id s v [] in
+   (ks' s', kv' v')
+
+let xpg_rassoc_comp_replace n =
+	let s = Int 1 in
+	let v = Int 100 in
+	let (ks, kv, ks', kv', s', v') = xpg (rassoc_comp Replace n) (fun _ -> s) (fun _ -> v) id id s v [] in
+		(ks' s', kv' v')
+
 (* test comp of n phead *)
 let xpg_lassoc_comp_phead n =
   let s = make_smallest_nested_list (n + 1) in

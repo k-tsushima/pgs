@@ -21,12 +21,20 @@ let _ =
 			let comp_name = Sys.argv.(2) in
 			let n_comp = int_of_string (Sys.argv.(3)) in
 				( match func_name, comp_name with
+                    | "put", "lassoc_comp_replace" -> let _ = put_lassoc_comp_replace n_comp in ""
+					| "put", "rassoc_comp_replace" -> let _ = put_rassoc_comp_replace n_comp in ""
 					| "put", "lassoc_comp_phead" -> let _ = put_lassoc_comp_phead n_comp in ""
 					| "put", "rassoc_comp_phead" -> let _ = put_rassoc_comp_phead n_comp in ""
 					| "put", "breverse" -> let _ = put_breverse n_comp in ""
+
+                    | "pg", "lassoc_comp_replace" -> let _ = pg_lassoc_comp_replace n_comp in ""
+					| "pg", "rassoc_comp_replace" -> let _ = pg_rassoc_comp_replace n_comp in ""
 					| "pg", "lassoc_comp_phead" -> let _ = pg_lassoc_comp_phead n_comp in ""
 					| "pg", "rassoc_comp_phead" -> let _ = pg_rassoc_comp_phead n_comp in ""
 					| "pg", "breverse" -> let _ = pg_breverse n_comp in ""
+                    
+                    | "xpg", "lassoc_comp_replace" -> let _ = xpg_lassoc_comp_replace n_comp in ""
+					| "xpg", "rassoc_comp_replace" -> let _ = xpg_rassoc_comp_replace n_comp in ""
 					| "xpg", "lassoc_comp_phead" -> let _ = xpg_lassoc_comp_phead n_comp in ""
 					| "xpg", "rassoc_comp_phead" -> let _ = xpg_rassoc_comp_phead n_comp in ""
 					| "xpg", "breverse" -> let _ = xpg_breverse n_comp in ""

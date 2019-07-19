@@ -59,6 +59,19 @@ let pg_bsnoc =
   let (s, v) = pg bsnoc_def s v [] in
     (s, v)
 
+(* test pg comp of n replace *)
+let pg_lassoc_comp_replace n =
+  let s = Int 1 in
+  let v = Int 100 in
+  let (s, v) = pg (lassoc_comp Replace n) s v [] in
+   (s, v)
+
+let pg_rassoc_comp_replace n =
+	let s = Int 1 in
+	let v = Int 100 in
+	let (s, v) = pg (rassoc_comp Replace n) s v [] in
+		(s, v)
+
 (* test pg comp of n phead *)
 let pg_lassoc_comp_phead n =
   let s = make_smallest_nested_list (n + 1) in
