@@ -116,7 +116,7 @@ let rec xpg (bx:bigul) (ks:data->data) (kv:data->data) (ks':data->data) (kv':dat
         ks'
         id
         s'
-        (construct_dummy v')
+        v'
         env
     in
     let (ks2, kv2, ks2', kv2', s2', v2') =
