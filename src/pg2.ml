@@ -46,13 +46,6 @@ let rec pg2 (bx:bigul) s v env =
     else
       pg2 bx2 s v env
   | Compose(bx1, bx2) ->
-    let (ks, kv, ks', kv', s', v') = xpg bx1 (fun _ -> s) (fun _ -> v) id id s v env in 
+    let (ks, kv, ks', kv', s', v') = xpg bx1 (fun _ -> s) id id id s v env in 
     let (s'', v'') = pg2 bx2 (kv' v') v env in
-        (ks s'', v'') 
-    (* let (ks1, kv1, ks1', kv1', s1', v1') = xpg bx1 (fun _ -> s) (fun _ -> v) id id s v env in 
-    let (ks2, kv2, ks2', kv2', s2', v2') = xpg bx2 kv1 (fun _ -> v) kv1' id v1' v env in
-    (
-      (* (fun m -> ks1 (ks2' m)) s2', kv2' v2' *)
-      (fun x -> ks1 (ks2 x)) s,
-      kv2 v
-    ) *)
+        (ks s'', v'')
