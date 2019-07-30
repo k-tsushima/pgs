@@ -39,21 +39,15 @@ src
 #load "minbigul.cmo";;
 #use "test_minbigul.ml";;
 
-#load "kpg.cmo";;
-#use "test_kpg.ml";;
+#load "pg.cmo";;
+#use "test_pg.ml";;
 
 #load "cpg.cmo";;
 #use "test_cpg.ml";;
 
+#load "kpg.cmo";;
+#use "test_kpg.ml";;
+
 #load "xpg.cmo";;
 #use "test_xpg.ml";;
-
-#load "xpg2.cmo";;
-#use "test_xpg2.ml";;
-
-#load "pg.cmo";;
-#use "test_pg.ml";;
-
-#load "pg2.cmo";;
-#use "test_pg2.ml";;
 ```

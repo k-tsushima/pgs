@@ -16,6 +16,12 @@ let rearrV_d = RearrV(
 
 let prod_rs = Prod(Replace, skip1)
 
+let phead_no_evaluation = RearrV(
+    (fun v -> Con(v, Unit)), 
+    (fun x -> match x with Con(v, Unit) -> v | _ -> assert false), 
+    Prod(Replace, Replace)
+  ) 
+
 let phead = RearrV(
     (fun v -> Con(v, Unit)), 
     (fun x -> match x with Con(v, Unit) -> v | _ -> assert false), 
@@ -32,6 +38,47 @@ let phead_with_case = Case(
     ),
     skip1
   )
+
+let phead_with_multi_case = Case(
+    (fun s v -> true),
+    (fun s -> true),
+    RearrV(
+        (fun v -> Con(v, Unit)),
+        (fun x -> match x with Con(v, Unit) -> v | _ -> assert false),
+        Case(
+            (fun s v -> true),
+            (fun s -> true),
+            Prod(Replace, skip1),
+            skip1
+        )
+    ),
+    skip1
+)
+
+let phead_with_multi_case_2 = Case(
+    (fun s v -> true),
+    (fun s -> true),
+    RearrS(
+        (fun x -> match x with Con(s, xs) -> Con(s, xs) | _ -> assert false),
+        (fun x -> match x with Con(s, xs) -> Con(s, xs) | _ -> assert false),
+        Case(
+            (fun s v -> true),
+            (fun s -> true),
+            RearrV(
+                (fun v -> Con(v, Unit)),
+                (fun x -> match x with Con(v, Unit) -> v | _ -> assert false),
+                Case(
+                    (fun s v -> true),
+                    (fun s -> true),
+                    Prod(Replace, skip1),
+                    skip1
+                )
+            ),
+            skip1
+        )
+    ),
+    skip1
+)
 
 let phead2 = RearrS(
     (fun x -> match x with Con(s, ss) -> Con(s, ss) | _ -> assert false),

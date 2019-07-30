@@ -1,7 +1,0 @@
-{
-    "files.exclude": {
-        "**/._*": true,
-        "**/_*": true,
-        "**/*.cm*": true
-    }
-}

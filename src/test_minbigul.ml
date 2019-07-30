@@ -278,3 +278,28 @@ let get_bmapreplace_with_case n =
   let s = make_consecutive_list n in
   let v = get bmapreplace_with_case s [] in 
   v
+
+(* test put comp of n phead_with_multi_case *)
+let put_lassoc_comp_phead_with_multi_case n =
+  let s = make_smallest_nested_list (n + 1) in
+  let v = Int 100 in
+  let s' = put (lassoc_comp phead_with_multi_case n) s v [] in
+  s'
+
+let put_rassoc_comp_phead_with_multi_case n =
+  let s = make_smallest_nested_list (n + 1) in
+  let v = Int 100 in 
+  let s' = put (rassoc_comp phead_with_multi_case n) s v [] in
+  s'
+
+let put_lassoc_comp_phead_with_multi_case_2 n =
+  let s = make_smallest_nested_list (n + 1) in
+  let v = Int 100 in
+  let s' = put (lassoc_comp phead_with_multi_case_2 n) s v [] in
+  s'
+
+let put_rassoc_comp_phead_with_multi_case_2 n =
+  let s = make_smallest_nested_list (n + 1) in
+  let v = Int 100 in 
+  let s' = put (rassoc_comp phead_with_multi_case_2 n) s v [] in
+  s'
