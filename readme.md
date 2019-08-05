@@ -42,11 +42,11 @@ src
 #load "pg.cmo";;
 #use "test_pg.ml";;
 
-#load "kpg.cmo";;
-#use "test_kpg.ml";;
-
 #load "cpg.cmo";;
 #use "test_cpg.ml";;
+
+#load "kpg.cmo";;
+#use "test_kpg.ml";;
 
 #load "xpg.cmo";;
 #use "test_xpg.ml";;
