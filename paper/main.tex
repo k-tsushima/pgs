@@ -1,0 +1,616 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.20 of 2017/10/04
+%
+\documentclass[runningheads]{llncs}
+%
+\usepackage{graphicx}
+\usepackage{color}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
+
+\newcommand{\bxput}[3]{put$_{BX}$ \ {#1} \ {#2} \ {#3}}
+\newcommand{\bxget}[2]{get$_{BX}$ \ {#1} \ {#2}}
+\newcommand{\revput}[3]{put$_{REV}$ \ {#1} \ {#2} \ {#3}}
+\newcommand{\revget}[2]{get$_{REV}$ \ {#1} \ {#2}}
+\newcommand{\sif}[3]{if \ {#1} \ then \ {#2} \ else \ {#3}}
+\newcommand{\product}[2]{({#1} `cons' {#2})}
+\newcommand{\tuple}[2]{(#1 :: #2)}
+\newcommand{\rearrS}[2]{rearrS \ #1 \ #2}
+\newcommand{\rearrV}[2]{rearrV \ #1 \ #2}
+\newcommand{\pg}[3]{pg \ #1 \ (#2, #3)}
+\newcommand{\casebx}[6]{case [#1][#2] $\to$ #3, [#4][#5] $\to$ #6}
+\newcommand{\xpgone}[7]{kpg [\![#1]\!]}
+\newcommand{\xpg}[7]{kpg [\![#1]\!] (#2, #3, #4, #5, #6, #7)}
+\newcommand{\xpgtwo}[5]{cpg [\![#1]\!] (#2, #3, #4, #5)}
+\newcommand{\xpgtwod}[5]{cpg [\![#1]\!]}
+
+\begin{document}
+%
+\title{Bx to Rev (tentative) \thanks{Supported by organization x.}}
+%
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{First Author\inst{1}\orcidID{0000-1111-2222-3333} \and
+Second Author\inst{2,3}\orcidID{1111-2222-3333-4444} \and
+Third Author\inst{3}\orcidID{2222--3333-4444-5555}}
+%
+\authorrunning{F. Author et al.}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{Princeton University, Princeton NJ 08544, USA \and
+Springer Heidelberg, Tiergartenstr. 17, 69121 Heidelberg, Germany
+\email{lncs@springer.com}\\
+\url{http://www.springer.com/gp/computer-science/lncs} \and
+ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
+\email{\{abc,lncs\}@uni-heidelberg.de}}
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+The abstract should briefly summarize the contents of the paper in
+15--250 words.
+
+\keywords{First keyword  \and Second keyword \and Another keyword.}
+\end{abstract}
+%
+%
+%
+\section{Introduction}
+
+% Story ->
+% reversible is needed not to lose any information -> pg is introduced.
+% pg is not good for lassoc -> cpg (xpg2) is introduced.
+% cpg can be improved -> kpg(xpg) is introduced.
+% kpg is slower than pg for rassoc. combined version -> xpg.
+
+% Evaluation result: Comparison with OCaml implementation of miniBiGUL
+
+\begin{itemize}
+\item Importance of BX, BX is a solution of view update problem in database.
+\item Explanation of put-based BX: BiGUL.
+\item Current status of BiGUL: Fastest BX language in the world
+\item A problem: Efficiency of compose evaluation. If we do not save the intermediate states, the number of get is quadratic. This is not good.
+\item To solve this problem we use an idea from reversible computation: not to lose any information.
+\item Based on this idea we introduce pg.
+\item We extend pg with several ideas and produce faster implementation.
+\end{itemize}
+
+\subsection{Contribution}
+
+\begin{itemize}
+\item Improvement of evaluation efficiency
+\item Reveal a part of relationship between BX and Reversible.
+  \begin{itemize}
+  \item Very well-behaved (no adaptive-case) \& The same evaluation path $\to$ No garbage Reversible Computation.
+  \item A pair of put and get is self-inverse (involution).
+  \item If we can obtain good parameter (dummy) for a BiGUL program,
+    put(s, dummy) can be a complement function.
+  \end {itemize}
+\item Introduced extentions (maybe) use more memory than the original approach, but they are faster than the original.
+\end{itemize}
+
+\subsection{Construction of this paper}
+
+\begin{itemize}
+\item 
+\end{itemize}
+
+\section{Bidirectional Programming Language: BiGUL}
+
+\begin{itemize}
+\item our target language is miniBiGUL (BiGUL minus adaptive case) : very well-behaved
+\item get = s $\to$ v
+\item put = s * v $\to$ s
+\item explanation about get and put.
+\item We assume putget and getput hold (explanation about putget and getput)
+\item explanation about put-based BX language: BiGUL
+\item Because our target language satisfies very well-behaved (No adaptive case) $\to$ putput hold.
+\end{itemize}
+
+\subsection{Semantics of miniBiGUL}
+
+%\begin{figure}
+\bxput{(Skip $h$)}{s}{v} = \sif{$h$ s = v}{s}{fail}\\
+\bxput{Replace}{s}{v} = v\\
+\bxput{\product{$bx_1$}{$bx_2$}}{\tuple{$s_1$}{$s_2$}}{\tuple{$v_1$}{$v_2$}} = \product{\bxput{$bx_1$}{$s_1$}{$v_1$}}{\bxput{$bx_2$}{$s_2$}{$v_2$}}\\
+\bxput{(\rearrS{$f$}{bx})}{s}{v} = $f^{-1}$(\bxput{bx}{($f$ s)}{v})\\
+\bxput{(\rearrV{$g$}{bx})}{s}{v} = \bxput{bx}{s}{($g$ v)}\\
+\bxput{(\casebx{cond$_{sv1}$}{cond$_{s1}$}{bx$_1$}{cond$_{sv2}$}{cond$_{s2}$}{bx$_2$})}
+      {s}{v} = \\
+      \hspace{10mm} if {cond$_{sv1}$ s v}\\
+      \hspace{10mm} then let s' = \bxput{bx$_1$}{s}{v}\\
+      \hspace{10mm} else let s' = \bxput{bx$_2$}{s}{v}\\
+      \hspace{10mm} fi cond$_{s1}$ s'; return s'\\
+\bxput{(bx$_1$ $\circ$ bx$_2$)}{s}{v} = \bxput{bx$_1$}{s}{(\bxput{bx$_2$}{(\bxget{bx$_1$}{s})}{v})}\\
+%\end{figure}
+
+\noindent 
+%\begin{figure}
+\bxget{(Skip $h$)}{s} = {$h$ s}\\
+\bxget{Replace}{s} = s\\
+\bxget{\product{$bx_1$}{$bx_2$}}{\tuple{$s_1$}{$s_2$}} =
+\product{\bxget{$bx_1$}{$s_1$}}{\bxget{$bx_2$}{$s_2$}}\\
+\bxget{(\rearrS{$f$}{bx})}{s} = \bxget{bx}{($f$ s)}\\
+\bxget{(\rearrV{$g$}{bx})}{s} = $g^{-1}$ (\bxget{bx}{s})\\
+\bxget{(\casebx{cond$_{sv1}$}{cond$_{s1}$}{bx$_1$}{cond$_{sv2}$}{cond$_{s2}$}{bx$_2$})}{s} =\\
+      \hspace{10mm} if {cond$_{s1}$ s}\\
+      \hspace{10mm} then let v' = \bxget{bx$_1$}{s}\\
+      \hspace{10mm} else let v' = \bxget{bx$_2$}{s}\\
+      \hspace{10mm} fi {cond$_{sv1}$ s v'}; return v'\\
+\bxget{(bx$_1$ $\circ$ bx$_2$)}{s} = \bxget{bx$_2$}{(\bxget{bx$_1$}{s})}\\
+%\end{figure}
+
+\begin{itemize}
+\item To implement this in OCaml, we need some way to produce inverse function for $f$ and $g$.
+\item Avoiding this, our implementation requires users to write inverse function f$^{-1}$ and g$^{-1}$.
+\end{itemize}
+
+\section{Skip:Reversible langauge: Rwhile}
+
+% Maybe we should skip
+
+\begin{itemize}
+\item Usually programs receives inputs and produces outputs. It is impossible to produce inputs from outputs in general. Obtaining the inverse program of a program is difficult.
+\item Using reversible language, we can obtain inverse programs easily.
+\item Explanation of Rwhile: we need fi-condition.
+\item syntax, how to work.
+\end{itemize}
+
+\section{Skip:First approach}
+
+% We should skip this 
+
+\begin{itemize}
+\item Make put and get to be reversible. We need garbages (g) to keep lost infomation after evaluation.
+\item put$_{REV}$ = s * v $\to$ s * g
+\item get$_{REV}$ = s $\to$ v * g
+\item introduce (put$_{REV}^{-1}$: s * g $\to$ s * v) and (get$_{REV}^{-1}$:v * g $\to$ s)
+\item \textcolor{red}{(Missing part?)} Relationship between put$_{REV}$, get$_{REV}$, put$_{REV}^{-1}$, get$_{REV}^{-1}$ 
+\end{itemize}
+
+
+
+
+\noindent
+\revput{(Skip $h$)}{s}{v} = \sif{$h$ s = v}{(s, v)}{fail}
+
+\noindent
+\revput{Replace}{s}{v} = (v, s)
+
+\noindent
+\revput{\product{$bx_1$}{$bx_2$}}{\tuple{$s_1$}{$s_2$}}{\tuple{$v_1$}{$v_2$}} =\\
+\hspace{5mm}let (s1, g1) = \revput{$bx_1$}{$s_1$}{$v_1$} in\\
+\hspace{5mm}let (s2, g2) = \revput{$bx_2$}{$s_2$}{$v_2$} in\\
+\hspace{5mm}((s1, s2), (g1, g2))
+
+\noindent
+\revput{(\rearrS{$f$}{bx})}{s}{v} =\\
+\hspace{5mm}let (s1, g1) = \revput{bx}{($f$ s)}{v} in\\
+\hspace{5mm}($f^{-1}$ s1, g1)
+
+\noindent
+\revput{(\rearrV{$g$}{bx})}{s}{v} =\\
+\hspace{5mm} let (s1, g1) = \revput{bx}{s}{($g$ v)} in\\
+\hspace{5mm} (s1, g1)
+
+\noindent
+\revput{(\casebx{cond$_{sv1}$}{cond$_{s1}$}{bx$_1$}{cond$_{sv2}$}{cond$_{s2}$}{bx$_2$})}{s}{v} =\\
+\hspace{5mm} if {cond$_{sv1}$ s v}\\
+\hspace{5mm} then let (s', g) = \revput{bx$_1$}{s}{v} in\\
+\hspace{5mm} else let (s', g) = \revput{bx$_2$}{s}{v} in\\
+\hspace{5mm} fi cond$_{s1}$ s'; return (s', g)
+
+\noindent
+\revput{(bx$_1$ $\circ$ bx$_2$)}{s}{v} =\\
+\hspace{5mm} let (s1, g1) = \revget{bx$_1$}{s} in\\
+\hspace{5mm} let (s2, g2) = \revput{bx$_2$}{s1}{v} in\\
+\hspace{5mm} let (s3, g3) = \revput{bx$_1$}{s}{s2} in (* need to copy s *)\\
+\hspace{5mm} (s3, (g1, g2, g3))
+
+
+\vspace{5mm}
+\noindent
+\revget{(Skip $h$)}{s} = {($h$ s, s)}
+
+\noindent
+\revget{Replace}{s} = (s, \textcolor{red}{Nil})
+
+\noindent
+\revget{\product{$bx_1$}{$bx_2$}}{\tuple{$s_1$}{$s_2$}} = \\
+\hspace{5mm} let (v1, g1) = \revget{$bx_1$}{$s_1$} in\\
+\hspace{5mm} let (v2, g2) = \revget{$bx_2$}{$s_2$} in\\
+\hspace{5mm} ((v1, v2), (g1, g2))
+
+\noindent
+%% from here
+\revget{(\rearrS{$f$}{bx})}{s}{v} =\\
+\hspace{5mm}let (v1, g1) = \revget{bx}{($f$ s)} in\\
+\hspace{5mm}(v1, g1)
+
+\noindent
+\revget{(\rearrV{$g$}{bx})}{s}{v} =\\
+\hspace{5mm} let (v1, g1) = \revget{bx}{s} in\\
+\hspace{5mm} ($g^{-1}$ v1, g1)
+
+\noindent
+\revget{(\casebx{cond$_{sv1}$}{cond$_{s1}$}{bx$_1$}{cond$_{sv2}$}{cond$_{s2}$}{bx$_2$})}{s} =\\
+\hspace{5mm} if {cond$_{s1}$ s}\\
+\hspace{5mm} then let (v', g) = \revget{bx$_1$}{s} in\\
+\hspace{5mm} else let (v', g) = \revget{bx$_2$}{s} in\\
+\hspace{5mm} fi cond$_{sv1}$ s v'; return (v', g)
+
+\noindent
+\revget{(bx$_1$ $\circ$ bx$_2$)}{s}{v} =\\
+\hspace{5mm} let (v1, g1) = \revget{bx$_1$}{s} in\\
+\hspace{5mm} let (v2, g2) = \revget{bx$_1$}{s} in\\
+\hspace{5mm} (v2, (g1, g2))
+
+\textcolor{red}{If we use Rwhile for target language, we do not need to introduce inverse.}
+
+\section{``pg'' approach}
+
+\subsection{Self-inverse function: pg}
+
+\begin{itemize}
+\item Information loss causes re-evaluation of get.
+\item To prevent this, we introduced the idea of reversible computation.
+\item In reversible computation we need to keep all information: we can not lose any information.
+\item In BiGul we can do this with a pair of put and get.
+\item pg bx (s, v) = (put bx (s, v), get bx (s))
+\item pg: s * v $\to$ s * v
+\item No garbage
+\item This function is self-inverse. (involution, (f (f input)) = input)
+\item \textcolor{red}{Constraint: In case expression, put and get must always choose the same branch. This constraint is not satisfied in general: (e.g, SNOC, the different length of two inputs.) To remove this constraint we need to use garbage.}
+\end{itemize}
+
+Proof.\\
+pg bx (pg bx (s, v)) = (put bx (put bx (s, v), get bx (s)), get bx (put bx (s, v)))\\
+= (put bx (put bx (s, v), get bx (s)), v)\\
+= (put bx (s, get bx (s)), v)\\
+= (s, v)\\
+
+\subsection{Skip:Construction of pg}
+
+\pg{Skip h}{s}{v} \\
+= (\sif{$h$ s = v}{s}{fail}, {$h$ s})\\
+= \sif{$h$ s = v}{(s, $h$ s)}{fail}\\
+= \sif{$h$ s = v}{(s, v)}{fail}\\
+
+\noindent
+\pg{Replace}{s}{v}\\
+= (v, s)\\
+
+\noindent
+\pg{\product{$bx_1$}{$bx_2$}}{\tuple{$s_1$}{$s_2$}}{\tuple{$v_1$}{$v_2$}}\\
+= (\product{\bxput{$bx_1$}{$s_1$}{$v_1$}}{\bxput{$bx_2$}{$s_2$}{$v_2$}}, \product{\bxget{$bx_1$}{$s_1$}}{\bxget{$bx_2$}{$s_2$}})\\
+= let (s1, v1) = \pg{$bx_1$}{$s_1$}{$v_1$} in\\
+  let (s2, v2) = \pg{$bx_2$}{$s_2$}{$v_2$} in\\
+  (\product{s1}{s2}, \product{v1}{v2})\\
+
+  \noindent
+\pg{(\rearrS{$f$}{bx})}{s}{v}\\
+= ($f^{-1}$(\bxput{bx}{($f$ s)}{v}), \bxget{bx}{($f$ s)})\\
+= let (s, v) = \pg{bx}{($f$ s)}{v} in\\
+($f^{-1}$ s, v)\\
+
+\noindent
+\pg{(\rearrV{$g$}{bx})}{s}{v}\\
+= (\bxput{bx}{s}{($g$ v)}, $g^{-1}$ (\bxget{bx}{s}))\\
+= let (s, v) = \pg{bx}{s}{($g$ v)} in\\
+  (s, $g^{-1}$ v)\\
+
+\noindent
+\pg{(\casebx{cond$_{sv1}$}{cond$_{s1}$}{bx$_1$}{cond$_{sv2}$}{cond$_{s2}$}{bx$_2$})}{s}{v}\\
+= (if {cond$_{sv1}$ s v}\\
+\hspace{4mm} then let s' = \bxput{bx$_1$}{s}{v}\\
+\hspace{4mm} else let s' = \bxput{bx$_2$}{s}{v}\\
+\hspace{4mm} fi cond$_{v1}$ s'; return s',\\
+\hspace{4mm} if {cond$_{s1}$ s}\\
+\hspace{4mm} then let v' = \bxget{bx$_1$}{s}\\
+\hspace{4mm} else let v' = \bxget{bx$_2$}{s}\\
+\hspace{4mm} fi cond$_{sv1}$ s v'; return v')\\
+= if {cond$_{sv1}$ s v} \&\& {cond$_{s1}$ s}\\
+\hspace{3mm} then let s' = \pg{bx$_1$}{s}{v}\\
+\hspace{3mm} else let s' = \pg{bx$_2$}{s}{v}\\
+\hspace{3mm} fi cond$_{v1}$ s' \&\& cond$_{sv1}$ s v'; return s'\\
+\textcolor{red}{A restriction is introduced here. In general we need to consider additional two cases: {cond$_{sv1}$ s v} \&\& not {cond$_{s1}$ s}, not {cond$_{sv1}$ s v} \&\& {cond$_{s1}$ s}. In these two cases, the evaluated bxs are different in put and get. We need to keep garbage. }
+
+\noindent
+\pg{(bx$_1$ $\circ$ bx$_2$)}{s}{v}\\
+= (\bxput{bx$_1$}{s}{(\bxput{bx$_2$}{(\bxget{bx$_1$}{s})}{v})}, \bxget{bx$_2$}{(\bxget{bx$_1$}{s})})\\
+= let a = \bxget{bx$_1$}{s} in\\
+\hspace{3mm} let (b, c) = \pg{bx$_2$}{a}{v} in\\
+\hspace{3mm} let (d, e) = \pg{bx$_1$}{s}{b} in\\
+\hspace{3mm} (d, c)\\
+= let (a, f) = \pg{bx$_1$}{s}{dummy} in\\
+\hspace{3mm} let (b, c) = \pg{bx$_2$}{a}{v} in\\
+\hspace{3mm} let (d, e) = \pg{bx$_1$}{s}{b} in\\
+\hspace{3mm} (d, c)\\
+= let (a, f) = \pg{bx$_1$}{s}{dummy} in\\
+\hspace{3mm} let (b, c) = \pg{bx$_2$}{a}{v} in\\
+\hspace{3mm} let (d, e) = \pg{bx$_1$}{\textcolor{red}{f}}{b} in\\
+\hspace{3mm} (d, c)\\
+\textcolor{red}{Last transformation uses putput.}
+
+\subsection{How to Evaluate Bidirectional Programs using pg}
+
+\begin{itemize}
+\item Because we combine put and get, we need to supply view for evaluation of get.
+\item introduce dummy?
+\item automatic analysis for domain \& range?
+\item 
+\item partial evaluation of put(s(D), dummy(S)).
+\item \textcolor{red}{Not good? Basically put (BX) is often a recursion on the source. If source is static, partial evaluation will work well. On the other hand, view is small data. So partial evaluation might not work well.}
+\item \textcolor{red}{lazy evaluation is also a possibility?}
+\end{itemize}
+
+\subsection{cpg}
+
+\begin{itemize}
+\item If the BX programs are left assoc of composition, pg will be exponential. Because it calls pg bx$_1$ twice.
+\item To solve this problem, we introduce accumulation of changes.
+\end{itemize}
+
+\noindent
+$
+\begin{array}{lll}
+\xpgtwod{Skip \ h}{ks}{kv}{s'}{v'} & = &(ks, kv, s', v')\\
+\\
+
+\xpgtwod{Replace}{ks}{kv}{s'}{v'} & = & (kv, ks, v', s')\\
+\\
+
+\xpgtwod{bx1 \ prod \ bx2}{ks}{kv}{s'}{v'} & = &
+(ks1, kv1, s1', v1') \Leftarrow \xpgtwo{bx1}{fst \circ ks}{fst \circ kv}{fst \ s'}{fst \ v'};\\
+& & (ks2, kv2, s2', v2') \Leftarrow \xpgtwo{bx2}{snd \circ ks}{snd \circ kv}{snd \ s'}{snd \ v'};\\
+& & (con \ ks1 \ ks2, con \ kv1 \ kv2, \\
+& & (Con \ s1' \ s2'), (Con \ v1' \ v2'))\\
+\\
+
+\xpgtwod{RearrS \ f1 \ f2 \ bx}{ks}{kv}{s'}{v'} & = &
+(ks, kv, s', v') \Leftarrow \xpgtwo{bx}{f1 \circ ks}{kv}{f1 \ s'}{v'};\\
+& & (f2 \circ ks, kv, s', v')\\
+\\
+
+\xpgtwod{RearrV \ g1 \ g2 \ bx}{ks}{kv}{s'}{v'} & = &
+(ks, kv, s', v') \Leftarrow \xpgtwo{bx}{ks}{g1 \circ kv}{s'}{g1 \ v'};\\
+& & (ks, g2 \circ kv, ks', g2 \ v')\\
+\\
+
+\xpgtwod{Case \ c \ bx1 \ bx2}{ks}{kv}{s'}{v'}
+& & if \ c \ s' \ v' \ then \ \xpgtwo{bx1}{ks}{kv}{s'}{v'}\\
+& & else \ \xpgtwo{bx2}{ks}{kv}{s'}{v'}\\
+\\
+
+\xpgtwod{bx1 \circ bx2}{ks}{kv}{s'}{v'}
+& = & (ks1, kv1, \underline{s1'}, v1') \Leftarrow \xpgtwo{bx1}{ks}{id}{s'}{const$\_$dummy \ v'};\\
+& & (ks2, kv2, s2', v2') \Leftarrow \xpgtwo{bx2}{kv1}{kv}{v1'}{v'};\\
+& & (ks1 \circ ks2, kv2,  ks1 \ s2', v2')\\
+\end{array}
+$
+
+\begin{itemize}
+\item This is faster than pg for left assoc BX programs.
+\item (Slower for right assoc programs)
+\item []
+\item $s1'$ in composition is redundant.  
+\item Next, we will extend this to avoid this redundant computation.
+\end{itemize}
+
+
+\subsection{kpg}
+
+$fst = \lambda (Con (x1, x2)). x1$\\
+\noindent 
+$snd = \lambda (Con (x1, x2)). x2$\\
+$con = \lambda ks1. \lambda ks2. \lambda x. Con(ks1 \ x, ks2 \ x)$
+
+\noindent 
+$\xpg{bx}{ks}{kv}{ks'}{kv'}{s'}{v'}$\\
+
+$ks, kv$ (from cpg. For keeping modification information = used for compose)
+
+$ks', kv'$ (from kpg. For evaluating actual values)
+
+$s', v'$ (from kpg. For keeping evaluated values)
+
+\vspace{5mm}
+
+\noindent
+$
+\begin{array}{lll}
+\xpgone{Skip \ h}{ks}{kv}{ks'}{kv'}{s'}{v'} & = & s' \Leftarrow ks' \ s';\\
+& & v' \Leftarrow kv' \ v';\\
+& & (ks, kv, id, id, s', v')\\
+\\
+
+\xpgone{Replace}{ks}{kv}{ks'}{kv'}{s'}{v'} & = & (kv, ks, kv', ks', v', s')\\
+\\
+
+\xpgone{bx1 \ prod \ bx2}{ks}{kv}{ks'}{kv'}{s'}{v'} & = &
+\textcolor{red}{let \ s' = ks' \ s' \ in \ let \ v' = kv' \ v' \ in}\\
+& & \textcolor{red}{let \ ks' = id \ in \ let \ kv' = id \ in}\\
+& & (ks1, kv1, ks1', kv1', s1', v1') \Leftarrow \xpg{bx1}{fst \circ ks}{fst \circ kv}{fst \circ ks'}{fst \circ kv'}{s'}{v'};\\
+& & (ks2, kv2, ks2', kv2', s2', v2') \Leftarrow \xpg{bx2}{snd \circ ks}{snd \circ kv}{snd \circ ks'}{snd \circ kv'}{s'}{v'};\\
+& & (con \ ks1 \ ks2, con \ kv1 \ kv2, \\
+& & con \ (ks1' \circ fst) \ (ks2' \circ snd), con \ (kv1' \circ fst) \ (kv2' \circ snd),\\
+& & (Con \ s1' \ s2'), (Con \ v1' \ v2'))\\
+\\
+
+\xpgone{RearrS \ f1 \ f2 \ bx}{ks}{kv}{ks'}{kv'}{s'}{v'} & = &
+(ks, kv, ks', kv', s', v') \Leftarrow \xpg{bx}{f1 \circ ks}{kv}{f1 \circ ks'}{kv'}{s'}{v'};\\
+& & (f2 \circ ks, kv, f2 \circ ks', kv', s', v')\\
+\\
+
+\xpgone{RearrV \ g1 \ g2 \ bx}{ks}{kv}{ks'}{kv'}{s'}{v'} & = &
+(ks, kv, ks', kv', s', v') \Leftarrow \xpg{bx}{ks}{g1 \circ kv}{ks'}{g1 \circ kv'}{s'}{v'};\\
+& & (ks, g2 \circ kv, ks', g2 \circ kv', s', v')\\
+\\
+
+\xpgone{Case \ c \ bx1 \ bx2}{ks}{kv}{ks'}{kv'}{s'}{v'}
+& = & s' \Leftarrow ks' s';\\
+& & v' \Leftarrow kv' v';\\
+& & if \ c \ s' \ v' \ then \ \xpg{bx1}{ks}{kv}{id}{id}{s'}{v'}\\
+& & else \ \xpg{bx2}{ks}{kv}{id}{id}{s'}{v'}\\
+\\
+
+\xpgone{bx1 \circ bx2}{ks}{kv}{ks'}{kv'}{s'}{v'}
+& = & (ks1, kv1, \underline{ks1'}, kv1', \underline{s1'}, v1') \Leftarrow \xpg{bx1}{ks}{id}{ks'}{id}{s'}{const$\_$dummy \ v'};\\
+& & (ks2, kv2, ks2', kv2', s2', v2') \Leftarrow \xpg{bx2}{kv1}{kv}{kv1'}{kv'}{v1'}{v'};\\
+& & (ks1 \circ ks2, kv2, ks1 \circ ks2', kv2', s2', v2')\\
+\end{array}
+$
+
+\begin{itemize}
+\item In this definition of kpg, s' and v' will have actual value only in skip and case. Except them, the functions for computation will be kept as ks' and kv'.
+\item In composition $ks1'$ and $s1'$ are still redundant. But, they are not evaluated.
+\item In prod, Evaluation of ks' and kv' will be done indendently in kpg$[\![bx_1]\!]$ and kpg$[\![bx_2]\!]$. To remove redundant re-computation we evaluate actual s' and v'.
+\item This implementation is faster for left assoc BX programs. (Actually slower for right assoc than cpg)
+\end{itemize}
+
+\section{xpg}
+
+\begin{itemize}
+\item pg is fastest for right assoc programs and kpg is fastest for left assoc programs.
+\item To combine their strength, we can use the following definition.
+\item If there is a composition, we use xpg for evaluation of $bx_1$ and pg for evaluation of $bx_2$.
+\item If $bx_1$ is simple program (= Right assoc), this is almost the same with pg.
+\item If $bx_1$ is complicated program (= Left assoc), this is almost the same with kpg.
+\end{itemize}
+
+$
+\begin{array}{lll}
+  xpg [\![E]\!]_{(s, v)} & = & same \ with \ pg \ if \ E \ is \ not \ compose\\
+  xpg [\![bx_1 \circ bx_2]\!]_{(s, v)} & = &
+  let \ (ks, kv, ks', kv', s', v') = kpg \ bx_1 \ (\lambda \_. s) \ id \ id \ id \ in\\
+  & & let \ (s', v') = pg \ bx_2 \ (kv' \ v') \ v \ in\\
+  & & (ks \ s', v')\\
+\end{array}
+$
+
+\section{Experimental result}
+
+\begin{itemize}
+\item Evaluation time for miniBiGul, pg, cpg, kpg, xpg.
+\item Memory allocation of miniBiGul, pg, cpg, kpg, xpg.
+\item []
+\item xpg looks the best one (maybe)
+\item 
+\end{itemize}
+
+\subsection{Theoretical Computational Complexity}
+
+\section{Conclusion and Future Work}
+
+
+% From sample code
+% 
+% ---- Bibliography ----
+%
+% BibTeX users should specify bibliography style 'splncs04'.
+% References will then be sorted and formatted in the correct style.
+%
+% \bibliographystyle{splncs04}
+% \bibliography{mybibliography}
+%
+\begin{thebibliography}{8}
+\bibitem{ref_article1}
+Author, F.: Article title. Journal \textbf{2}(5), 99--110 (2016)
+
+\bibitem{ref_lncs1}
+Author, F., Author, S.: Title of a proceedings paper. In: Editor,
+F., Editor, S. (eds.) CONFERENCE 2016, LNCS, vol. 9999, pp. 1--13.
+Springer, Heidelberg (2016). \doi{10.10007/1234567890}
+
+\bibitem{ref_book1}
+Author, F., Author, S., Author, T.: Book title. 2nd edn. Publisher,
+Location (1999)
+
+\bibitem{ref_proc1}
+Author, A.-B.: Contribution title. In: 9th International Proceedings
+on Proceedings, pp. 1--2. Publisher, Location (2010)
+
+\bibitem{ref_url1}
+LNCS Homepage, \url{http://www.springer.com/lncs}. Last accessed 4
+Oct 2017
+\end{thebibliography}
+\end{document}
+
+
+
+
+
+
+
+\subsubsection{Sample Heading (Third Level)} Only two levels of
+headings should be numbered. Lower level headings remain unnumbered;
+they are formatted as run-in headings.
+
+\paragraph{Sample Heading (Fourth Level)}
+The contribution should contain no more than four levels of
+headings. Table~\ref{tab1} gives a summary of all heading levels.
+
+\begin{table}
+\caption{Table captions should be placed above the
+tables.}\label{tab1}
+\begin{tabular}{|l|l|l|}
+\hline
+Heading level &  Example & Font size and style\\
+\hline
+Title (centered) &  {\Large\bfseries Lecture Notes} & 14 point, bold\\
+1st-level heading &  {\large\bfseries 1 Introduction} & 12 point, bold\\
+2nd-level heading & {\bfseries 2.1 Printing Area} & 10 point, bold\\
+3rd-level heading & {\bfseries Run-in Heading in Bold.} Text follows & 10 point, bold\\
+4th-level heading & {\itshape Lowest Level Heading.} Text follows & 10 point, italic\\
+\hline
+\end{tabular}
+\end{table}
+
+
+\noindent Displayed equations are centered and set on a separate
+line.
+\begin{equation}
+x + y = z
+\end{equation}
+Please try to avoid rasterized images for line-art diagrams and
+schemas. Whenever possible, use vector graphics instead (see
+Fig.~\ref{fig1}).
+
+\begin{figure}
+\includegraphics[width=\textwidth]{fig1.eps}
+\caption{A figure caption is always placed below the illustration.
+Please note that short captions are centered, while long ones are
+justified by the macro package automatically.} \label{fig1}
+\end{figure}
+
+\begin{theorem}
+This is a sample theorem. The run-in heading is set in bold, while
+the following text appears in italics. Definitions, lemmas,
+propositions, and corollaries are styled the same way.
+\end{theorem}
+%
+% the environments 'definition', 'lemma', 'proposition', 'corollary',
+% 'remark', and 'example' are defined in the LLNCS documentclass as well.
+%
+\begin{proof}
+Proofs, examples, and remarks have the initial word in italics,
+while the following text appears in normal font.
+\end{proof}
+For citations of references, we prefer the use of square brackets
+and consecutive numbers. Citations using labels or the author/year
+convention are also acceptable. The following bibliography provides
+a sample reference list with entries for journal
+articles~\cite{ref_article1}, an LNCS chapter~\cite{ref_lncs1}, a
+book~\cite{ref_book1}, proceedings without editors~\cite{ref_proc1},
+and a homepage~\cite{ref_url1}. Multiple citations are grouped
+\cite{ref_article1,ref_lncs1,ref_book1},
+\cite{ref_article1,ref_book1,ref_proc1,ref_url1}.
+%
