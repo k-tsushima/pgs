@@ -3,10 +3,11 @@ open Test_kpg
 open Test_cpg
 open Test_pg
 open Test_xpg
+open Gc
 
 let usage =
 		"\nusage: .\\calc function_name comp_name n_comp \n" ^
-		"\tfunction_name : { put | pg | kpg }\n" ^
+		"\tfunction_name : { put | pg | cpg | kpg | xpg }\n" ^
 		"\tcomp_name : { lassoc_comp_phead | rassoc_comp_phead | breverse }\n" ^
 		"\tn_comp : positive number\n"
 
@@ -15,9 +16,8 @@ exception Too_Many_Parameters of string
 exception Unsupported_Parameter of string
 
 let _ =
-	match Array.length Sys.argv with
-		| 1 | 2 | 3 ->
-			raise (Missing_Parameter usage);
+    let start_time = Sys.time () in 
+	(match Array.length Sys.argv with
 		| 4 ->
 			let func_name = Sys.argv.(1) in
 			let comp_name = Sys.argv.(2) in
@@ -108,5 +108,9 @@ let _ =
                     
 					| _ -> raise (Unsupported_Parameter usage)
 				)
+        | 1 | 2 | 3 ->
+			raise (Missing_Parameter usage)
 		| _ ->
 			raise (Too_Many_Parameters usage)
+        ); 
+        Printf.printf "Elapsed Time: %f \nAllocated Bytes: %.0f \n" (Sys.time() -. start_time) (Gc.allocated_bytes ());
