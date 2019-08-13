@@ -29,13 +29,13 @@
 \newcommand{\rearrV}[2]{rearrV \ #1 \ #2}
 \newcommand{\casebx}[6]{case [#1][#2] \to #3, [#4][#5] \to #6}
 
-\newcommand{\bxput}[3]{put \, [\![#1]\!] \ #2 \ #3}
-\newcommand{\bxputinline}[1]{put \, [\![#1]\!]}
-\newcommand{\bxget}[2]{get \, [\![#1]\!] \ #2}
-\newcommand{\bxgetinline}[1]{get \, [\![#1]\!]}
+\newcommand{\putbx}[3]{put \, [\![#1]\!] \ #2 \ #3}
+\newcommand{\putbxinline}[1]{put \, [\![#1]\!]}
+\newcommand{\getbx}[2]{get \, [\![#1]\!] \ #2}
+\newcommand{\getbxinline}[1]{get \, [\![#1]\!]}
 
-\newcommand{\revput}[3]{put$_{REV}$ \ {#1} \ {#2} \ {#3}}
-\newcommand{\revget}[2]{get$_{REV}$ \ {#1} \ {#2}}
+\newcommand{\putrev}[3]{put_{REV} \, [\![#1]\!] \ {#2} \ {#3}}
+\newcommand{\getrev}[2]{get_{REV} \, [\![#1]\!] \ {#2}}
 
 \newcommand{\pg}[3]{pg \, [\![#1]\!] (#2, #3)}
 \newcommand{\pginline}[1]{pg \, [\![#1]\!]}
@@ -87,7 +87,7 @@ The abstract should briefly summarize the contents of the paper in
 
 % Story ->
 % reversible is needed not to lose any information -> pg is introduced.
-% pg is not good for lassoc -> cpg (xpg2) is introduced.
+% pg is not good for lassoc -> cpg (xpg_2) is introduced.
 % cpg can be improved -> kpg(xpg) is introduced.
 % kpg is slower than pg for rassoc. combined version -> xpg.
 
@@ -137,45 +137,45 @@ The abstract should briefly summarize the contents of the paper in
 
 \subsection{Semantics of miniBiGUL}
 
-$\bxput{Skip \ h}{s}{v} = \sif{h \ s = v}{s}{\text{fail}}$
+$\putbx{Skip \ h}{s}{v} = \sif{h \ s = v}{s}{\text{fail}}$
 
-$\bxput{Replace}{s}{v} = v$
+$\putbx{Replace}{s}{v} = v$
 
-$\bxput{\product{bx_1}{bx_2}}{\tuple{s_1}{s_2}}{\tuple{v_1}{v_2}} =\\
-    \tab \product{(\bxput{bx_1}{s_1}{v_1})}{(\bxput{bx_2}{s_2}{v_2})}$
+$\putbx{\product{bx_1}{bx_2}}{\tuple{s_1}{s_2}}{\tuple{v_1}{v_2}} =\\
+    \tab \product{(\putbx{bx_1}{s_1}{v_1})}{(\putbx{bx_2}{s_2}{v_2})}$
 
-$\bxput{\rearrS{f}{bx}}{s}{v} = f^{-1}(\bxput{bx}{(f \ s)}{v})$
+$\putbx{\rearrS{f}{bx}}{s}{v} = f^{-1}(\putbx{bx}{(f \ s)}{v})$
 
-$\bxput{\rearrV{g}{bx}}{s}{v} = \bxput{bx}{s}{(g \ v)}$
+$\putbx{\rearrV{g}{bx}}{s}{v} = \putbx{bx}{s}{(g \ v)}$
 
-$\bxput{\casebx{cond_{sv1}}{cond_{s1}}{bx_1}{cond_{sv2}}{cond_{s2}}{bx_2}}{s}{v} = \\
-    \tab \text{if } {cond_{sv1} \ s \ v} \\
-    \tab \text{then let } s' = \bxput{bx_1}{s}{v} \\
-    \tab \text{else let } s' = \bxput{bx_2}{s}{v} \\
-    \tab \text{fi } cond_{s1} \ s'; \text{ return } s'$
+$\putbx{\casebx{cond_{sv_1}}{cond_{s_1}}{bx_1}{cond_{sv_2}}{cond_{s_2}}{bx_2}}{s}{v} = \\
+    \tab \text{if } {cond_{sv_1} \ s \ v} \\
+    \tab \text{then let } s' = \putbx{bx_1}{s}{v} \\
+    \tab \text{else let } s' = \putbx{bx_2}{s}{v} \\
+    \tab \text{fi } cond_{s_1} \ s'; \ \text{return} \ s'$
 
-$\bxput{(bx_1 \circ bx_2)}{s}{v} = \bxput{bx_1}{s}{(\bxput{bx_2}{(\bxget{bx_1}{s})}{v})}$
+$\putbx{bx_1 \circ bx_2}{s}{v} = \putbx{bx_1}{s}{(\putbx{bx_2}{(\getbx{bx_1}{s})}{v})}$
 
 \vspace{5mm}
 
-$\bxget{Skip \ h}{s} = h \ s$
+$\getbx{Skip \ h}{s} = h \ s$
 
-$\bxget{Replace}{s} = s$
+$\getbx{Replace}{s} = s$
 
-$\bxget{\product{bx_1}{bx_2}}{\tuple{s_1}{s_2}} = \\
-    \tab \product{(\bxget{bx_1}{s_1})}{(\bxget{bx_2}{s_2})}$
+$\getbx{\product{bx_1}{bx_2}}{\tuple{s_1}{s_2}} = \\
+    \tab \product{(\getbx{bx_1}{s_1})}{(\getbx{bx_2}{s_2})}$
 
-$\bxget{\rearrS{f}{bx}}{s} = \bxget{bx}{(f \ s)}$
+$\getbx{\rearrS{f}{bx}}{s} = \getbx{bx}{(f \ s)}$
 
-$\bxget{\rearrV{g}{bx}}{s} = g^{-1} (\bxget{bx}{s})$
+$\getbx{\rearrV{g}{bx}}{s} = g^{-1} (\getbx{bx}{s})$
 
-$\bxget{\casebx{cond_{sv1}}{cond_{s1}}{bx_1}{cond_{sv2}}{cond_{s2}}{bx_2}}{s} =\\
-    \tab \text{if } {cond_{s1} \ s}\\
-    \tab \text{then let } v' = \bxget{bx_1}{s}\\
-    \tab \text{else let } v' = \bxget{bx_2}{s}\\
-    \tab \text{fi } {cond_{sv1} \ s \ v'}; \text{ return } v'$
+$\getbx{\casebx{cond_{sv_1}}{cond_{s_1}}{bx_1}{cond_{sv_2}}{cond_{s_2}}{bx_2}}{s} =\\
+    \tab \text{if} \ {cond_{s_1} \ s}\\
+    \tab \text{then let} \ v' = \getbx{bx_1}{s}\\
+    \tab \text{else let} \ v' = \getbx{bx_2}{s}\\
+    \tab \text{fi} \ {cond_{sv_1} \ s \ v'}; \ \text{return} \ v'$
 
-$\bxget{bx_1 \circ bx_2}{s} = \bxget{bx_2}{(\bxget{bx_1}{s})}$
+$\getbx{bx_1 \circ bx_2}{s} = \getbx{bx_2}{(\getbx{bx_1}{s})}$
 
 \begin{itemize}
 \item To implement this in OCaml, we need some way to produce inverse function for $f$ and $g$.
@@ -205,82 +205,64 @@ $\bxget{bx_1 \circ bx_2}{s} = \bxget{bx_2}{(\bxget{bx_1}{s})}$
 \item \textcolor{red}{(Missing part?)} Relationship between put$_{REV}$, get$_{REV}$, put$_{REV}^{-1}$, get$_{REV}^{-1}$ 
 \end{itemize}
 
+$\putrev{Skip \ h}{s}{v} =  \sif{h \ s = v}{(s, v)}{\text{fail}}$
 
+$\putrev{Replace}{s}{v} = (v, s)$
 
+$\putrev{\product{bx_1}{bx_2}}{\tuple{s_1}{s_2}}{\tuple{v_1}{v_2}} =\\
+    \tab \text{let} \ (s_1, g_1) = \putrev{bx_1}{s_1}{v_1} \ \text{in}\\
+    \tab \text{let} \ (s_2, g_2) = \putrev{bx_2}{s_2}{v_2} \ \text{in}\\
+        \qtab ((s_1, s_2), (g_1, g_2))$
 
-% \noindent
-% \revput{(Skip $h$)}{s}{v} = \sif{$h$ s = v}{(s, v)}{fail}
+$\putrev{\rearrS{f}{bx}}{s}{v} =\\
+    \tab \text{let} \ (s_1, g_1) = \putrev{bx}{(f \ s)}{v} \ \text{in}\\
+        \qtab (f^{-1} s_1, g_1)$
 
-% \noindent
-% \revput{Replace}{s}{v} = (v, s)
+$\putrev{\rearrV{g}{bx}}{s}{v} =\\
+    \tab \text{let} \ (s_1, g_1) = \putrev{bx}{s}{(g \ v)} \ \text{in}\\
+        \qtab (s_1, g_1)$
 
-% \noindent
-% \revput{\product{$bx_1$}{$bx_2$}}{\tuple{$s_1$}{$s_2$}}{\tuple{$v_1$}{$v_2$}} =\\
-% \hspace{5mm}let (s1, g1) = \revput{$bx_1$}{$s_1$}{$v_1$} in\\
-% \hspace{5mm}let (s2, g2) = \revput{$bx_2$}{$s_2$}{$v_2$} in\\
-% \hspace{5mm}((s1, s2), (g1, g2))
+$\putrev{\casebx{cond_{sv_1}}{cond_{s_1}}{bx_1}{cond_{sv_2}}{cond_{s_2}}{bx_2}}{s}{v} =\\
+    \tab \text{if} \ cond_{sv_1} \ s \ v\\
+    \tab \text{then let} \ (s', g) = \putrev{bx_1}{s}{v} \ \text{in}\\
+    \tab \text{else let} \ (s', g) = \putrev{bx_2}{s}{v} \ \text{in}\\
+    \tab \text{fi} \ cond_{s_1} \ s'; \ \text{return} \ (s', g)$
 
-% \noindent
-% \revput{(\rearrS{$f$}{bx})}{s}{v} =\\
-% \hspace{5mm}let (s1, g1) = \revput{bx}{($f$ s)}{v} in\\
-% \hspace{5mm}($f^{-1}$ s1, g1)
+$\putrev{bx_1 \circ bx_2}{s}{v} =\\
+    \tab \text{let} \ (s_1, g_1) = \getrev{bx_1}{s} \ \text{in}\\
+    \tab \text{let} \ (s_2, g_2) = \putrev{bx_2}{s_1}{v} \ \text{in}\\
+    \tab \text{let} \ (s_3, g_3) = \putrev{bx_1}{s}{s_2} \ \text{in (* need to copy s *)}\\
+        \qtab (s_3, (g_1, g_2, g_3))$
 
-% \noindent
-% \revput{(\rearrV{$g$}{bx})}{s}{v} =\\
-% \hspace{5mm} let (s1, g1) = \revput{bx}{s}{($g$ v)} in\\
-% \hspace{5mm} (s1, g1)
+\vspace{5mm}
 
-% \noindent
-% \revput{(\casebx{cond$_{sv1}$}{cond$_{s1}$}{bx$_1$}{cond$_{sv2}$}{cond$_{s2}$}{bx$_2$})}{s}{v} =\\
-% \hspace{5mm} if {cond$_{sv1}$ s v}\\
-% \hspace{5mm} then let (s', g) = \revput{bx$_1$}{s}{v} in\\
-% \hspace{5mm} else let (s', g) = \revput{bx$_2$}{s}{v} in\\
-% \hspace{5mm} fi cond$_{s1}$ s'; return (s', g)
+$\getrev{Skip \ h}{s} = {(h \ s, s)}$
 
-% \noindent
-% \revput{(bx$_1$ $\circ$ bx$_2$)}{s}{v} =\\
-% \hspace{5mm} let (s1, g1) = \revget{bx$_1$}{s} in\\
-% \hspace{5mm} let (s2, g2) = \revput{bx$_2$}{s1}{v} in\\
-% \hspace{5mm} let (s3, g3) = \revput{bx$_1$}{s}{s2} in (* need to copy s *)\\
-% \hspace{5mm} (s3, (g1, g2, g3))
+$\getrev{Replace}{s} = (s, \textcolor{red}{\text{Nil}})$
 
+$\getrev{\product{bx_1}{bx_2}}{\tuple{s_1}{s_2}} = \\
+    \tab \text{let} \ (v_1, g_1) = \getrev{bx_1}{s_1} \ \text{in}\\
+    \tab \text{let} \ (v_2, g_2) = \getrev{bx_2}{s_2} \ \text{in}\\
+        \qtab ((v_1, v_2), (g_1, g_2))$
 
-% \vspace{5mm}
-% \noindent
-% \revget{(Skip $h$)}{s} = {($h$ s, s)}
+$\getrev{\rearrS{f}{bx}}{s}{v} =\\
+    \tab \text{let} \ (v_1, g_1) = \getrev{bx}{(f \ s)} \ \text{in}\\
+        \qtab (v_1, g_1)$
 
-% \noindent
-% \revget{Replace}{s} = (s, \textcolor{red}{Nil})
+$\getrev{\rearrV{g}{bx}}{s}{v} =\\
+    \tab \text{let} \ (v_1, g_1) = \getrev{bx}{s} \ \text{in}\\
+        \qtab (g^{-1} v_1, g_1)$
 
-% \noindent
-% \revget{\product{$bx_1$}{$bx_2$}}{\tuple{$s_1$}{$s_2$}} = \\
-% \hspace{5mm} let (v1, g1) = \revget{$bx_1$}{$s_1$} in\\
-% \hspace{5mm} let (v2, g2) = \revget{$bx_2$}{$s_2$} in\\
-% \hspace{5mm} ((v1, v2), (g1, g2))
+$\getrev{\casebx{cond_{sv_1}}{cond_{s_1}}{bx_1}{cond_{sv_2}}{cond_{s_2}}{bx_2}}{s} =\\
+    \tab \text{if} \ cond_{s_1} \ s\\
+    \tab \text{then let} \ (v', g) = \getrev{bx_1}{s} \ \text{in}\\
+    \tab \text{else let} \ (v', g) = \getrev{bx_2}{s} \ \text{in}\\
+    \tab \text{fi} \ cond_{sv_1} \ s \ v'; \ \text{return} \ (v', g)$
 
-% \noindent
-% %% from here
-% \revget{(\rearrS{$f$}{bx})}{s}{v} =\\
-% \hspace{5mm}let (v1, g1) = \revget{bx}{($f$ s)} in\\
-% \hspace{5mm}(v1, g1)
-
-% \noindent
-% \revget{(\rearrV{$g$}{bx})}{s}{v} =\\
-% \hspace{5mm} let (v1, g1) = \revget{bx}{s} in\\
-% \hspace{5mm} ($g^{-1}$ v1, g1)
-
-% \noindent
-% \revget{(\casebx{cond$_{sv1}$}{cond$_{s1}$}{bx$_1$}{cond$_{sv2}$}{cond$_{s2}$}{bx$_2$})}{s} =\\
-% \hspace{5mm} if {cond$_{s1}$ s}\\
-% \hspace{5mm} then let (v', g) = \revget{bx$_1$}{s} in\\
-% \hspace{5mm} else let (v', g) = \revget{bx$_2$}{s} in\\
-% \hspace{5mm} fi cond$_{sv1}$ s v'; return (v', g)
-
-% \noindent
-% \revget{(bx$_1$ $\circ$ bx$_2$)}{s}{v} =\\
-% \hspace{5mm} let (v1, g1) = \revget{bx$_1$}{s} in\\
-% \hspace{5mm} let (v2, g2) = \revget{bx$_1$}{s} in\\
-% \hspace{5mm} (v2, (g1, g2))
+$\getrev{(bx_1 \circ bx_2)}{s}{v} =\\
+    \tab let (v_1, g_1) = \getrev{bx_1}{s} in\\
+    \tab let (v_2, g_2) = \getrev{bx_1}{s} in\\
+        \qtab (v_2, (g_1, g_2))$
 
 \textcolor{red}{If we use Rwhile for target language, we do not need to introduce inverse.}
 
@@ -302,16 +284,16 @@ $\bxget{bx_1 \circ bx_2}{s} = \bxget{bx_2}{(\bxget{bx_1}{s})}$
 For the approaches so far, when evaluating a composition of BX programs, $get$s are re-evaluated so many times since no intermediate state is stored during the evaluation. This is a kind of information loss. One question is whether it is possible to calculate the above programs without losing information. And the answer is yes. It comes from the the idea of reversible computation where all information during the evaluation need to be kept. In miniBiGUL, we can do that by tupling $put$ and $get$. The such pair is accepted as input of a function named $pg$ to produce a new one that contains the actual result of a BX program.
 
 \textbf{Definition:} \\
-$\pg{bx}{s}{v} = (\bxput{bx}{s}{v}, \bxget{bx}{s})$ \\
+$\pg{bx}{s}{v} = (\putbx{bx}{s}{v}, \getbx{bx}{s})$ \\
 
 $pg$ is an involution that is self-inverse. An involution is a function $f$ that satifies $f(f(x)) = x \text{ for all } x \text{ in the domain of } f$.
 
 Proof:\\
 $pg [\![bx]\!] \ (\pg{bx}{s}{v}) \\
-    \tab = \pg{bx}{(\bxput{bx}{s}{v})}{(\bxget{bx}{s})} \quad [pg \text{ definition}] \\
-    \tab = (put \ [\![bx]\!] \ (\bxput{bx}{s}{v}) \ (\bxget{bx}{s}), \bxget{bx}{(\bxput{bx}{s}{v})})  \quad [pg \text{ definition}] \\
-    \tab = (put \ [\![bx]\!] \ (\bxput{bx}{s}{v}, \bxget{bx}{s}), v) \quad [\text{PUTGET}] \\
-    \tab = (put \ [\![bx]\!] \ (s, \bxget{bx}{s}), v) \quad [\text{PUTPUT}] \\
+    \tab = \pg{bx}{(\putbx{bx}{s}{v})}{(\getbx{bx}{s})} \quad [pg \text{ definition}] \\
+    \tab = (put \ [\![bx]\!] \ (\putbx{bx}{s}{v}) \ (\getbx{bx}{s}), \getbx{bx}{(\putbx{bx}{s}{v})})  \quad [pg \text{ definition}] \\
+    \tab = (put \ [\![bx]\!] \ (\putbx{bx}{s}{v}, \getbx{bx}{s}), v) \quad [\text{PUTGET}] \\
+    \tab = (put \ [\![bx]\!] \ (s, \getbx{bx}{s}), v) \quad [\text{PUTPUT}] \\
     \tab = (s, v) \quad [\text{GETPUT}]$
 
 \subsection{Skip:Construction of pg}
@@ -321,62 +303,62 @@ $\pg{Skip \ h}{s}{v} \\
     \tab = \sif{h \ s = v}{(s, h \ s)}{\text{fail}} \\
     \tab = \sif{h \ s = v}{(s, v)}{\text{fail}}$
 
-There is a trick in the construction of $\pginline{Skip \ h}$. The first equality is simply based on the definitions of $pg$, $\bxputinline{Skip \ h}$ and $\bxgetinline{Skip \ h}$. The second one tuples two results of $put$ and $get$ in the body of the if-expression. And the last one is quite obivious. What we call the trick here is in the second equality where in some cases, the result of $pg$ may be fail although there is no fail when evaluating $\bxgetinline{Skip \ h}$.\\
+There is a trick in the construction of $\pginline{Skip \ h}$. The first equality is simply based on the definitions of $pg$, $\putbxinline{Skip \ h}$ and $\getbxinline{Skip \ h}$. The second one tuples two results of $put$ and $get$ in the body of the if-expression. And the last one is quite obivious. What we call the trick here is in the second equality where in some cases, the result of $pg$ may be fail although there is no fail when evaluating $\getbxinline{Skip \ h}$.\\
 
 $\pg{Replace}{s}{v}\\
     \tab = (v, s)$
 
 $\pg{\product{bx_1}{bx_2}}{\tuple{s_1}{s_2}}{\tuple{v_1}{v_2}} \\
-    \tab = (\product{(\bxput{bx_1}{s_1}{v_1})}{(\bxput{bx_2}{s_2}{v_2})}, \product{(\bxget{bx_1}{s_1})}{(\bxget{bx_2}{s_2})}) \\
-    \tab = \text{let } (s_1, v_1) = \pg{bx_1}{s_1}{v_1} \text{ in} \\
-        \qtab \text{let } (s_2, v_2) = \pg{bx_2}{s_2}{v_2} \text{ in} \\
+    \tab = (\product{(\putbx{bx_1}{s_1}{v_1})}{(\putbx{bx_2}{s_2}{v_2})}, \product{(\getbx{bx_1}{s_1})}{(\getbx{bx_2}{s_2})}) \\
+    \tab = \text{let} \ (s_1, v_1) = \pg{bx_1}{s_1}{v_1} \ \text{in} \\
+        \qtab \text{let} \ (s_2, v_2) = \pg{bx_2}{s_2}{v_2} \ \text{in} \\
         \qtab (\product{s_1}{s_2}, \product{v_1}{v_2})$
 
 $\pg{\rearrS{f}{bx}}{s}{v} \\
-    \tab = (f^{-1}(\bxput{bx}{(f \ s)}{v}), \bxget{bx}{(f \ s)}) \\
-    \tab = \text{let } (s, v) = \pg{bx}{(f \ s)}{v} \text{ in} \\
+    \tab = (f^{-1}(\putbx{bx}{(f \ s)}{v}), \getbx{bx}{(f \ s)}) \\
+    \tab = \text{let} \ (s, v) = \pg{bx}{f \ s}{v} \ \text{in} \\
         \qtab (f^{-1} s, v)$
 
 $\pg{\rearrV{g}{bx}}{s}{v} \\
-    \tab = (\bxput{bx}{s}{(g v)}, g^{-1} (\bxget{bx}{s})) \\
-    \tab = \text{let } (s, v) = \pg{bx}{s}{(g v)} \text{ in} \\
+    \tab = (\putbx{bx}{s}{(g v)}, g^{-1} (\getbx{bx}{s})) \\
+    \tab = \text{let} \ (s, v) = \pg{bx}{s}{g \ v} \ \text{in} \\
         \qtab (s, g^{-1} v)$\\
 
 Constructions of $pg$ for $[\![Replace]\!]$, $[\![\product{bx_1}{bx_2}]\!]$, $[\![\rearrS{f}{bx}]\!]$ and $[\![\rearrV{g}{bx}]\!]$ are very clear when just paring $put$ and $get$ respectively, then doing basic changes.\\
 
-$\pg{\casebx{cond_{sv1}}{cond_{s1}}{bx_1}{cond_{sv2}}{cond_{s2}}{bx_2}}{s}{v} \\
-    \tab = (\text{if } {cond_{sv1} \ s \ v} \\
-    \qtab \text{then let } s' = \bxput{bx_1}{s}{v} \\
-    \qtab \text{else let } s' = \bxput{bx_2}{s}{v} \\
-    \qtab \text{fi } cond_{s1} \ s'; \text{ return } s', \\
-    \qtab \quad \text{if } {cond_{s1} \ s}\\
-    \qtab \quad \text{then let } v' = \bxget{bx_1}{s}\\
-    \qtab \quad \text{else let } v' = \bxget{bx_2}{s}\\
-    \qtab \quad \text{fi } {cond_{sv1} \ s \ v'}; \text{ return } v') \\
-    \tab = \text{if } {cond_{sv1} \ s \ v} \ and \ {cond_{s1} \ s} \\
-        \qtab \text{then let } (s', v') = \pg{bx_1}{s}{v}\\
-        \qtab \text{else let } (s', v') = \pg{bx_2}{s}{v}\\
-        \qtab \text{fi } cond_{v1} \ s' \ and \ cond_{sv1} \ s \ v'; \text{ return } (s',v')$\\
+$\pg{\casebx{cond_{sv_1}}{cond_{s_1}}{bx_1}{cond_{sv_2}}{cond_{s_2}}{bx_2}}{s}{v} \\
+    \tab = (\text{if} \ {cond_{sv_1} \ s \ v} \\
+    \qtab \text{then let} \ s' = \putbx{bx_1}{s}{v} \\
+    \qtab \text{else let} \ s' = \putbx{bx_2}{s}{v} \\
+    \qtab \text{fi} \ cond_{s_1} \ s'; \text{ return } s', \\
+    \qtab \quad \text{if} \ {cond_{s_1} \ s}\\
+    \qtab \quad \text{then let} \ v' = \getbx{bx_1}{s}\\
+    \qtab \quad \text{else let} \ v' = \getbx{bx_2}{s}\\
+    \qtab \quad \text{fi} \ {cond_{sv_1} \ s \ v'}; \text{ return } v') \\
+    \tab = \text{if} \ {cond_{sv_1} \ s \ v} \ and \ {cond_{s_1} \ s} \\
+        \qtab \text{then let} \ (s', v') = \pg{bx_1}{s}{v}\\
+        \qtab \text{else let} \ (s', v') = \pg{bx_2}{s}{v}\\
+        \qtab \text{fi} \ cond_{v_1} \ s' \ and \ cond_{sv_1} \ s \ v'; \text{ return } (s',v')$\\
 
-A restriction for $\pginline{case}$ needs to be introduced here. We know that there is one entering condition and one exit condition when evaluating $\bxputinline{case}$ as well as $\bxgetinline{case}$. If a tupling $put$ and $get$ occurs, there will be 4 combinations of these conditions. This means that two entering conditions of $\bxputinline{case}$ and $\bxgetinline{case}$ are not always simultaneously satified. The evaluated BXs are different in the $put$ and $get$ directions for combinations $((cond_{sv1} \ s \ v) \ and \ (not (cond_{s1} \ s)))$ and $((not (cond_{sv1} \ s \ v) \ and \ (cond_{s1} \ s))$, which are restricted in this paper. This does not happen for the others, which the construction of $\pginline{case}$ uses above. \\
+A restriction for $\pginline{case}$ needs to be introduced here. We know that there is one entering condition and one exit condition when evaluating $\putbxinline{case}$ as well as $\getbxinline{case}$. If a tupling $put$ and $get$ occurs, there will be 4 combinations of these conditions. This means that two entering conditions of $\putbxinline{case}$ and $\getbxinline{case}$ are not always simultaneously satified. The evaluated BXs are different in the $put$ and $get$ directions for combinations $((cond_{sv_1} \ s \ v) \ and \ (not (cond_{s_1} \ s)))$ and $((not (cond_{sv_1} \ s \ v) \ and \ (cond_{s_1} \ s))$, which are restricted in this paper. This does not happen for the others, which the construction of $\pginline{case}$ uses above. \\
 
 
 $\pg{bx_1 \circ bx_2}{s}{v} \\
-    \hspace*{5mm} = (\bxput{bx_1}{s}{(\bxput{bx_2}{(\bxget{bx_1}{s})}{v})}, \bxget{bx_2}{(\bxget{bx_1}{s})}) \\
-    \hspace*{5mm} = \text{let } a = \bxget{bx_1}{s} \text{ in} \\
-        \hspace*{5mm} \ \quad \text{let } (b, c) = \pg{bx_2}{a}{v} \text{ in} \\
-        \hspace*{5mm} \ \quad \text{let } (d, e) = \pg{bx_1}{s}{b} \text{ in} \\
-        \hspace*{5mm} \ \quad (d, c) \\
-    \hspace*{5mm} = \text{let } (f, a) = \pg{bx_1}{s}{dummy} \text{ in} \\
-        \hspace*{5mm} \ \quad \text{let } (b, c) = \pg{bx_2}{a}{v} \text{ in} \\
-        \hspace*{5mm} \ \quad \text{let } (d, e) = \pg{bx_1}{s}{b} \text{ in} \\
-        \hspace*{5mm} \ \quad (d, c) \\
-    \hspace*{5mm} = \text{let } (f, a) = \pg{bx_1}{s}{dummy} \text{ in} \\
-        \hspace*{5mm} \ \quad \text{let } (b, c) = \pg{bx_2}{a}{v} \text{ in} \\
-        \hspace*{5mm} \ \quad \text{let } (d, e) = \pg{bx_1}{\textcolor{red}{f}}{b} \text{ in} \\
-        \hspace*{5mm} \ \quad (d, c)$\\
+    \tab = (\putbx{bx_1}{s}{(\putbx{bx_2}{(\getbx{bx_1}{s})}{v})}, \getbx{bx_2}{(\getbx{bx_1}{s})}) \\
+    \tab = \text{let} \ a = \getbx{bx_1}{s} \ \text{in} \\
+        \qtab \text{let} \ (b, c) = \pg{bx_2}{a}{v} \ \text{in} \\
+        \qtab \text{let} \ (d, e) = \pg{bx_1}{s}{b} \ \text{in} \\
+        \qtab (d, c) \\
+    \tab = \text{let} \ (f, a) = \pg{bx_1}{s}{dummy} \ \text{in} \\
+        \qtab \text{let} \ (b, c) = \pg{bx_2}{a}{v} \ \text{in} \\
+        \qtab \text{let} \ (d, e) = \pg{bx_1}{s}{b} \ \text{in} \\
+        \qtab (d, c) \\
+    \tab = \text{let } (f, a) = \pg{bx_1}{s}{dummy} \ \text{in} \\
+        \qtab \text{let} \ (b, c) = \pg{bx_2}{a}{v} \ \text{in} \\
+        \qtab \text{let} \ (d, e) = \pg{bx_1}{\textcolor{red}{f}}{b} \ \text{in} \\
+        \qtab (d, c)$\\
 
-The construction of $\pginline{bx_1 \circ bx_2}$ can be considered as the soul of the $pg$ function. The first two equalities comes from mentioned definitions and some basic transformations. The third one rewrites $(\text{let } a = \bxget{bx_1}{s} \text{ in})$ into $(\text{let } (f, a) = \pg{bx_1}{s}{dummy} \text{ in})$. It is possible if we consider $(\bxget{bx_1}{s})$ as the second element of $(\pg{bx_1}{s}{dummy})$ where $dummy$ is a special value that make the $put \, [\![bx_1]\!]$ direction is valid. The last equality substitutes $s$ in $(\text{let } (d, e) = \pg{bx_1}{s}{b} \text{ in})$ by $f$ which is the evaluated result of $\bxput{bx_1}{s}{dummy}$. This transformation is feasible due to the PUTPUT law. Then, $e$ in the result pair $(d,e)$ of the new let-expression equals $dummy$. So we can realize that there is no loss information when computing a composition.
+The construction of $\pginline{bx_1 \circ bx_2}$ can be considered as the soul of the $pg$ function. The first two equalities comes from mentioned definitions and some basic transformations. The third one rewrites $(\text{let } a = \getbx{bx_1}{s} \text{ in})$ into $(\text{let } (f, a) = \pg{bx_1}{s}{dummy} \text{ in})$. It is possible if we consider $(\getbx{bx_1}{s})$ as the second element of $(\pg{bx_1}{s}{dummy})$ where $dummy$ is a special value that make the $put \, [\![bx_1]\!]$ direction is valid. The last equality substitutes $s$ in $(\text{let } (d, e) = \pg{bx_1}{s}{b} \text{ in})$ by $f$ which is the evaluated result of $\putbx{bx_1}{s}{dummy}$. This transformation is feasible due to the PUTPUT law. Then, $e$ in the result pair $(d,e)$ of the new let-expression equals $dummy$. So we can realize that there is no loss information when computing a composition.
 
 \subsection{How to Evaluate Bidirectional Programs using pg}
 
@@ -397,12 +379,12 @@ The construction of $\pginline{bx_1 \circ bx_2}$ can be considered as the soul o
 \item To solve this problem, we introduce accumulation of changes.
 \end{itemize}
 
-$fst = \lambda (Con (x1, x2)). x1$\\
-$snd = \lambda (Con (x1, x2)). x2$\\
-$con = \lambda ks1. \lambda ks2. \lambda x. Con(ks1 \ x, ks2 \ x)$\\
+$fst = \lambda (Con (x_1, x_2)). x_1$\\
+$snd = \lambda (Con (x_1, x_2)). x_2$\\
+$con = \lambda ks_1. \lambda ks_2. \lambda x. Con(ks_1 \ x, ks_2 \ x)$\\
 
 $\cpg{bx}{ks}{kv}{s}{v}$ \\
-    \tab $ks, kv$ evaluate actual values\\
+    \tab $ks, kv$ keep modification information\\
     \tab $s, v$ keep evaluated values\\
 \vspace{3mm}
 
@@ -411,83 +393,84 @@ $\cpg{Skip \ h}{ks}{kv}{s}{v} = \text{ if } h \ s = v \text{ then } (ks, kv, s, 
 $\cpg{Replace}{ks}{kv}{s}{v} = (kv, ks, v, s)$\\
 
 $\cpg{\product{bx_1}{bx_2}}{ks}{kv}{s}{v} =\\
-    \tab (ks1, kv1, s1, v1) \Leftarrow \cpg{bx1}{fst \circ ks}{fst \circ kv}{fst \ s}{fst \ v};\\
-    \tab (ks2, kv2, s2, v2) \Leftarrow \cpg{bx2}{snd \circ ks}{snd \circ kv}{snd \ s}{snd \ v};\\
-    \qtab ((con \ ks1 \ ks2, con \ kv1 \ kv2, Con \ s1 \ s2, Con \ v1 \ v2)$\\
+    \tab (ks_1, kv_1, s_1, v_1) \Leftarrow \cpg{bx_1}{fst \circ ks}{fst \circ kv}{fst \ s}{fst \ v};\\
+    \tab (ks_2, kv_2, s_2, v_2) \Leftarrow \cpg{bx_2}{snd \circ ks}{snd \circ kv}{snd \ s}{snd \ v};\\
+    \qtab (con \ ks_1 \ ks_2, con \ kv_1 \ kv_2, Con \ s_1 \ s_2, Con \ v_1 \ v_2)$\\
 
-$\cpg{RearrS \ f1 \ f2 \ bx}{ks}{kv}{s}{v} =\\
-    \tab (ks, kv, s, v) \Leftarrow \cpg{bx}{f1 \circ ks}{kv}{f1 \ s}{v};\\
-    \qtab (f2 \circ ks, kv, s, v)$\\
+$\cpg{RearrS \ f_1 \ f_2 \ bx}{ks}{kv}{s}{v} =\\
+    \tab (ks, kv, s, v) \Leftarrow \cpg{bx}{f_1 \circ ks}{kv}{f_1 \ s}{v};\\
+    \qtab (f_2 \circ ks, kv, s, v)$\\
 
-$\cpg{RearrV \ g1 \ g2 \ bx}{ks}{kv}{s}{v} =\\
-    \tab (ks, kv, s, v) \Leftarrow \cpg{bx}{ks}{g1 \circ kv}{s}{g1 \ v};\\
-    \qtab (ks, g2 \circ kv, ks, g2 \ v)$\\
+$\cpg{RearrV \ g_1 \ g_2 \ bx}{ks}{kv}{s}{v} =\\
+    \tab (ks, kv, s, v) \Leftarrow \cpg{bx}{ks}{g_1 \circ kv}{s}{g_1 \ v};\\
+    \qtab (ks, g_2 \circ kv, ks, g_2 \ v)$\\
 
-$\cpg{Case \ c \ bx1 \ bx2}{ks}{kv}{s}{v} =\\
+$\cpg{Case \ c \ bx_1 \ bx_2}{ks}{kv}{s}{v} =\\
     \tab \text{if} \ c \ s \ v \ \text{then}\\
-        \qtab \cpg{bx1}{ks}{kv}{s}{v}\\
+        \qtab \cpg{bx_1}{ks}{kv}{s}{v}\\
     \tab \text{else} \\ 
-        \qtab \cpg{bx2}{ks}{kv}{s}{v}$\\
+        \qtab \cpg{bx_2}{ks}{kv}{s}{v}$\\
 
-$\cpg{bx1 \circ bx2}{ks}{kv}{s}{v} =\\
-    \tab (ks1, kv1, \underline{s1}, v1) \Leftarrow \cpg{bx1}{ks}{id}{s}{const$\_$dummy \ v};\\
-    \tab (ks2, kv2, s2, v2) \Leftarrow \cpg{bx2}{kv1}{kv}{v1}{v};\\
-        \qtab (ks1 \circ ks2, kv2,  ks1 \ s2, v2)$\\
+$\cpg{bx_1 \circ bx_2}{ks}{kv}{s}{v} =\\
+    \tab (ks_1, kv_1, \underline{s_1}, v_1) \Leftarrow \cpg{bx_1}{ks}{id}{s}{const$\_$dummy \ v};\\
+    \tab (ks_2, kv_2, s_2, v_2) \Leftarrow \cpg{bx_2}{kv_1}{kv}{v_1}{v};\\
+        \qtab (ks_1 \circ ks_2, kv_2,  ks_1 \ s_2, v_2)$\\
 
 \begin{itemize}
 \item This is faster than pg for left assoc BX programs.
 \item (Slower for right assoc programs)
-\item $s1'$ in composition is redundant.  
+\item $s_1'$ in composition is redundant.  
 \item Next, we will extend this to avoid this redundant computation.
 \end{itemize}
 
 
 \subsection{kpg}
 
-$\kpg{bx}{ks'}{kv'}{ks}{kv}{s}{v}$ \\
-    \tab $ks', kv'$ keep modification information\\
-    \tab $ks, kv$ evaluate actual values\\
+$\kpg{bx}{ks}{kv}{ks'}{kv'}{s}{v}$ \\
+    \tab $ks, kv$ keep modification information\\
+    \tab $ks', kv'$ evaluate actual values\\
     \tab $s, v$ keep evaluated values\\
 
-$\kpg{Skip \ h}{ks'}{kv'}{ks}{kv}{s}{v} =\\
-    \tab s \Leftarrow ks \ s;\\
-    \tab v \Leftarrow kv \ v;\\
-    \tab \text{if} \ h \ s = v \ \text{then} \ (ks', kv', id, id, s, v) \ \text{else fail}$\\
+$\kpg{Skip \ h}{ks}{kv}{ks'}{kv'}{s}{v} =\\
+    \tab s \Leftarrow ks' \ s; \quad v \Leftarrow kv' \ v;\\
+    \tab ks' \Leftarrow id; \quad kv' \Leftarrow id;\\
+    \tab \text{if} \ h \ s = v \ \text{then} \ (ks, kv, ks', kv', s, v) \ \text{else fail}$\\
 
-$\kpg{Replace}{ks'}{kv'}{ks}{kv}{s}{v} = (kv', ks', kv, ks, v, s)$\\
+$\kpg{Replace}{ks}{kv}{ks'}{kv'}{s}{v} = (kv, ks, kv', ks', v, s)$\\
 
-$\kpg{bx1 \ prod \ bx2}{ks'}{kv'}{ks}{kv}{s}{v} =\\
-    \textcolor{red}{s \Leftarrow ks \ s; v \Leftarrow kv \ v; ks \Leftarrow id; kv \Leftarrow id;}\\
-    (ks1', kv1', ks1, kv1, s1, v1) \Leftarrow \kpg{bx1}{fst \circ ks'}{fst \circ kv'}{fst \circ ks}{fst \circ kv}{s}{v};\\
-    (ks2', kv2', ks2, kv2, s2, v2) \Leftarrow \kpg{bx2}{snd \circ ks'}{snd \circ kv'}{snd \circ ks}{snd \circ kv}{s}{v};\\
-    \tab ( con \ ks1' \ ks2', con \ kv1' \ kv2', \\
-    \qtab con \ (ks1 \circ fst) \ (ks2 \circ snd), con \ (kv1 \circ fst) \ (kv2 \circ snd), \\
-    \qtab (Con \ s1 \ s2), (Con \ v1 \ v2))$\\
+$\kpg{bx_1 \ prod \ bx_2}{ks}{kv}{ks'}{kv'}{s}{v} =\\
+    \textcolor{red}{s \Leftarrow ks' \ s; \quad v \Leftarrow kv' \ v;}\\
+    \textcolor{red}{ks' \Leftarrow id; \quad kv' \Leftarrow id;}\\
+    (ks_1, kv_1, ks_1', kv_1', s_1, v_1) \Leftarrow \kpg{bx_1}{fst \circ ks}{fst \circ kv}{fst \circ ks'}{fst \circ kv'}{s}{v};\\
+    (ks_2, kv_2, ks_2', kv_2', s_2, v_2) \Leftarrow \kpg{bx_2}{snd \circ ks}{snd \circ kv}{snd \circ ks'}{snd \circ kv'}{s}{v};\\
+    \tab ( con \ ks_1 \ ks_2, con \ kv_1 \ kv_2, \\
+    \tab con \ (ks_1' \circ fst) \ (ks_2' \circ snd), con \ (kv_1' \circ fst) \ (kv_2' \circ snd), \\
+    \tab (Con \ s_1 \ s_2), (Con \ v_1 \ v_2))$\\
 
-$\kpg{RearrS \ f1 \ f2 \ bx}{ks'}{kv'}{ks}{kv}{s}{v} =\\
-    \tab (ks', kv', ks, kv, s, v) \Leftarrow \kpg{bx}{f1 \circ ks'}{kv'}{f1 \circ ks}{kv}{s}{v};\\
-    \qtab (f2 \circ ks', kv', f2 \circ ks, kv, s, v)$\\
+$\kpg{RearrS \ f_1 \ f_2 \ bx}{ks}{kv}{ks'}{kv'}{s}{v} =\\
+    \tab (ks, kv, ks', kv', s, v) \Leftarrow \kpg{bx}{f_1 \circ ks}{kv}{f_1 \circ ks'}{kv'}{s}{v};\\
+    \qtab (f_2 \circ ks, kv, f_2 \circ ks', kv', s, v)$\\
 
-$\kpg{RearrV \ g1 \ g2 \ bx}{ks'}{kv'}{ks}{kv}{s}{v} =\\
-    \tab (ks', kv', ks, kv, s, v) \Leftarrow \kpg{bx}{ks'}{g1 \circ kv'}{ks}{g1 \circ kv}{s}{v};\\
-    \qtab (ks', g2 \circ kv', ks, g2 \circ kv, s, v)$\\
+$\kpg{RearrV \ g_1 \ g_2 \ bx}{ks}{kv}{ks'}{kv'}{s}{v} =\\
+    \tab (ks, kv, ks', kv', s, v) \Leftarrow \kpg{bx}{ks}{g_1 \circ kv}{ks'}{g_1 \circ kv'}{s}{v};\\
+    \qtab (ks, g_2 \circ kv, ks', g_2 \circ kv', s, v)$\\
 
-$\kpg{Case \ c \ bx1 \ bx2}{ks'}{kv'}{ks}{kv}{s}{v} =\\
-    \tab s \Leftarrow ks \ s;\\
-    \tab v \Leftarrow kv \ v;\\
+$\kpg{Case \ c \ bx_1 \ bx_2}{ks}{kv}{ks'}{kv'}{s}{v} =\\
+    \tab s \Leftarrow ks' \ s; \tab v \Leftarrow kv' \ v;\\
+    \tab ks' \Leftarrow id ; \tab kv' \Leftarrow id;\\
     \tab \text{if} \ c \ s \ v \ \text{then}\\
-        \qtab \kpg{bx1}{ks'}{kv'}{id}{id}{s}{v}\\
+        \qtab \kpg{bx_1}{ks}{kv}{ks'}{kv'}{s}{v}\\
     \tab \text{else}\\\
-        \qtab \kpg{bx2}{ks'}{kv'}{id}{id}{s}{v}$\\
+        \qtab \kpg{bx_2}{ks}{kv}{ks'}{kv'}{s}{v}$\\
 
-$\kpg{bx1 \circ bx2}{ks'}{kv'}{ks}{kv}{s}{v} =\\
-    \tab (ks1', kv1', \underline{ks1}, kv1, \underline{s1}, v1) \Leftarrow \kpg{bx1}{ks'}{id}{ks}{id}{s}{const$\_$dummy \ v};\\
-    \tab (ks2', kv2', ks2, kv2, s2, v2) \Leftarrow \kpg{bx2}{kv1'}{kv'}{kv1}{kv}{v1}{v};\\
-    \qtab (ks1' \circ ks2', kv2', ks1' \circ ks2, kv2, s2, v2)$
+$\kpg{bx_1 \circ bx_2}{ks}{kv}{ks'}{kv'}{s}{v} =\\
+    \tab (ks_1, kv_1, \underline{ks_1'}, kv_1', \underline{s_1}, v_1) \Leftarrow \kpg{bx_1}{ks}{id}{ks'}{id}{s}{const$\_$dummy \ v};\\
+    \tab (ks_2, kv_2, ks_2', kv_2', s_2, v_2) \Leftarrow \kpg{bx_2}{kv_1}{kv}{kv_1'}{kv'}{v_1}{v};\\
+    \qtab (ks_1 \circ ks_2, kv_2', ks_1 \circ ks_2', kv_2', s_2, v_2)$
 
 \begin{itemize}
 \item In this definition of kpg, s' and v' will have actual value only in skip and case. Except them, the functions for computation will be kept as ks' and kv'.
-\item In composition $ks1'$ and $s1'$ are still redundant. But, they are not evaluated.
+\item In composition $ks_1'$ and $s_1'$ are still redundant. But, they are not evaluated.
 \item In prod, Evaluation of ks' and kv' will be done indendently in kpg$[\![bx_1]\!]$ and kpg$[\![bx_2]\!]$. To remove redundant re-computation we evaluate actual s' and v'.
 \item This implementation is faster for left assoc BX programs. (Actually slower for right assoc than cpg)
 \end{itemize}
@@ -505,9 +488,9 @@ $\kpg{bx1 \circ bx2}{ks'}{kv'}{ks}{kv}{s}{v} =\\
 $\xpg{E}{s}{v} = \text{same with } pg \text{ if } E \text{ is not compose}$
 
 $\xpg{bx_1 \circ bx_2}{s}{v} =\\
-    \tab (ks1',kv1', ks1, kv1, s1, v1) \Leftarrow \kpg{bx_1}{id}{id}{\lambda \_.s}{id}{s}{v};\\
-    \tab (s2, v2) \Leftarrow \xpg{bx_2}{kv1 \ v1}{v};\\
-    \qtab (ks1' \ s2, v2)$
+    \tab (ks_1,kv_1, ks_1', kv_1', s_1, v_1) \Leftarrow \kpg{bx_1}{\lambda \_.s}{id}{id}{id}{s}{v};\\
+    \tab (s_2, v_2) \Leftarrow \xpg{bx_2}{kv_1' \ v_1}{v};\\
+    \qtab (ks_1 \ s_2, v_2)$
 
 \section{Experimental result}
 
@@ -538,7 +521,7 @@ $\xpg{bx_1 \circ bx_2}{s}{v} =\\
 \bibitem{ref_article1}
 Author, F.: Article title. Journal \textbf{2}(5), 99--110 (2016)
 
-\bibitem{ref_lncs1}
+\bibitem{ref_lncs_1}
 Author, F., Author, S.: Title of a proceedings paper. In: Editor,
 F., Editor, S. (eds.) CONFERENCE 2016, LNCS, vol. 9999, pp. 1--13.
 Springer, Heidelberg (2016). \doi{10.10007/1234567890}
@@ -595,13 +578,13 @@ x + y = z
 \end{equation}
 Please try to avoid rasterized images for line-art diagrams and
 schemas. Whenever possible, use vector graphics instead (see
-Fig.~\ref{fig1}).
+Fig.~\ref{fig_1}).
 
 \begin{figure}
-\includegraphics[width=\textwidth]{fig1.eps}
+\includegraphics[width=\textwidth]{fig_1.eps}
 \caption{A figure caption is always placed below the illustration.
 Please note that short captions are centered, while long ones are
-justified by the macro package automatically.} \label{fig1}
+justified by the macro package automatically.} \label{fig_1}
 \end{figure}
 
 \begin{theorem}
@@ -621,9 +604,9 @@ For citations of references, we prefer the use of square brackets
 and consecutive numbers. Citations using labels or the author/year
 convention are also acceptable. The following bibliography provides
 a sample reference list with entries for journal
-articles~\cite{ref_article1}, an LNCS chapter~\cite{ref_lncs1}, a
+articles~\cite{ref_article1}, an LNCS chapter~\cite{ref_lncs_1}, a
 book~\cite{ref_book1}, proceedings without editors~\cite{ref_proc1},
 and a homepage~\cite{ref_url1}. Multiple citations are grouped
-\cite{ref_article1,ref_lncs1,ref_book1},
+\cite{ref_article1,ref_lncs_1,ref_book1},
 \cite{ref_article1,ref_book1,ref_proc1,ref_url1}.
 %
