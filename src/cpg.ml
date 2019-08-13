@@ -1,25 +1,21 @@
 open Syntax
 open Utils
 
-(*
-	s = s0, v = v0
-  cpg bx ks kv ks' kv' s' v' env = (ks, kv, ks', kv',s', v')
-  where
-    ks, kv ~ cpg 
-    ks', kv', s', v' ~ kpg
-*)
+let count_cpg = ref 0
 
-let rec cpg (bx:bigul) (ks:data->data) (kv:data->data) s' v' env = match bx with
+let rec cpg (bx:bigul) (ks:data->data) (kv:data->data) s' v' env =
+  count_cpg := !count_cpg + 1;
+  match bx with
   | Def(name, bx1, bx2) ->
-    	cpg bx2 ks kv s' v' ((name, bx1) :: env)
+    cpg bx2 ks kv s' v' ((name, bx1) :: env)
   | Var(name) -> ( 
-			try
-				let bx = snd (List.find (fun (x, t) -> x = name) env) in
-					cpg bx ks kv s' v' env
-			with Not_found -> 
-				Printf.printf "%s is not found" name; 
-				assert false
-			)
+      try
+        let bx = snd (List.find (fun (x, t) -> x = name) env) in
+        cpg bx ks kv s' v' env
+      with Not_found -> 
+        Printf.printf "%s is not found" name; 
+        assert false
+    )
   | Skip(h) ->
     if h s' = v' then
       (ks, kv, s', v')
@@ -86,9 +82,9 @@ let rec cpg (bx:bigul) (ks:data->data) (kv:data->data) s' v' env = match bx with
     )
   | Case(condsv, conds, bx1, bx2) ->
     if (condsv s' v') then
-        cpg bx1 ks kv s' v' env
+      cpg bx1 ks kv s' v' env
     else
-        cpg bx2 ks kv s' v' env
+      cpg bx2 ks kv s' v' env
   | Compose(bx1, bx2) ->
     let (ks1, kv1, s1', v1') =
       cpg
@@ -114,4 +110,3 @@ let rec cpg (bx:bigul) (ks:data->data) (kv:data->data) s' v' env = match bx with
       ks1 s2',
       v2'
     )
-		

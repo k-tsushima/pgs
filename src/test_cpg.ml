@@ -185,3 +185,46 @@ let cpg_bmapreplace_with_case n =
   let v = make_consecutive_list n in
   let (ks, kv, s', v') = cpg bmapreplace_with_case (fun _ -> s) (fun _ -> v) s v [] in
   (s', v')
+
+let cpg_lassoc_comp_replace_count n =
+    count_cpg := 0;
+  let s = Int 1 in
+  let v = Int 100 in
+  let (ks, kv, s', v') = cpg (lassoc_comp Replace n) (fun _ -> s) (fun _ -> v) s v [] in
+  !count_cpg
+
+let cpg_rassoc_comp_replace_count n =
+    count_cpg := 0;
+  let s = Int 1 in
+  let v = Int 100 in
+  let (ks, kv, s', v') = cpg (rassoc_comp Replace n) (fun _ -> s) (fun _ -> v) s v [] in
+  !count_cpg
+
+(* test comp of n phead *)
+let cpg_lassoc_comp_phead_count n =
+    count_cpg := 0;
+  let s = make_smallest_nested_list (n + 1) in
+  let v = Int 100 in
+  let (ks, kv, s', v') = cpg (lassoc_comp phead n) (fun _ -> s) (fun _ -> v) s v [] in
+  !count_cpg
+
+let cpg_rassoc_comp_phead_count n =
+    count_cpg := 0;
+  let s = make_smallest_nested_list (n + 1) in
+  let v = Int 100 in
+  let (ks, kv, s', v') = cpg (rassoc_comp phead n) (fun _ -> s) (fun _ -> v) s v [] in
+  !count_cpg
+
+let cpg_breverse_count n =
+    count_cpg := 0;
+  let s = make_consecutive_list n in
+  let v = make_consecutive_list n in
+  let (ks, kv, s', v') = cpg breverse (fun _ -> s) (fun _ -> v) s v [] in
+  !count_cpg
+
+let cpg_bmapreplace_count n =
+    count_cpg := 0;
+  let s = make_consecutive_list n in
+  let v = make_consecutive_list n in
+  let (ks, kv, s', v') = cpg bmapreplace (fun _ -> s) (fun _ -> v) s v [] in
+  !count_cpg

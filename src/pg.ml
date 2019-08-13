@@ -1,10 +1,10 @@
 open Syntax
 open Utils
 
-let count = ref 0
+let count_pg = ref 0
 
 let rec pg (bx:bigul) s v env =
-  count := !count + 1;
+  count_pg := !count_pg + 1;
   match bx with
   | Def(name, bx1, bx2) ->
     pg bx2 s v ((name, bx1)::env)

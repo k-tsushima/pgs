@@ -2,6 +2,7 @@ open Syntax
 open Bxprog
 open Utils
 open Xpg
+open Kpg
 
 (* test xpg skip1 *)
 let xpg_skip1 =
@@ -208,3 +209,51 @@ let xpg_rassoc_comp_phead_with_multi_case_2 n =
   let v = Int 100 in
   let (s, v) = xpg (rassoc_comp phead_with_multi_case_2 n) s v [] in
   (s, v)
+
+let xpg_lassoc_comp_replace_count n =
+  count_xpg := 0;
+  count_kpg := 0;
+  let s = Int 1 in
+  let v = Int 100 in
+  let (s, v) = xpg (lassoc_comp Replace n) s v [] in
+  !count_xpg + !count_kpg
+
+let xpg_rassoc_comp_replace_count n =
+  count_xpg := 0;
+  count_kpg := 0;
+  let s = Int 1 in
+  let v = Int 100 in
+  let (s, v) = xpg (rassoc_comp Replace n) s v [] in
+  !count_xpg + !count_kpg
+
+let xpg_lassoc_comp_phead_count n =
+  count_xpg := 0;
+  count_kpg := 0;
+  let s = make_smallest_nested_list (n + 1) in
+  let v = Int 100 in
+  let (s, v) = xpg (lassoc_comp phead n) s v [] in
+  !count_xpg + !count_kpg
+
+let xpg_rassoc_comp_phead_count n =
+  count_xpg := 0;
+  count_kpg := 0;
+  let s = make_smallest_nested_list (n + 1) in
+  let v = Int 100 in
+  let (s, v) = xpg (rassoc_comp phead n) s v [] in
+  !count_xpg + !count_kpg
+
+let xpg_breverse_count n =
+  count_xpg := 0;
+  count_kpg := 0;
+  let s = make_consecutive_list n in
+  let v = make_consecutive_list n in 
+  let (s, v) = xpg breverse s v [] in 
+  !count_xpg + !count_kpg
+
+let xpg_bmapreplace_count n =
+  count_xpg := 0;
+  count_kpg := 0;
+  let s = make_consecutive_list n in
+  let v = make_consecutive_list n in 
+  let (s, v) = xpg bmapreplace s v [] in 
+  !count_xpg + !count_kpg

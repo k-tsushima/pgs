@@ -15,6 +15,14 @@ exception Missing_Parameter of string
 exception Too_Many_Parameters of string
 exception Unsupported_Parameter of string
 
+(* let _ = 
+    let (p, g) = put_bmapreplace_count (int_of_string((Sys.argv.(1)))) in 
+        Printf.printf "%d|%d" p g *)
+
+(* let _ = 
+    let pg = pg_bmapreplace_count (int_of_string((Sys.argv.(1)))) in 
+        Printf.printf "%d" pg *)
+
 let _ =
     let start_time = Sys.time () in 
 	(match Array.length Sys.argv with

@@ -2,7 +2,10 @@ open Syntax
 open Utils
 open Kpg
 
+let count_xpg = ref 0
+
 let rec xpg (bx:bigul) s v env =
+  count_xpg := !count_xpg + 1;
   match bx with
   | Def(name, bx1, bx2) ->
     xpg bx2 s v ((name, bx1)::env)
@@ -48,4 +51,4 @@ let rec xpg (bx:bigul) s v env =
   | Compose(bx1, bx2) ->
     let (ks, kv, ks', kv', s', v') = kpg bx1 (fun _ -> s) id id id s v env in 
     let (s'', v'') = xpg bx2 (kv' v') v env in
-        (ks s'', v'')
+    (ks s'', v'')

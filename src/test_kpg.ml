@@ -198,3 +198,46 @@ let kpg_rassoc_comp_phead_no_evaluation n =
   let v = Int 100 in
   let (ks, kv, ks', kv', s', v') = kpg (rassoc_comp phead_no_evaluation n) (fun _ -> s) (fun _ -> v) id id s v [] in
   (ks', kv')
+
+let kpg_lassoc_comp_replace_count n =
+  count_kpg := 0;
+  let s = Int 1 in
+  let v = Int 100 in
+  let (ks, kv, ks', kv', s', v') = kpg (lassoc_comp Replace n) (fun _ -> s) (fun _ -> v) id id s v [] in
+  !count_kpg
+
+let kpg_rassoc_comp_replace_count n =
+  count_kpg := 0;
+  let s = Int 1 in
+  let v = Int 100 in
+  let (ks, kv, ks', kv', s', v') = kpg (rassoc_comp Replace n) (fun _ -> s) (fun _ -> v) id id s v [] in
+  !count_kpg
+
+let kpg_lassoc_comp_phead_count n =
+  count_kpg := 0;
+  let s = make_smallest_nested_list (n + 1) in
+  let v = Int 100 in
+  let (ks, kv, ks', kv', s', v') = kpg (lassoc_comp phead n) (fun _ -> s) (fun _ -> v) id id s v [] in
+  !count_kpg
+
+let kpg_rassoc_comp_phead_count n =
+  count_kpg := 0;
+  let s = make_smallest_nested_list (n + 1) in
+  let v = Int 100 in
+  let (ks, kv, ks', kv', s', v') = kpg (rassoc_comp phead n) (fun _ -> s) (fun _ -> v) id id s v [] in
+  !count_kpg
+
+let kpg_breverse_count n =
+  count_kpg := 0;
+  let s = make_consecutive_list n in
+  let v = make_consecutive_list n in
+  let (ks, kv, ks', kv', s', v') = kpg breverse (fun _ -> s) (fun _ -> v) id id s v [] in
+  !count_kpg
+
+(* test bmapreplace *)
+let kpg_bmapreplace_count n =
+  count_kpg := 0;
+  let s = make_consecutive_list n in
+  let v = make_consecutive_list n in
+  let (ks, kv, ks', kv', s', v') = kpg bmapreplace (fun _ -> s) (fun _ -> v) id id s v [] in
+  !count_kpg

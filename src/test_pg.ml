@@ -177,3 +177,46 @@ let pg_bmapreplace_with_case n =
   let v = make_consecutive_list n in 
   let (s, v) = pg bmapreplace_with_case s v [] in 
   (s, v)
+
+let pg_lassoc_comp_replace_count n =
+  count_pg := 0;
+  let s = Int 1 in
+  let v = Int 100 in
+  let (s, v) = pg (lassoc_comp Replace n) s v [] in
+  !count_pg
+
+let pg_rassoc_comp_replace_count n =
+  count_pg := 0;
+  let s = Int 1 in
+  let v = Int 100 in
+  let (s, v) = pg (rassoc_comp Replace n) s v [] in
+  !count_pg
+
+(* test pg comp of n phead *)
+let pg_lassoc_comp_phead_count n =
+  count_pg := 0;
+  let s = make_smallest_nested_list (n + 1) in
+  let v = Int 100 in
+  let (s, v) = pg (lassoc_comp phead n) s v [] in
+  !count_pg
+
+let pg_rassoc_comp_phead_count n =
+  count_pg := 0;
+  let s = make_smallest_nested_list (n + 1) in
+  let v = Int 100 in
+  let (s, v) = pg (rassoc_comp phead n) s v [] in
+  !count_pg
+
+let pg_breverse_count n =
+  count_pg := 0;
+  let s = make_consecutive_list n in
+  let v = make_consecutive_list n in 
+  let (s, v) = pg breverse s v [] in 
+  !count_pg
+
+let pg_bmapreplace_count n =
+  count_pg := 0;
+  let s = make_consecutive_list n in
+  let v = make_consecutive_list n in 
+  let (s, v) = pg bmapreplace s v [] in 
+  !count_pg

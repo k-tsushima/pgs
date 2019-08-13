@@ -1,11 +1,10 @@
 open Syntax
 
-let count_g = ref 0
-let count_p = ref 0
-let count_c = ref 0
+let count_get = ref 0
+let count_put = ref 0
 
 let rec get (bx:bigul) s env =
-  count_g := !count_g + 1;
+  count_get := !count_get + 1;
   match bx with
   | Def(name, bx1, bx2) ->
     get bx2 s ((name, bx1)::env)
@@ -42,7 +41,7 @@ let rec get (bx:bigul) s env =
     v2
 
 let rec put (bx:bigul) s v env =
-  count_p := !count_p + 1;
+  count_put := !count_put + 1;
   match bx with
   | Def(name, bx1, bx2) ->
     put bx2 s v ((name, bx1)::env)
@@ -84,7 +83,6 @@ let rec put (bx:bigul) s v env =
     let s = put bx s ((fun m -> g1 m) v) env in
     s
   | Compose(bx1, bx2) ->
-    count_c := !count_c + 1;
     let v1 = get bx1 s env in
     let s2 = put bx2 v1 v env in
     let s3 = put bx1 s s2 env in
