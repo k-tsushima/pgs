@@ -9,12 +9,21 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usepackage{subfig}
+\usepackage{lmodern}
 % Used for displaying a sample figure. If possible, figure files should
 % be included in EPS format.
 %
 % If you use the hyperref package, please uncomment the following line
 % to display URLs in blue roman font according to Springer's eBook style:
 % \renewcommand\UrlFont{\color{blue}\rmfamily}
+
+\pgfplotsset{compat=1.12}
 
 \setlength{\parindent}{0pt}
 \renewcommand{\indent}{\hspace*{0pt}}
@@ -48,6 +57,10 @@
 
 \newcommand{\xpg}[3]{xpg \, [\![#1]\!] (#2, #3)}
 \newcommand{\xpginline}[1]{xpg \, [\![#1]\!]}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
 
 \begin{document}
 %
@@ -259,9 +272,9 @@ $\getrev{\casebx{cond_{sv_1}}{cond_{s_1}}{bx_1}{cond_{sv_2}}{cond_{s_2}}{bx_2}}{
     \tab \text{else let} \ (v', g) = \getrev{bx_2}{s} \ \text{in}\\
     \tab \text{fi} \ cond_{sv_1} \ s \ v'; \ \text{return} \ (v', g)$
 
-$\getrev{(bx_1 \circ bx_2)}{s}{v} =\\
-    \tab let (v_1, g_1) = \getrev{bx_1}{s} in\\
-    \tab let (v_2, g_2) = \getrev{bx_1}{s} in\\
+$\getrev{bx_1 \circ bx_2}{s}{v} =\\
+    \tab \text{let} \ (v_1, g_1) = \getrev{bx_1}{s} \ \text{in}\\
+    \tab \text{let} \ (v_2, g_2) = \getrev{bx_1}{s} \ \text{in}\\
         \qtab (v_2, (g_1, g_2))$
 
 \textcolor{red}{If we use Rwhile for target language, we do not need to introduce inverse.}
@@ -283,18 +296,20 @@ $\getrev{(bx_1 \circ bx_2)}{s}{v} =\\
 
 For the approaches so far, when evaluating a composition of BX programs, $get$s are re-evaluated so many times since no intermediate state is stored during the evaluation. This is a kind of information loss. One question is whether it is possible to calculate the above programs without losing information. And the answer is yes. It comes from the the idea of reversible computation where all information during the evaluation need to be kept. In miniBiGUL, we can do that by tupling $put$ and $get$. The such pair is accepted as input of a function named $pg$ to produce a new one that contains the actual result of a BX program.
 
-\textbf{Definition:} \\
-$\pg{bx}{s}{v} = (\putbx{bx}{s}{v}, \getbx{bx}{s})$ \\
+\begin{definition}
+    $\pg{bx}{s}{v} = (\putbx{bx}{s}{v}, \getbx{bx}{s})$
+\end{definition}
 
 $pg$ is an involution that is self-inverse. An involution is a function $f$ that satifies $f(f(x)) = x \text{ for all } x \text{ in the domain of } f$.
 
-Proof:\\
+\begin{proof}
 $pg [\![bx]\!] \ (\pg{bx}{s}{v}) \\
     \tab = \pg{bx}{(\putbx{bx}{s}{v})}{(\getbx{bx}{s})} \quad [pg \text{ definition}] \\
     \tab = (put \ [\![bx]\!] \ (\putbx{bx}{s}{v}) \ (\getbx{bx}{s}), \getbx{bx}{(\putbx{bx}{s}{v})})  \quad [pg \text{ definition}] \\
     \tab = (put \ [\![bx]\!] \ (\putbx{bx}{s}{v}, \getbx{bx}{s}), v) \quad [\text{PUTGET}] \\
     \tab = (put \ [\![bx]\!] \ (s, \getbx{bx}{s}), v) \quad [\text{PUTPUT}] \\
     \tab = (s, v) \quad [\text{GETPUT}]$
+\end{proof}
 
 \subsection{Skip:Construction of pg}
 
@@ -386,6 +401,7 @@ $con = \lambda ks_1. \lambda ks_2. \lambda x. Con(ks_1 \ x, ks_2 \ x)$\\
 $\cpg{bx}{ks}{kv}{s}{v}$ \\
     \tab $ks, kv$ keep modification information\\
     \tab $s, v$ keep evaluated values\\
+
 \vspace{3mm}
 
 $\cpg{Skip \ h}{ks}{kv}{s}{v} = \text{ if } h \ s = v \text{ then } (ks, kv, s, v) \text{ else fail}$\\
@@ -416,6 +432,10 @@ $\cpg{bx_1 \circ bx_2}{ks}{kv}{s}{v} =\\
     \tab (ks_2, kv_2, s_2, v_2) \Leftarrow \cpg{bx_2}{kv_1}{kv}{v_1}{v};\\
         \qtab (ks_1 \circ ks_2, kv_2,  ks_1 \ s_2, v_2)$\\
 
+$s \Leftarrow s_0; v \Leftarrow v_0;\\
+(ks, kv, s, v) \Leftarrow \cpg{bx}{\lambda \_.s}{\lambda \_.v}{s}{v};\\
+    \tab (s; v)$
+
 \begin{itemize}
 \item This is faster than pg for left assoc BX programs.
 \item (Slower for right assoc programs)
@@ -430,6 +450,8 @@ $\kpg{bx}{ks}{kv}{ks'}{kv'}{s}{v}$ \\
     \tab $ks, kv$ keep modification information\\
     \tab $ks', kv'$ evaluate actual values\\
     \tab $s, v$ keep evaluated values\\
+
+\vspace{3mm}
 
 $\kpg{Skip \ h}{ks}{kv}{ks'}{kv'}{s}{v} =\\
     \tab s \Leftarrow ks' \ s; \quad v \Leftarrow kv' \ v;\\
@@ -466,7 +488,11 @@ $\kpg{Case \ c \ bx_1 \ bx_2}{ks}{kv}{ks'}{kv'}{s}{v} =\\
 $\kpg{bx_1 \circ bx_2}{ks}{kv}{ks'}{kv'}{s}{v} =\\
     \tab (ks_1, kv_1, \underline{ks_1'}, kv_1', \underline{s_1}, v_1) \Leftarrow \kpg{bx_1}{ks}{id}{ks'}{id}{s}{const$\_$dummy \ v};\\
     \tab (ks_2, kv_2, ks_2', kv_2', s_2, v_2) \Leftarrow \kpg{bx_2}{kv_1}{kv}{kv_1'}{kv'}{v_1}{v};\\
-    \qtab (ks_1 \circ ks_2, kv_2', ks_1 \circ ks_2', kv_2', s_2, v_2)$
+    \qtab (ks_1 \circ ks_2, kv_2', ks_1 \circ ks_2', kv_2', s_2, v_2)$\\
+
+$s \Leftarrow s_0; v \Leftarrow v_0;\\
+(ks, kv, ks', kv', s, v) \Leftarrow \kpg{bx}{\lambda \_.s}{id}{id}{id}{s}{v};\\
+    \tab (ks' \ s; kv' \ v)$
 
 \begin{itemize}
 \item In this definition of kpg, s' and v' will have actual value only in skip and case. Except them, the functions for computation will be kept as ks' and kv'.
@@ -492,17 +518,349 @@ $\xpg{bx_1 \circ bx_2}{s}{v} =\\
     \tab (s_2, v_2) \Leftarrow \xpg{bx_2}{kv_1' \ v_1}{v};\\
     \qtab (ks_1 \ s_2, v_2)$
 
-\section{Experimental result}
+\section{Experiment}
 
-\begin{itemize}
-\item Evaluation time for miniBiGul, pg, cpg, kpg, xpg.
-\item Memory allocation of miniBiGul, pg, cpg, kpg, xpg.
-\item []
-\item xpg looks the best one (maybe)
-\item 
-\end{itemize}
+This section describes the experiments involving $minBiGUl$, $pg$, $cpg$, $kpg$ and $xpg$. The evaluation time, the memory allocation and the number of function calls are considered in each test.
 
-\subsection{Theoretical Computational Complexity}
+\subsection{Experiment environment}
+We implemented 5 approaches with Ocaml 4.07.1 in the same environment as follows: macOS 10.14.6, processor Intel Core i7 (2.6 GHz), RAM 16 GB 2400 MHz DDR4. The Ocaml runtime system options and garbage collection parameters are set as default.  
+
+\subsection{Test cases}
+We are conducted tests on 5 cases, including many composition styles such as left or right associative, non-recursive or recursive. Table \ref{tab:test-cases} shows more details on these cases.
+
+\begin{table}[]
+    \centering
+    \caption{Test cases}
+    \label{tab:test-cases}
+    \begin{tabular*}{\textwidth}{|c @{\extracolsep{\fill}}|l|l|l|c|c|c|c|}
+        \hline
+        \multirow{2}{*}{No} & \multicolumn{1}{c|}{\multirow{2}{*}{Name}} & \multicolumn{1}{c|}{\multirow{2}{*}{Associative}} & \multicolumn{1}{c|}{\multirow{2}{*}{Recursive}} & \multicolumn{2}{c|}{Input} & \multicolumn{2}{c|}{Output} \\ \cline{5-8} 
+        & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{$s_0$} & \multicolumn{1}{c|}{$v_0$} & \multicolumn{1}{c|}{$s_r$} & \multicolumn{1}{c|}{$v_r$} \\ \hline
+        1 & lassoc-comp-replace & left & no & 1 & 100 & 100 & 1 \\ \hline
+        2 & rassoc-comp-replace & right & no & 1 & 100 & 100 & 1 \\ \hline
+        3 & lassoc-comp-phead & left & no & $\underbrace{[[\ldots[1]\ldots]]}_{\text{n+1 times}}$ & 100 & $\underbrace{[[\ldots[100]\ldots]]}_{\text{n+1 times}}$ & 1 \\ \hline
+        4 & rassoc-comp-phead & right & no & $\underbrace{[[\ldots[1]\ldots]]}_{\text{n+1 times}}$ & 100 & $\underbrace{[[\ldots[100]\ldots]]}_{\text{n+1 times}}$ & 1 \\ \hline
+        5 & breverse & left & yes & [1..n] & [1..n] & [n..1] & [n..1] \\ \hline
+    \end{tabular*}
+\end{table}
+
+In table \ref{tab:test-cases}, $s_r$ and $v_r$ are respectively updated source and view which are produced by applying $put$ and $get$ on original source $s_0$ and original view $v_0$. This means: $s_r = \putbx{bx}{s_0}{v_0}$ and $v_r = \getbx{bx}{s_0}$, where $bx$ is one of the 5 cases mentioned in the table. Note that the results $s_r$ and $v_r$ do not depend on the associative style of the composition.\\
+
+The first 4 test cases simply use $n$ compose operators to make a composition of $n + 1$ similar $BX$ programs which are non-recursive. For example, \textit{lassoc-comp-replace} looks like $(\ldots((Replace \circ Replace) \circ Replace) \circ \ldots \circ Replace) \circ Replace$, while \textit{rassoc-comp-replace} is like $Replace \circ (Replace \circ (Replace \circ \ldots \circ (Replace \circ Replace)\ldots))$, where there are $n + 1 \ Replace$s in each case. \textit{lassoc-comp-phead} and \textit{rassoc-comp-phead} are similar to the above two. While $Replace$ is a primitive BX program, $phead$ is a combination of such programs. The following is the definition of $phead$ in BiGUL [?]:
+
+    $\tab phead :: Show \ s \Rightarrow BiGUL \ [s] \ s\\
+    \tab phead = \$(rearrS \ [\![\lambda(s:ss) \to (s,ss)]\!])\$\\
+        \qtab \qtab \quad \$(rearrV \ [\![\lambda(v) \to (v,())]\!])\$\\
+            \qtab \qtab \qquad Replace \ `prod\text{'} \ (Skip \ (const \ ()))$
+
+We also provide the same $phead$ program in our Ocaml system. It rearranges the source, a non-empty list, to a pair of its head element $s$ and its tail $ss$, and the view to a pair $(v, ())$, then we can use $v$ to replace $s$ and $()$ to keep $ss$. $\putbx{phead}{s_0}{v_0}$ returns a list whose head is $v_0$ and tail is the tail of $s_0$. $\getbx{phead}{s_0}$ returns the head of $s_0$. For instance, $\putbx{phead}{[1,2,3]}{100} = [100,2,3]$ and $\getbx{phead}{[1,2,3]} = 1$. If we wanna update the head element of the head element of a list of lists by using the view, we can define a composition like $phead \circ phead$. For example:
+
+    \tab $\putbx{phead \circ phead}{[[1,2,3],[\ ],[4,5]]}{100} = [[100,2,3],[\ ],[4,5]]$\\
+    \tab $\getbx{phead \circ phead}{[[1,2,3],[\ ],[4,5]]} = 1$
+
+Similarly, we can use the view to update head element in the nested lists with a composition of a specific number of $phead$s. For both \textit{lassoc-comp-phead} and \textit{rassoc-comp-phead}, we choose input view $v_0$ is 100 and input source $s_0$ is one of the smallest nested lists which make $put$ and $get$ direction on the composition valid.\\
+
+The last test case, $bReverse$, is a left-associative and recursive composition. It is defined in terms of $bFoldr$, a putback function for $foldr$ in BiGUL as well as minBiGUL. What we know about $foldr$, an important higher-order function on lists, is as follows:\\
+    $\tab foldr :: (a \to b \to b) \to b \to [a] \to b\\
+    \tab foldr \ f \ e \ [\ ] = e\\
+    \tab foldr \ f \ e \ (x:xs) = f \ x \ (foldr \ f \ e \ xs)$
+
+We can define function $reverse$ on lists based on $foldr$:\\
+    $\tab reverse \ [\ ] = [\ ]\\
+    \tab reverse \ (x:xs) = snoc \ x \ (reverse \ xs)\\
+    \tab reverse = foldr \ snoc \ [\ ]$
+
+Let's see the following definition of $bFoldr$ which is a restricted version of $lensFoldr$ in [?] without adaptive cases:
+
+$\tab bFoldr :: (Show \ a, Show \ v) \Rightarrow BiGUL \ (a, v) \ v \to BiGUL \ ([a], v) \ v\\
+\tab bFoldr \ bx =\\
+    \qtab Case \ [\$(normal \ [\![ \lambda (x,\_) v \to null \ x ]\!] \ [\![ \lambda (x,\_) \to null \ x ]\!])\\
+        \qtab \qtab \Longrightarrow \$(rearrV [| \lambda v \to ((),v) |])\$\\
+            \qtab \qtab \qtab (Skip \ (const \ ())) \ `Prod \text{'} \ Replace\\
+    \qtab \qtab, \$(normal \ [\![ \lambda (x,\_) v \to not \ (null \ x) ]\!] \ [\![ \lambda (x,\_) \to not \ (null \ x) ]\!])\\
+        \qtab \qtab \Longrightarrow \$(rearrS \ [\![ \lambda ((x:xs), e) \to (x, (xs,e)) |])\$\\
+            \qtab \qtab \qtab (Replace \ `Prod\text{'} \ bFoldr \ bx) \ \circ \ bx\\
+    \qtab \qtab]\\$
+
+The detailed explanation of $bFoldr$ are skipped. Like $phead$, the program equipvalent to the above $bFoldr$ is also provided in our Ocaml system. If we put our eyes on the second branch of $bFoldr$, we can understand why it is recursive and left-associative composition. Note that the compose operator has a higher priority than the product operator. This leads to seemingly impossible to transform this function from left-associative style to right-associative style.
+
+Suppose that we haved $bSnoc$, a bidirectional version of $snoc$, in BiGUL. Then $bReverse$ can defined as follows:
+
+    $\tab bReverse :: Show \ a \Rightarrow BiGUL \ [a] \ [a]\\
+    \tab bReverse =\\
+        \qtab Case \ [ \$(adaptive \ [\![ \lambda s \ v \to length \ s \neq length \ v ]\!])\\
+        \qtab \qtab \quad \lambda s \ v \to v\\
+        \qtab \qtab , \$(normal \ [\![ \lambda s \ v \to True ]\!] \ [\![ \lambda s \to True ]\!])\\
+        \qtab \qtab \quad \$(rearrS \ [\![ \lambda s \to (s,[\ ]) ]\!])\$\\
+            \qtab \qtab \qquad bFoldr \ bSnoc\\
+       \qtab \qtab ]$
+
+The above definition contains an adaptive branch and it only occurs when the length of the source and the view are different. If we restrict them as two lists whose same lengths, the case analysis will only evaluate the normal branch. For test case $breverse$ in table \ref{tab:test-cases}, we choose both $s_0$ and $v_0$ as lists from 1 to $n$. Then, the results $s_r$ and $v_r$ are the list from $n$ to 1. Explicitly, $\putbx{bReverse}{[1..n]}{[1..n]} = [n..1]$ and $\getbx{bReverse}{[1..n]} = [n..1]$. In $bReverse$, the number of composition equals to the length of the source and the view.
+
+\subsection{Results and discussions}
+We conducted experiments on 5 test cases while changing the number of composition from 10 to 100000.
+
+\begin{figure}
+    \centering
+    \subfloat[\textit{lassoc-comp-replace}]{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode = normal,
+                ymode = normal,
+                xlabel = {number of composition},
+                ylabel = {evaluation time (s)},
+                width = 0.55\linewidth,
+                legend style = {font=\scriptsize},
+                legend pos = north west
+            ]
+                \pgfplotstableread[col sep=comma]{csv/time-lassoc-comp-replace.csv}\data
+                \addplot table[x=nComp,y=minbigul]{\data};
+                \addlegendentry{minbigul};
+                \addplot table[x=nComp,y=pg]{\data};
+                \addlegendentry{pg};
+                \addplot table[x=nComp,y=cpg]{\data};
+                \addlegendentry{cpg};
+                \addplot table[x=nComp,y=kpg]{\data};
+                \addlegendentry{kpg};
+                \addplot table[x=nComp,y=xpg]{\data};
+                \addlegendentry{xpg};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \subfloat[\textit{rassoc-comp-replace}]{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode = normal,
+                ymode = normal,
+                xlabel = {number of composition},
+                width = 0.55\linewidth,
+                legend style = {font=\scriptsize},
+                legend pos = north west
+            ]
+                \pgfplotstableread[col sep=comma]{csv/time-rassoc-comp-replace.csv}\data
+                \addplot table[x=nComp,y=minbigul]{\data};
+                \addlegendentry{minbigul};
+                \addplot table[x=nComp,y=pg]{\data};
+                \addlegendentry{pg};
+                \addplot table[x=nComp,y=cpg]{\data};
+                \addlegendentry{cpg};
+                \addplot table[x=nComp,y=kpg]{\data};
+                \addlegendentry{kpg};
+                \addplot table[x=nComp,y=xpg]{\data};
+                \addlegendentry{xpg};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \hspace{0mm}
+    \subfloat[\textit{lassoc-comp-phead}]{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode = normal,
+                ymode = normal,
+                xlabel = {number of composition},
+                ylabel = {evaluation time (s)},
+                width = 0.55\linewidth,
+                legend style = {font=\scriptsize},
+                legend pos = north west
+            ]
+                \pgfplotstableread[col sep=comma]{csv/time-lassoc-comp-phead.csv}\data
+                \addplot table[x=nComp,y=minbigul]{\data};
+                \addlegendentry{minbigul};
+                \addplot table[x=nComp,y=pg]{\data};
+                \addlegendentry{pg};
+                \addplot table[x=nComp,y=cpg]{\data};
+                \addlegendentry{cpg};
+                \addplot table[x=nComp,y=kpg]{\data};
+                \addlegendentry{kpg};
+                \addplot table[x=nComp,y=xpg]{\data};
+                \addlegendentry{xpg};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \subfloat[\textit{rassoc-comp-phead}]{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode = normal,
+                ymode = normal,
+                xlabel = {number of composition},
+                width = 0.55\linewidth,
+                legend style = {font=\scriptsize},
+                legend pos = north east
+            ]
+                \pgfplotstableread[col sep=comma]{csv/time-rassoc-comp-phead.csv}\data
+                \addplot table[x=nComp,y=minbigul]{\data};
+                \addlegendentry{minbigul};
+                \addplot table[x=nComp,y=pg]{\data};
+                \addlegendentry{pg};
+                \addplot table[x=nComp,y=cpg]{\data};
+                \addlegendentry{cpg};
+                \addplot table[x=nComp,y=kpg]{\data};
+                \addlegendentry{kpg};
+                \addplot table[x=nComp,y=xpg]{\data};
+                \addlegendentry{xpg};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \vspace{2mm}
+    \subfloat[\textit{breverse}]{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode = normal,
+                ymode = normal,
+                xlabel = {number of composition},
+                ylabel = {evaluation time (s)},
+                width = 0.55\linewidth,
+                legend style = {font=\scriptsize},
+                legend pos = north east
+            ]
+                \pgfplotstableread[col sep=comma]{csv/time-breverse.csv}\data
+                \addplot table[x=nComp,y=minbigul]{\data};
+                \addlegendentry{minbigul};
+                \addplot table[x=nComp,y=pg]{\data};
+                \addlegendentry{pg};
+                \addplot table[x=nComp,y=cpg]{\data};
+                \addlegendentry{cpg};
+                \addplot table[x=nComp,y=kpg]{\data};
+                \addlegendentry{kpg};
+                \addplot table[x=nComp,y=xpg]{\data};
+                \addlegendentry{xpg};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \caption{Evaluation time (s)}
+    \label{fig:evaluation-time}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \subfloat[\textit{lassoc-comp-replace}]{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode = normal,
+                ymode = normal,
+                xlabel = {number of composition},
+                ylabel = {memory allocation (MBytes)},
+                width = 0.55\linewidth,
+                legend style = {font=\scriptsize},
+                legend pos = north west
+            ]
+                \pgfplotstableread[col sep=comma]{csv/mem-lassoc-comp-replace.csv}\data
+                \addplot table[x=nComp,y=minbigul]{\data};
+                \addlegendentry{minbigul};
+                \addplot table[x=nComp,y=pg]{\data};
+                \addlegendentry{pg};
+                \addplot table[x=nComp,y=cpg]{\data};
+                \addlegendentry{cpg};
+                \addplot table[x=nComp,y=kpg]{\data};
+                \addlegendentry{kpg};
+                \addplot table[x=nComp,y=xpg]{\data};
+                \addlegendentry{xpg};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \subfloat[\textit{rassoc-comp-replace}]{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode = normal,
+                ymode = normal,
+                xlabel = {number of composition},
+                width = 0.55\linewidth,
+                legend style = {font=\scriptsize},
+                legend pos = north west
+            ]
+                \pgfplotstableread[col sep=comma]{csv/mem-rassoc-comp-replace.csv}\data
+                \addplot table[x=nComp,y=minbigul]{\data};
+                \addlegendentry{minbigul};
+                \addplot table[x=nComp,y=pg]{\data};
+                \addlegendentry{pg};
+                \addplot table[x=nComp,y=cpg]{\data};
+                \addlegendentry{cpg};
+                \addplot table[x=nComp,y=kpg]{\data};
+                \addlegendentry{kpg};
+                \addplot table[x=nComp,y=xpg]{\data};
+                \addlegendentry{xpg};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \hspace{0mm}
+    \subfloat[\textit{lassoc-comp-phead}]{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode = normal,
+                ymode = normal,
+                xlabel = {number of composition},
+                ylabel = {memory allocation (MBytes)},
+                width = 0.55\linewidth,
+                legend style = {font=\scriptsize},
+                legend pos = north west
+            ]
+                \pgfplotstableread[col sep=comma]{csv/mem-lassoc-comp-phead.csv}\data
+                \addplot table[x=nComp,y=minbigul]{\data};
+                \addlegendentry{minbigul};
+                \addplot table[x=nComp,y=pg]{\data};
+                \addlegendentry{pg};
+                \addplot table[x=nComp,y=cpg]{\data};
+                \addlegendentry{cpg};
+                \addplot table[x=nComp,y=kpg]{\data};
+                \addlegendentry{kpg};
+                \addplot table[x=nComp,y=xpg]{\data};
+                \addlegendentry{xpg};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \subfloat[\textit{rassoc-comp-phead}]{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode = normal,
+                ymode = normal,
+                xlabel = {number of composition},
+                width = 0.55\linewidth,
+                legend style = {font=\scriptsize},
+                legend pos = north east
+            ]
+                \pgfplotstableread[col sep=comma]{csv/mem-rassoc-comp-phead.csv}\data
+                \addplot table[x=nComp,y=minbigul]{\data};
+                \addlegendentry{minbigul};
+                \addplot table[x=nComp,y=pg]{\data};
+                \addlegendentry{pg};
+                \addplot table[x=nComp,y=cpg]{\data};
+                \addlegendentry{cpg};
+                \addplot table[x=nComp,y=kpg]{\data};
+                \addlegendentry{kpg};
+                \addplot table[x=nComp,y=xpg]{\data};
+                \addlegendentry{xpg};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \vspace{2mm}
+    \subfloat[\textit{breverse}]{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode = normal,
+                ymode = normal,
+                xlabel = {number of composition},
+                ylabel = {memory allocation (MBytes)},
+                width = 0.55\linewidth,
+                legend style = {font=\scriptsize},
+                legend pos = north east
+            ]
+                \pgfplotstableread[col sep=comma]{csv/mem-breverse.csv}\data
+                \addplot table[x=nComp,y=minbigul]{\data};
+                \addlegendentry{minbigul};
+                \addplot table[x=nComp,y=pg]{\data};
+                \addlegendentry{pg};
+                \addplot table[x=nComp,y=cpg]{\data};
+                \addlegendentry{cpg};
+                \addplot table[x=nComp,y=kpg]{\data};
+                \addlegendentry{kpg};
+                \addplot table[x=nComp,y=xpg]{\data};
+                \addlegendentry{xpg};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \caption{Memory allocation (MBytes)}
+    \label{fig:memory-allocation}
+\end{figure}
 
 \section{Conclusion and Future Work}
 
