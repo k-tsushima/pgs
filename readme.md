@@ -22,7 +22,7 @@ src
 +--> xpg.ml	
 +--> test_xpg.ml
 |
-+--> main.ml (use when evalutating time)
++--> main.ml (use when evalutating time, memory & counter)
 
 ```
 
