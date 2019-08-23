@@ -320,17 +320,17 @@ $\getrev{bx_1 \circ bx_2}{s}{v} =\\
 \section{pg}
 \subsection{Self-inverse function: pg}
 
-\begin{itemize}
-\item Information loss causes re-evaluation of get.
-\item To prevent this, we introduced the idea of reversible computation.
-\item In reversible computation we need to keep all information: we can not lose any information.
-\item In BiGUL we can acheive this by tupling put and get.
-\item pg bx (s, v) = (put bx (s, v), get bx (s))
-\item pg: s * v $\to$ s * v
-\item No garbage
-\item This function is self-inverse. (involution, (f (f input)) = input)
-\item \textcolor{red}{Constraint: In case expression, put and get must always choose the same branch. This constraint is not satisfied in general: (e.g, SNOC, the different length of two inputs.) To remove this constraint we need to use garbage.}
-\end{itemize}
+%\begin{itemize}
+%\item Information loss causes re-evaluation of get.
+%\item To prevent this, we introduced the idea of reversible computation.
+%\item In reversible computation we need to keep all information: we can not lose any information.
+%\item In BiGUL we can acheive this by tupling put and get.
+%\item pg bx (s, v) = (put bx (s, v), get bx (s))
+%\item pg: s * v $\to$ s * v
+%\item No garbage
+%\item This function is self-inverse. (involution, (f (f input)) = input)
+%\item \textcolor{red}{Constraint: In case expression, put and get must always choose the same branch. This constraint is not satisfied in general: (e.g, SNOC, the different length of two inputs.) To remove this constraint we need to use garbage.}
+%\end{itemize}
 
 For the approaches so far, when evaluating a composition of BX programs, $get$s are re-evaluated so many times since no intermediate state is stored during the evaluation. This is a kind of information loss. One question is whether it is possible to calculate the above programs without losing information. And the answer is yes. It comes from the the idea of reversible computation where all information during the evaluation need to be kept. In miniBiGUL, we can do that by tupling $put$ and $get$. The such pair is accepted as input of a function named $pg$ to produce a new one that contains the actual result of a BX program.
 
@@ -450,6 +450,12 @@ $\cpg{bx}{ks}{kv}{s}{v}$ \\
     \tab $ks, kv$ keep modification information\\
     \tab $s, v$ keep evaluated values\\
 
+\textcolor{red}{
+    $s \Leftarrow s_0; v \Leftarrow v_0;\\
+    (ks, kv, s, v) \Leftarrow \cpg{bx}{\lambda \_.s}{\lambda \_.v}{s}{v};\\
+        \tab (s; v)$
+}
+
 \vspace{3mm}
 
 $\cpg{Skip \ h}{ks}{kv}{s}{v} = \text{ if } h \ s = v \text{ then } (ks, kv, s, v) \text{ else fail}$\\
@@ -483,7 +489,8 @@ $\cpg{bx_1 \circ bx_2}{ks}{kv}{s}{v} =\\
 \begin{itemize}
 \item This is faster than pg for left assoc BX programs.
 \item (Slower for right assoc programs)
-
+\item $s_1$ in composition is redundant.  
+\item Next, we will extend this to avoid this redundant computation.
 \end{itemize}
 
 
@@ -507,6 +514,12 @@ $\kpg{bx}{ks}{kv}{ks'}{kv'}{s}{v}$ \\
     \tab $ks, kv$ keep modification information\\
     \tab $ks', kv'$ for lazy evaluation of actual values\\
     \tab $s, v$ keep evaluated values\\
+
+\textcolor{red}{
+    $s \Leftarrow s_0; v \Leftarrow v_0;\\
+    (ks, kv, ks', kv', s, v) \Leftarrow \kpg{bx}{\lambda \_.s}{id}{id}{id}{s}{v};\\
+        \tab (ks' \ s; kv' \ v)$
+}
 
 \vspace{3mm}
 
@@ -547,11 +560,13 @@ $\kpg{bx_1 \circ bx_2}{ks}{kv}{ks'}{kv'}{s}{v} =\\
     \tab (ks_2, kv_2, ks_2', kv_2', s_2, v_2) \Leftarrow \kpg{bx_2}{kv_1}{kv}{kv_1'}{kv'}{v_1}{v};\\
     \qtab (ks_1 \circ ks_2, kv_2', ks_1 \circ ks_2', kv_2', s_2, v_2)$\\
 
-%$s \Leftarrow s_0; v \Leftarrow v_0;\\
-%(ks, kv, ks', kv', s, v) \Leftarrow \kpg{bx}{\lambda \_.s}{id}{id}{id}{s}{v};\\
-%    \tab (ks' \ s; kv' \ v)$
 
-
+\begin{itemize}
+    \item In this definition of kpg, s and v keep actual values only in skip and case. Except them, the functions for computation will be kept as ks' and kv'.
+    \item In composition $ks_1'$ and $s_1$ are still redundant. But, they are not evaluated.
+    \item In prod, evaluation of ks' and kv' will be done indendently in kpg$[\![bx_1]\!]$ and kpg$[\![bx_2]\!]$. To remove redundant re-computation we evaluate actual s and v.
+    \item This implementation is faster for left assoc BX programs. (Actually slower for right assoc than cpg). \textcolor{red}{But it makes stack\_overflow comes sooner}.
+\end{itemize}
 
 \subsection{xpg}
 
@@ -573,10 +588,10 @@ $\xpg{bx_1 \circ bx_2}{s}{v} =\\
 
 \section{Experiment}
 
-This section describes the experiments involving $minBiGUl$, $pg$, $cpg$, $kpg$ and $xpg$. The evaluation time, the memory allocation and the number of function calls are considered in each test.
+This section describes the experiments involving $minBIGUL$, $pg$, $cpg$, $kpg$ and $xpg$. The number of function calls, the evaluation time and the memory allocation are considered in each test.
 
 \subsection{Experiment environment}
-We implemented 5 approaches with Ocaml 4.07.1 in the same environment as follows: macOS 10.14.6, processor Intel Core i7 (2.6 GHz), RAM 16 GB 2400 MHz DDR4. The Ocaml runtime system options and garbage collection parameters are set as default.  
+We implemented 5 approaches with OCaml 4.07.1 in the same environment as follows: macOS 10.14.6, processor Intel Core i7 (2.6 GHz), RAM 16 GB 2400 MHz DDR4. The OCaml runtime system options and garbage collection parameters are set as default.  
 
 \subsection{Test cases}
 We are conducted tests on 5 cases, including many composition styles such as left or right associative, non-recursive or recursive. Table \ref{tab:test-cases} shows more details on these cases.
@@ -606,7 +621,7 @@ The first 4 test cases simply use $n$ compose operators to make a composition of
         \qtab \qtab \quad \$(rearrV \ [\![\lambda(v) \to (v,())]\!])\$\\
             \qtab \qtab \qquad Replace \ `prod\text{'} \ (Skip \ (const \ ()))$
 
-We also provide the same $phead$ program in our Ocaml system. It rearranges the source, a non-empty list, to a pair of its head element $s$ and its tail $ss$, and the view to a pair $(v, ())$, then we can use $v$ to replace $s$ and $()$ to keep $ss$. $\putbx{phead}{s_0}{v_0}$ returns a list whose head is $v_0$ and tail is the tail of $s_0$. $\getbx{phead}{s_0}$ returns the head of $s_0$. For instance, $\putbx{phead}{[1,2,3]}{100} = [100,2,3]$ and $\getbx{phead}{[1,2,3]} = 1$. If we wanna update the head element of the head element of a list of lists by using the view, we can define a composition like $phead \circ phead$. For example:
+We also provide the same $phead$ program in our OCaml system. It rearranges the source, a non-empty list, to a pair of its head element $s$ and its tail $ss$, and the view to a pair $(v, ())$, then we can use $v$ to replace $s$ and $()$ to keep $ss$. $\putbx{phead}{s_0}{v_0}$ returns a list whose head is $v_0$ and tail is the tail of $s_0$. $\getbx{phead}{s_0}$ returns the head of $s_0$. For instance, $\putbx{phead}{[1,2,3]}{100} = [100,2,3]$ and $\getbx{phead}{[1,2,3]} = 1$. If we wanna update the head element of the head element of a list of lists by using the view, we can define a composition like $phead \circ phead$. For example:
 
     \tab $\putbx{phead \circ phead}{[[1,2,3],[\ ],[4,5]]}{100} = [[100,2,3],[\ ],[4,5]]$\\
     \tab $\getbx{phead \circ phead}{[[1,2,3],[\ ],[4,5]]} = 1$
@@ -635,7 +650,7 @@ $\tab bFoldr :: (Show \ a, Show \ v) \Rightarrow BiGUL \ (a, v) \ v \to BiGUL \ 
             \qtab \qtab \qtab (Replace \ `Prod\text{'} \ bFoldr \ bx) \ \circ \ bx\\
     \qtab \qtab]\\$
 
-The detailed explanation of $bFoldr$ are skipped. Like $phead$, the program equipvalent to the above $bFoldr$ is also provided in our Ocaml system. If we put our eyes on the second branch of $bFoldr$, we can understand why it is recursive and left-associative composition. Note that the compose operator has a higher priority than the product operator. This leads to seemingly impossible to transform this function from left-associative style to right-associative style.
+The detailed explanation of $bFoldr$ are skipped. Like $phead$, the program equipvalent to the above $bFoldr$ is also provided in our OCaml system. If we put our eyes on the second branch of $bFoldr$, we can understand why it is recursive and left-associative composition. Note that the compose operator has a higher priority than the product operator. This leads to seemingly impossible to transform this function from left-associative style to right-associative style.
 
 Suppose that we haved $bSnoc$, a bidirectional version of $snoc$, in BiGUL. Then $bReverse$ can defined as follows:
 
@@ -648,10 +663,67 @@ Suppose that we haved $bSnoc$, a bidirectional version of $snoc$, in BiGUL. Then
             \qtab \qtab \qquad bFoldr \ bSnoc\\
        \qtab \qtab ]$
 
-The above definition contains an adaptive branch and it only occurs when the length of the source and the view are different. If we restrict them as two lists whose same lengths, the case analysis will only evaluate the normal branch. For test case $breverse$ in table \ref{tab:test-cases}, we choose both $s_0$ and $v_0$ as lists from 1 to $n$. Then, the results $s_r$ and $v_r$ are the list from $n$ to 1. Explicitly, $\putbx{bReverse}{[1..n]}{[1..n]} = [n..1]$ and $\getbx{bReverse}{[1..n]} = [n..1]$. In $bReverse$, the number of composition equals to the length of the source and the view.
+The above definition contains an adaptive branch and it only occurs when the lengths of the source and the view are different. If we restrict them as two lists whose same lengths, the case analysis will only evaluate the normal branch. For test case $breverse$ in table \ref{tab:test-cases}, we choose both $s_0$ and $v_0$ as lists from 1 to $n$. Then, the results $s_r$ and $v_r$ are the list from $n$ to 1. Explicitly, $\putbx{bReverse}{[1..n]}{[1..n]} = [n..1]$ and $\getbx{bReverse}{[1..n]} = [n..1]$. In $bReverse$, the number of compositions equals to the length of the source and the view.
 
 \subsection{Results and discussions}
-We conducted experiments on 5 test cases while changing the number of composition from 10 to 100000.
+
+\begin{table}[]
+    \centering
+    \caption{Comparison}
+    \label{tab:comparison}
+    \resizebox{\textwidth}{!}{%
+        \begin{tabular}{|l|l|l|l|}
+            \hline
+            \multicolumn{1}{|c|}{Name} & \multicolumn{1}{c|}{Properties} & \multicolumn{1}{c|}{Evaluation time order} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}Memory allocation order\\ (stack\_overflow point / 100000)\end{tabular}} \\ \hline
+            lassoc-comp-replace & l, NR & xpg $\sim$ kpg $<$ cpg $<$ minbigul $<$ pg & minbigul $<$ cpg $<$ xpg $\sim$ kpg (95299) $<$ pg (ND) \\ \hline
+            rassoc-comp-replace & r, NR & minbigul $<$ pg $<$ xpg $<$ cpg $<$ kpg & minbigul $<$ pg $<$ xpg $<$ cpg (95299) $<$ kpg (80638) \\ \hline
+            lassoc-comp-phead & l, NR & xpg $<$ kpg $<$ minbigul $<$ cpg $<$ pg & minbigul $<$ xpg $\sim$ kpg (80638) $<$ cpg (ND) $<$ pg (ND) \\ \hline
+            rassoc-comp-phead & r, NR & minbigul $<$ pg $<$ xpg $<$ cpg $<$ kpg & minbigul $<$ pg $<$ xpg $<$ cpg (43680) $<$ kpg (61665) \\ \hline
+            breverse & l, R & xpg $<$ kpg $<$ minbigul $<$ cpg $<$ pg & xpg (ND) $<$ kpg (ND) $<$ cpg (ND) $<$ minbigul (ND) $<$ pg (ND) \\ \hline
+            \multicolumn{4}{r}{} \\
+            \multicolumn{4}{r}{stack\_overflow point (default: $>$ 100000): can not evaluate a program if the number of compositions is larger than this point} \\
+            \multicolumn{4}{r}{best $< \ldots < \ldots <$ worst} \\
+            \multicolumn{4}{r}{l/r: left/right associative} \\
+            \multicolumn{4}{r}{NR/R: non-recursive/recursive} \\
+            \multicolumn{4}{r}{ND: not determined}
+        \end{tabular}%
+    }
+\end{table}
+
+\begin{itemize}
+    \item Number of calls
+        \begin{itemize}
+            \item No(cpg) = No(kpg) = No(xpg) = No(put) (\textcolor{blue}{come from function definitions})
+            \item For right-associative \& non-recursive composition (rassoc-comp-replace, rassoc-comp-phead): No(get), No(put), No(pg) are linear where No(get) $<$ No(put) $<$ No(pg)
+            \item For left-associative \& non-recursive composition (lassoc-comp-replace, lassoc-comp-phead): No(put) is still linear, No(get) is quadratic, No(pg) is under exponential distribution. No(put) $<$ No(get) $<$ No(pg)
+            \item For left-associative \& recursive composition (breverse): we still have No(put) $<$ No(get) $<$ No(pg) and all three are non-linear. In case of breverse, No(put) is quadratic, No(get) is cubic and No(pg) is exponential.
+        \end{itemize}
+    \item Evalutation times (s)
+        \begin{itemize}
+            \item For left-associative compositions:\\
+            - pg time is exponential (\textcolor{blue}{since the number of pg calls in these cases are exponential}) \\
+            \item For left-associative \& non-recursive compositions:\\
+            - kpg time are are approximate to xpg time, and they are the most efficient.\\
+            - In case of lassoc-comp-replace, kpg time and xpg time are linear, cpg time and minbigul time are non-linear. (\textcolor{blue}{because the input size is constant, No(get) is quadratic for minbigul while the number of redundant evaluations in cpg is \underline{linear} and ... ?})\\
+            - In case of lassoc-comp-phead, because of the data size is linear and the numbers of function calls are either linear or quadractic or exponential, then all times are non-linear.
+
+            \item For right-associative \& non-recursive compositions:\\
+            - minbigul time, pg time and xpg time are linear \\
+            - In case of rassoc-comp-replace, all times are small enough to consider all them as linear \\
+            - In case of rassoc-comp-phead, cpg time and kpg time are quadratic (\textcolor{blue}{because data size is linear, the number of redundant evaluations in cpg and kpg are linear})
+
+            \item For left-associative \& recursive composition (breverse):\\
+            - all times should be non-linear (\textcolor{blue}{due to there is no linear number of function calls})
+        \end{itemize}
+    \item Memory allocation (MBytes)
+        \begin{itemize}
+            \item Memory usage depends on the input size and the number of composition
+            \item In general, minbigul uses less memory than the others for non-recursive compositions (all tests except breverse)
+            \item pg only uses memory efficient when handling right-associative composition 
+            \item cpg \& kpg are worst in memory allocation for right-associative
+            \item For left-associative \& recursive composition (breverse), minbigul uses significantly more memory than kpg as well as xpg.
+        \end{itemize}
+\end{itemize}
 
 \begin{figure}
     \centering
@@ -660,11 +732,126 @@ We conducted experiments on 5 test cases while changing the number of compositio
             \begin{axis}[
                 xmode = normal,
                 ymode = normal,
-                xlabel = {number of composition},
+                xlabel = {number of compositions},
+                ylabel = {number of calls},
+                width = 0.55\linewidth,
+                legend style = {font=\scriptsize,at={(0.15,0.78)},anchor=west},
+            ]
+                \pgfplotstableread[col sep=comma]{csv/count-lassoc-comp-replace.csv}\data
+                \addplot table[x=nComp,y=count_get]{\data};
+                \addlegendentry{get};
+                \addplot table[x=nComp,y=count_put]{\data};
+                \addlegendentry{put};
+                \addplot table[x=nComp,y=count_pg]{\data};
+                \addlegendentry{pg};
+                \addplot table[x=nComp,y=count_xpg]{\data};
+                \addlegendentry{cpg/kpg/xpg};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \subfloat[\textit{rassoc-comp-replace}]{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode = normal,
+                ymode = normal,
+                xlabel = {number of compositions},
+                width = 0.55\linewidth,
+                legend style = {font=\scriptsize,at={(0.03,0.78)},anchor=west},
+            ]
+                \pgfplotstableread[col sep=comma]{csv/count-rassoc-comp-replace.csv}\data
+                \addplot table[x=nComp,y=count_get]{\data};
+                \addlegendentry{get};
+                \addplot table[x=nComp,y=count_put]{\data};
+                \addlegendentry{put};
+                \addplot table[x=nComp,y=count_pg]{\data};
+                \addlegendentry{pg};
+                \addplot table[x=nComp,y=count_xpg]{\data};
+                \addlegendentry{cpg/kpg/xpg};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \hspace{0mm}
+    \subfloat[\textit{lassoc-comp-phead}]{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode = normal,
+                ymode = normal,
+                xlabel = {number of compositions},
+                ylabel = {number of calls},
+                width = 0.55\linewidth,
+                legend style = {font=\scriptsize,at={(0.15,0.78)},anchor=west},
+            ]
+                \pgfplotstableread[col sep=comma]{csv/count-lassoc-comp-phead.csv}\data
+                \addplot table[x=nComp,y=count_get]{\data};
+                \addlegendentry{get};
+                \addplot table[x=nComp,y=count_put]{\data};
+                \addlegendentry{put};
+                \addplot table[x=nComp,y=count_pg]{\data};
+                \addlegendentry{pg};
+                \addplot table[x=nComp,y=count_xpg]{\data};
+                \addlegendentry{cpg/kpg/xpg};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \subfloat[\textit{rassoc-comp-phead}]{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode = normal,
+                ymode = normal,
+                xlabel = {number of compositions},
+                width = 0.55\linewidth,
+                legend style = {font=\scriptsize,at={(0.03,0.78)},anchor=west},
+            ]
+                \pgfplotstableread[col sep=comma]{csv/count-rassoc-comp-phead.csv}\data
+                \addplot table[x=nComp,y=count_get]{\data};
+                \addlegendentry{get};
+                \addplot table[x=nComp,y=count_put]{\data};
+                \addlegendentry{put};
+                \addplot table[x=nComp,y=count_pg]{\data};
+                \addlegendentry{pg};
+                \addplot table[x=nComp,y=count_xpg]{\data};
+                \addlegendentry{cpg/kpg/xpg};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \vspace{2mm}
+    \subfloat[\textit{breverse}]{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode = normal,
+                ymode = normal,
+                xlabel = {number of compositions},
+                ylabel = {number of calls},
+                width = 0.55\linewidth,
+                legend style = {font=\scriptsize,at={(0.47,0.78)},anchor=west},
+            ]
+                \pgfplotstableread[col sep=comma]{csv/count-breverse.csv}\data
+                \addplot table[x=nComp,y=count_get]{\data};
+                \addlegendentry{get};
+                \addplot table[x=nComp,y=count_put]{\data};
+                \addlegendentry{put};
+                \addplot table[x=nComp,y=count_pg]{\data};
+                \addlegendentry{pg};
+                \addplot table[x=nComp,y=count_xpg]{\data};
+                \addlegendentry{cpg/kpg/xpg};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \caption{Number of calls}
+    \label{fig:count-calls}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \subfloat[\textit{lassoc-comp-replace}]{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode = normal,
+                ymode = normal,
+                xlabel = {number of compositions},
                 ylabel = {evaluation time (s)},
                 width = 0.55\linewidth,
-                legend style = {font=\scriptsize},
-                legend pos = north west
+                legend style = {font=\scriptsize,at={(0.2,0.75)},anchor=west},
             ]
                 \pgfplotstableread[col sep=comma]{csv/time-lassoc-comp-replace.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data};
@@ -685,10 +872,9 @@ We conducted experiments on 5 test cases while changing the number of compositio
             \begin{axis}[
                 xmode = normal,
                 ymode = normal,
-                xlabel = {number of composition},
+                xlabel = {number of compositions},
                 width = 0.55\linewidth,
-                legend style = {font=\scriptsize},
-                legend pos = north west
+                legend style = {font=\scriptsize,at={(0.03,0.75)},anchor=west},
             ]
                 \pgfplotstableread[col sep=comma]{csv/time-rassoc-comp-replace.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data};
@@ -710,11 +896,10 @@ We conducted experiments on 5 test cases while changing the number of compositio
             \begin{axis}[
                 xmode = normal,
                 ymode = normal,
-                xlabel = {number of composition},
+                xlabel = {number of compositions},
                 ylabel = {evaluation time (s)},
                 width = 0.55\linewidth,
-                legend style = {font=\scriptsize},
-                legend pos = north west
+                legend style = {font=\scriptsize,at={(0.2,0.75)},anchor=west},
             ]
                 \pgfplotstableread[col sep=comma]{csv/time-lassoc-comp-phead.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data};
@@ -735,10 +920,9 @@ We conducted experiments on 5 test cases while changing the number of compositio
             \begin{axis}[
                 xmode = normal,
                 ymode = normal,
-                xlabel = {number of composition},
+                xlabel = {number of compositions},
                 width = 0.55\linewidth,
-                legend style = {font=\scriptsize},
-                legend pos = north east
+                legend style = {font=\scriptsize,at={(0.03,0.75)},anchor=west},
             ]
                 \pgfplotstableread[col sep=comma]{csv/time-rassoc-comp-phead.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data};
@@ -760,11 +944,10 @@ We conducted experiments on 5 test cases while changing the number of compositio
             \begin{axis}[
                 xmode = normal,
                 ymode = normal,
-                xlabel = {number of composition},
+                xlabel = {number of compositions},
                 ylabel = {evaluation time (s)},
                 width = 0.55\linewidth,
-                legend style = {font=\scriptsize},
-                legend pos = north east
+                legend style = {font=\scriptsize,at={(1.03,0.75)},anchor=west},
             ]
                 \pgfplotstableread[col sep=comma]{csv/time-breverse.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data};
@@ -791,11 +974,10 @@ We conducted experiments on 5 test cases while changing the number of compositio
             \begin{axis}[
                 xmode = normal,
                 ymode = normal,
-                xlabel = {number of composition},
+                xlabel = {number of compositions},
                 ylabel = {memory allocation (MBytes)},
                 width = 0.55\linewidth,
-                legend style = {font=\scriptsize},
-                legend pos = north west
+                legend style = {font=\scriptsize,at={(0.2,0.75)},anchor=west},
             ]
                 \pgfplotstableread[col sep=comma]{csv/mem-lassoc-comp-replace.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data};
@@ -816,10 +998,9 @@ We conducted experiments on 5 test cases while changing the number of compositio
             \begin{axis}[
                 xmode = normal,
                 ymode = normal,
-                xlabel = {number of composition},
+                xlabel = {number of compositions},
                 width = 0.55\linewidth,
-                legend style = {font=\scriptsize},
-                legend pos = north west
+                legend style = {font=\scriptsize,at={(0.03,0.75)},anchor=west},
             ]
                 \pgfplotstableread[col sep=comma]{csv/mem-rassoc-comp-replace.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data};
@@ -841,11 +1022,10 @@ We conducted experiments on 5 test cases while changing the number of compositio
             \begin{axis}[
                 xmode = normal,
                 ymode = normal,
-                xlabel = {number of composition},
+                xlabel = {number of compositions},
                 ylabel = {memory allocation (MBytes)},
                 width = 0.55\linewidth,
-                legend style = {font=\scriptsize},
-                legend pos = north west
+                legend style = {font=\scriptsize,at={(0.2,0.75)},anchor=west},
             ]
                 \pgfplotstableread[col sep=comma]{csv/mem-lassoc-comp-phead.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data};
@@ -866,14 +1046,13 @@ We conducted experiments on 5 test cases while changing the number of compositio
             \begin{axis}[
                 xmode = normal,
                 ymode = normal,
-                xlabel = {number of composition},
+                xlabel = {number of compositions},
                 width = 0.55\linewidth,
-                legend style = {font=\scriptsize},
-                legend pos = north east
+                legend style = {font=\scriptsize,at={(0.2,0.75)},anchor=west},
             ]
                 \pgfplotstableread[col sep=comma]{csv/mem-rassoc-comp-phead.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data};
-                \addlegendentry{minbigul};
+                \addlegendentry{minbigul};x
                 \addplot table[x=nComp,y=pg]{\data};
                 \addlegendentry{pg};
                 \addplot table[x=nComp,y=cpg]{\data};
@@ -891,11 +1070,10 @@ We conducted experiments on 5 test cases while changing the number of compositio
             \begin{axis}[
                 xmode = normal,
                 ymode = normal,
-                xlabel = {number of composition},
+                xlabel = {number of compositions},
                 ylabel = {memory allocation (MBytes)},
                 width = 0.55\linewidth,
-                legend style = {font=\scriptsize},
-                legend pos = north east
+                legend style = {font=\scriptsize,at={(0.57,0.75)},anchor=west},
             ]
                 \pgfplotstableread[col sep=comma]{csv/mem-breverse.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data};
@@ -915,8 +1093,12 @@ We conducted experiments on 5 test cases while changing the number of compositio
     \label{fig:memory-allocation}
 \end{figure}
 
+
 \section{Related Work}
 
+
+
+\newpage
 
 
 \section{Conclusion and Future Work}

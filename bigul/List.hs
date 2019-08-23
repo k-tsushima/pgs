@@ -104,9 +104,10 @@ bReverse =
                bFoldr bSnoc
        ]
 
-bMap :: Show a => BiGUL [a] [a]
-bMap = $(rearrS [| \s -> (s,[]) |])$
+bMapReplace :: Show a => BiGUL [a] [a]
+bMapReplace = $(rearrS [| \s -> (s,[]) |])$
                     bFoldr bx
     where bx = 
             $(rearrV [| \(v:vs) -> (v,vs) |])$
                 Replace `Prod` Replace 
+

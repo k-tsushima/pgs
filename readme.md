@@ -13,24 +13,24 @@ src
 +--> pg.ml	
 +--> test_pg.ml
 |
-+--> kpg.ml	
-+--> test_kpg.ml
-|
 +--> cpg.ml	
 +--> test_cpg.ml
+|
++--> kpg.ml	
++--> test_kpg.ml
 |
 +--> xpg.ml	
 +--> test_xpg.ml
 |
-+--> main.ml (use when evalutating time)
++--> main.ml (use when evalutating time, memory & counter)
 
 ```
 
 
 
-### For testing in Ocaml top-level
+### For testing in OCaml top-level
 1. use ```make```
-2. in Ocaml top-level:
+2. in OCaml top-level:
 ```
 #load "syntax.cmo";;
 #load "bxprog.cmo";;
