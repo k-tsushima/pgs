@@ -64,7 +64,8 @@
 
 \begin{document}
 %
-\title{Bx to Rev (tentative) \thanks{Supported by organization x.}}
+\title{An optimization of bidirectional update language based on the idea of reversible computing
+ \thanks{Supported by organization x.}}
 %
 %\titlerunning{Abbreviated paper title}
 % If the paper title is too long for the running head, you can set
@@ -96,6 +97,28 @@ The abstract should briefly summarize the contents of the paper in
 %
 %
 %
+
+Points to discuss
+\begin{itemize}
+\item When will be the deadline of PEPM2020? (mid of October?)
+\item Need to change the style file of latex..
+\item []
+
+\item current foldr is not efficient? Are there any efficient foldr? Question to Prof. Hu.
+\item Language to show semantics: fi?, $f^{-1}$, $cond_{sv}$ and $cond_{s}$
+\item A good simple example of bx: Used in explanation of BiGUL and evaluation of pg.
+\item Related work: suggest?
+\item another pg ?? should be compared?
+\end{itemize}
+
+
+\begin{tabular}{c|c|c}
+  {} & {Not to keep eval info} & {Keep eval info as a function}\\ \hline
+  {eager evaluation} & {pg} & {cpg}\\ \hline
+  {lazy evaluation} & {??} & {kpg}
+\end{tabular}
+
+
 \section{Introduction}
 
 % Story ->
@@ -110,16 +133,21 @@ The abstract should briefly summarize the contents of the paper in
 \item Importance of BX, BX is a solution of view update problem in database.
 \item Explanation of put-based BX: BiGUL.
 \item Current status of BiGUL: Fastest BX language in the world
-\item A problem: Efficiency of compose evaluation. If we do not save the intermediate states, the number of get is quadratic. This is not good.
-\item To solve this problem we use an idea from reversible computation: not to lose any information.
-\item Based on this idea we introduce pg.
-\item We extend pg with several ideas and produce faster implementation.
+\item But there is a problem: Efficiency of compose evaluation. The current implementation of BiGUL does not save the intermediate states, the number of get is quadratic. This is not good.
+\item To solve this problem we use an idea: introduce pg : combination of put and get. Then, no information will be lost in a specific condition.
+%  an idea from reversible computation: not to lose any information.
+\item We extend pg with several ideas to produce faster implementation.
+\item 
 \end{itemize}
 
 \subsection{Contribution}
 
 \begin{itemize}
 \item Improvement of evaluation efficiency
+  \begin{itemize}
+  \item Quadratic to exponential? 
+  \item The introduced extentions (maybe) use more memory than the original approach, but they are faster than the original.
+  \end{itemize}
 \item Reveal a part of relationship between BX and Reversible.
   \begin{itemize}
   \item Very well-behaved (no adaptive-case) \& The same evaluation path $\to$ No garbage Reversible Computation.
@@ -127,25 +155,35 @@ The abstract should briefly summarize the contents of the paper in
   \item If we can obtain good parameter (dummy) for a BiGUL program,
     put(s, dummy) can be a complement function.
   \end {itemize}
-\item Introduced extentions (maybe) use more memory than the original approach, but they are faster than the original.
+
 \end{itemize}
 
 \subsection{Construction of this paper}
 
 \begin{itemize}
-\item 
+\item BiGUL 
+\item pg (pair of put and get)
+\item cpg (extention of pg. Keep eval information for reusing)
+\item kpg (extention of cpg. Lazy evaluation)
+\item xpg (combination of pg and kpg)
+\item Experiment
+\item Related work
+\item Conclusion and Future work
 \end{itemize}
 
 \section{Bidirectional Programming Language: BiGUL}
 
 \begin{itemize}
 \item our target language is miniBiGUL (BiGUL minus adaptive case) : very well-behaved
-\item get = s $\to$ v
-\item put = s * v $\to$ s
-\item explanation about get and put.
-\item We assume putget and getput hold (explanation about putget and getput)
+\item Basic explanation of bidirectional transformation
+  \begin{itemize}
+  \item get = s $\to$ v
+  \item put = s * v $\to$ s
+  \item explanation about get and put.
+  \item We assume putget and getput hold (explanation about putget and getput)
+  \item Because our target language satisfies very well-behaved (No adaptive case) $\to$ putput hold.
+  \end{itemize}
 \item explanation about put-based BX language: BiGUL
-\item Because our target language satisfies very well-behaved (No adaptive case) $\to$ putput hold.
 \end{itemize}
 
 \subsection{Semantics of miniBiGUL}
@@ -195,7 +233,7 @@ $\getbx{bx_1 \circ bx_2}{s} = \getbx{bx_2}{(\getbx{bx_1}{s})}$
 \item Avoiding this, our implementation requires users to write inverse function f$^{-1}$ and g$^{-1}$.
 \end{itemize}
 
-\section{Skip:Reversible langauge: Rwhile}
+\section{Remove?:Reversible langauge: Rwhile}
 
 % Maybe we should skip
 
@@ -206,7 +244,7 @@ $\getbx{bx_1 \circ bx_2}{s} = \getbx{bx_2}{(\getbx{bx_1}{s})}$
 \item syntax, how to work.
 \end{itemize}
 
-\section{Skip:First approach}
+\section{Remove?:First approach}
 
 % We should skip this 
 
@@ -286,7 +324,7 @@ $\getrev{bx_1 \circ bx_2}{s}{v} =\\
 \item Information loss causes re-evaluation of get.
 \item To prevent this, we introduced the idea of reversible computation.
 \item In reversible computation we need to keep all information: we can not lose any information.
-\item In BiGul we can do this with a pair of put and get.
+\item In BiGUL we can acheive this by tupling put and get.
 \item pg bx (s, v) = (put bx (s, v), get bx (s))
 \item pg: s * v $\to$ s * v
 \item No garbage
@@ -311,7 +349,7 @@ $pg [\![bx]\!] \ (\pg{bx}{s}{v}) \\
     \tab = (s, v) \quad [\text{GETPUT}]$
 \end{proof}
 
-\subsection{Skip:Construction of pg}
+\subsection{Construction of pg}
 
 $\pg{Skip \ h}{s}{v} \\
     \tab = (\sif{h \ s = v}{s}{\text{fail}}, h \ s) \\
@@ -375,22 +413,32 @@ $\pg{bx_1 \circ bx_2}{s}{v} \\
 
 The construction of $\pginline{bx_1 \circ bx_2}$ can be considered as the soul of the $pg$ function. The first two equalities comes from mentioned definitions and some basic transformations. The third one rewrites $(\text{let } a = \getbx{bx_1}{s} \text{ in})$ into $(\text{let } (f, a) = \pg{bx_1}{s}{dummy} \text{ in})$. It is possible if we consider $(\getbx{bx_1}{s})$ as the second element of $(\pg{bx_1}{s}{dummy})$ where $dummy$ is a special value that make the $put \, [\![bx_1]\!]$ direction is valid. The last equality substitutes $s$ in $(\text{let } (d, e) = \pg{bx_1}{s}{b} \text{ in})$ by $f$ which is the evaluated result of $\putbx{bx_1}{s}{dummy}$. This transformation is feasible due to the PUTPUT law. Then, $e$ in the result pair $(d,e)$ of the new let-expression equals $dummy$. So we can realize that there is no loss information when computing a composition.
 
-\subsection{How to Evaluate Bidirectional Programs using pg}
+\subsection{Evaluation by pg}
 
 \begin{itemize}
-\item Because we combine put and get, we need to supply view for evaluation of get.
-\item introduce dummy?
-\item automatic analysis for domain \& range?
-\item 
-\item partial evaluation of put(s(D), dummy(S)).
-\item \textcolor{red}{Not good? Basically put (BX) is often a recursion on the source. If source is static, partial evaluation will work well. On the other hand, view is small data. So partial evaluation might not work well.}
-\item \textcolor{red}{lazy evaluation is also a possibility?}
+\item In pg approach we always need to supply source and view.
+\item If we would like to evaluate get, we do not have any view.
+\item For this, we require the programmer to write a function to produce view from source. (This can be the same with get??)
+\item Example program: \textcolor{red}{Good example?}
+  Evaluate: $\putbx{bx}{s}{v}$ 
+  Evalaute: $\getbx{bx}{s}$
+  $\pg{bx}{s}{v} = $
 \end{itemize}
+
+%\begin{itemize}
+%\item Because we combine put and get, we need to supply view for evaluation of get.
+%\item introduce dummy?
+%\item automatic analysis for domain \& range?
+%\item 
+%\item partial evaluation of put(s(D), dummy(S)).
+%\item \textcolor{red}{Not good? Basically put (BX) is often a recursion on the source. If source is static, partial evaluation will work well. On the other hand, view is small data. So partial evaluation might not work well.}
+%\item \textcolor{red}{lazy evaluation is also a possibility?}
+%\end{itemize}
 
 \subsection{cpg}
 
 \begin{itemize}
-\item If the BX programs are left assoc of composition, pg will be exponential. Because it calls pg bx$_1$ twice.
+\item If the given BX programs are left assoc of composition, the recursive call of pg will be exponential. Because it calls $\pg{bx_1}{\_}{\_}$ twice in compose.
 \item To solve this problem, we introduce accumulation of changes.
 \end{itemize}
 
@@ -432,23 +480,32 @@ $\cpg{bx_1 \circ bx_2}{ks}{kv}{s}{v} =\\
     \tab (ks_2, kv_2, s_2, v_2) \Leftarrow \cpg{bx_2}{kv_1}{kv}{v_1}{v};\\
         \qtab (ks_1 \circ ks_2, kv_2,  ks_1 \ s_2, v_2)$\\
 
-$s \Leftarrow s_0; v \Leftarrow v_0;\\
-(ks, kv, s, v) \Leftarrow \cpg{bx}{\lambda \_.s}{\lambda \_.v}{s}{v};\\
-    \tab (s; v)$
-
 \begin{itemize}
 \item This is faster than pg for left assoc BX programs.
 \item (Slower for right assoc programs)
-\item $s_1'$ in composition is redundant.  
-\item Next, we will extend this to avoid this redundant computation.
+
 \end{itemize}
 
 
 \subsection{kpg}
 
+\begin{itemize}
+\item In cpg, $s_1'$ in composition is not used, but evaluated.
+\item Next, we will extend cpg to avoid this redundant computation.
+\item For this, we evaluate the values lazily.
+\item []
+\item s' and v' will have actual value only in Skip and case. Except them, the functions for computation will be kept as ks' and kv'
+\item Skip and Case need values of the time. They evaluate s and v with ks' and kv', and ks' and kv' will be reseted to an identity function.
+\item A special thing is in prod. In prod, if we omit red parts,
+Evaluation of ks' and kv' will be done indendently in kpg$[\![bx_1]\!]$ and kpg$[\![bx_2]\!]$. Because this causes redundant re-evaluation of ks' and kv', we insert evaluation before recursive calls.
+\item Except them, the functions for computation will be kept as ks' and kv'.
+\item In composition $ks_1'$ and $s_1'$ are still redundant. But, they are not evaluated.
+\item This implementation is faster for left assoc BX programs. (Actually slower for right assoc than cpg)
+\end{itemize}
+
 $\kpg{bx}{ks}{kv}{ks'}{kv'}{s}{v}$ \\
     \tab $ks, kv$ keep modification information\\
-    \tab $ks', kv'$ evaluate actual values\\
+    \tab $ks', kv'$ for lazy evaluation of actual values\\
     \tab $s, v$ keep evaluated values\\
 
 \vspace{3mm}
@@ -461,10 +518,10 @@ $\kpg{Skip \ h}{ks}{kv}{ks'}{kv'}{s}{v} =\\
 $\kpg{Replace}{ks}{kv}{ks'}{kv'}{s}{v} = (kv, ks, kv', ks', v, s)$\\
 
 $\kpg{bx_1 \ prod \ bx_2}{ks}{kv}{ks'}{kv'}{s}{v} =\\
-    \textcolor{red}{s \Leftarrow ks' \ s; \quad v \Leftarrow kv' \ v;}\\
-    \textcolor{red}{ks' \Leftarrow id; \quad kv' \Leftarrow id;}\\
-    (ks_1, kv_1, ks_1', kv_1', s_1, v_1) \Leftarrow \kpg{bx_1}{fst \circ ks}{fst \circ kv}{fst \circ ks'}{fst \circ kv'}{s}{v};\\
-    (ks_2, kv_2, ks_2', kv_2', s_2, v_2) \Leftarrow \kpg{bx_2}{snd \circ ks}{snd \circ kv}{snd \circ ks'}{snd \circ kv'}{s}{v};\\
+    \tab \textcolor{red}{s \Leftarrow ks' \ s; \quad v \Leftarrow kv' \ v;}\\
+    \tab \textcolor{red}{ks' \Leftarrow id; \quad kv' \Leftarrow id;}\\
+    \tab (ks_1, kv_1, ks_1', kv_1', s_1, v_1) \Leftarrow \kpg{bx_1}{fst \circ ks}{fst \circ kv}{fst \circ ks'}{fst \circ kv'}{s}{v};\\
+    \tab (ks_2, kv_2, ks_2', kv_2', s_2, v_2) \Leftarrow \kpg{bx_2}{snd \circ ks}{snd \circ kv}{snd \circ ks'}{snd \circ kv'}{s}{v};\\
     \tab ( con \ ks_1 \ ks_2, con \ kv_1 \ kv_2, \\
     \tab con \ (ks_1' \circ fst) \ (ks_2' \circ snd), con \ (kv_1' \circ fst) \ (kv_2' \circ snd), \\
     \tab (Con \ s_1 \ s_2), (Con \ v_1 \ v_2))$\\
@@ -490,22 +547,18 @@ $\kpg{bx_1 \circ bx_2}{ks}{kv}{ks'}{kv'}{s}{v} =\\
     \tab (ks_2, kv_2, ks_2', kv_2', s_2, v_2) \Leftarrow \kpg{bx_2}{kv_1}{kv}{kv_1'}{kv'}{v_1}{v};\\
     \qtab (ks_1 \circ ks_2, kv_2', ks_1 \circ ks_2', kv_2', s_2, v_2)$\\
 
-$s \Leftarrow s_0; v \Leftarrow v_0;\\
-(ks, kv, ks', kv', s, v) \Leftarrow \kpg{bx}{\lambda \_.s}{id}{id}{id}{s}{v};\\
-    \tab (ks' \ s; kv' \ v)$
+%$s \Leftarrow s_0; v \Leftarrow v_0;\\
+%(ks, kv, ks', kv', s, v) \Leftarrow \kpg{bx}{\lambda \_.s}{id}{id}{id}{s}{v};\\
+%    \tab (ks' \ s; kv' \ v)$
+
+
+
+\subsection{xpg}
 
 \begin{itemize}
-\item In this definition of kpg, s' and v' will have actual value only in skip and case. Except them, the functions for computation will be kept as ks' and kv'.
-\item In composition $ks_1'$ and $s_1'$ are still redundant. But, they are not evaluated.
-\item In prod, Evaluation of ks' and kv' will be done indendently in kpg$[\![bx_1]\!]$ and kpg$[\![bx_2]\!]$. To remove redundant re-computation we evaluate actual s' and v'.
-\item This implementation is faster for left assoc BX programs. (Actually slower for right assoc than cpg)
-\end{itemize}
-
-\section{xpg}
-
-\begin{itemize}
-\item pg is fastest for right assoc programs and kpg is fastest for left assoc programs.
-\item To combine their strength, we can use the following definition.
+\item So far, we focus on left assoc programs. xpg is faster than the others.
+\item On the other hand, pg is fastest for right assoc programs.
+\item To combine their strength, we introfuce new pg that combines pg and kpg.
 \item If there is a composition, we use xpg for evaluation of $bx_1$ and pg for evaluation of $bx_2$.
 \item If $bx_1$ is simple program (= Right assoc), this is almost the same with pg.
 \item If $bx_1$ is complicated program (= Left assoc), this is almost the same with kpg.
@@ -861,6 +914,10 @@ We conducted experiments on 5 test cases while changing the number of compositio
     \caption{Memory allocation (MBytes)}
     \label{fig:memory-allocation}
 \end{figure}
+
+\section{Related Work}
+
+
 
 \section{Conclusion and Future Work}
 
