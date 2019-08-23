@@ -520,7 +520,7 @@ $\xpg{bx_1 \circ bx_2}{s}{v} =\\
 
 \section{Experiment}
 
-This section describes the experiments involving $minBiGUl$, $pg$, $cpg$, $kpg$ and $xpg$. The evaluation time, the memory allocation and the number of function calls are considered in each test.
+This section describes the experiments involving $minBiGUl$, $pg$, $cpg$, $kpg$ and $xpg$. The number of function calls, the evaluation time and the memory allocation are considered in each test.
 
 \subsection{Experiment environment}
 We implemented 5 approaches with Ocaml 4.07.1 in the same environment as follows: macOS 10.14.6, processor Intel Core i7 (2.6 GHz), RAM 16 GB 2400 MHz DDR4. The Ocaml runtime system options and garbage collection parameters are set as default.  
@@ -595,10 +595,9 @@ Suppose that we haved $bSnoc$, a bidirectional version of $snoc$, in BiGUL. Then
             \qtab \qtab \qquad bFoldr \ bSnoc\\
        \qtab \qtab ]$
 
-The above definition contains an adaptive branch and it only occurs when the length of the source and the view are different. If we restrict them as two lists whose same lengths, the case analysis will only evaluate the normal branch. For test case $breverse$ in table \ref{tab:test-cases}, we choose both $s_0$ and $v_0$ as lists from 1 to $n$. Then, the results $s_r$ and $v_r$ are the list from $n$ to 1. Explicitly, $\putbx{bReverse}{[1..n]}{[1..n]} = [n..1]$ and $\getbx{bReverse}{[1..n]} = [n..1]$. In $bReverse$, the number of composition equals to the length of the source and the view.
+The above definition contains an adaptive branch and it only occurs when the lengths of the source and the view are different. If we restrict them as two lists whose same lengths, the case analysis will only evaluate the normal branch. For test case $breverse$ in table \ref{tab:test-cases}, we choose both $s_0$ and $v_0$ as lists from 1 to $n$. Then, the results $s_r$ and $v_r$ are the list from $n$ to 1. Explicitly, $\putbx{bReverse}{[1..n]}{[1..n]} = [n..1]$ and $\getbx{bReverse}{[1..n]} = [n..1]$. In $bReverse$, the number of compositions equals to the length of the source and the view.
 
 \subsection{Results and discussions}
-We conducted experiments on 5 test cases while changing the number of composition from 10 to 100000.
 
 \begin{figure}
     \centering
@@ -607,11 +606,126 @@ We conducted experiments on 5 test cases while changing the number of compositio
             \begin{axis}[
                 xmode = normal,
                 ymode = normal,
-                xlabel = {number of composition},
+                xlabel = {number of compositions},
+                ylabel = {number of calls},
+                width = 0.55\linewidth,
+                legend style = {font=\scriptsize,at={(0.15,0.78)},anchor=west},
+            ]
+                \pgfplotstableread[col sep=comma]{csv/count-lassoc-comp-replace.csv}\data
+                \addplot table[x=nComp,y=count_get]{\data};
+                \addlegendentry{get};
+                \addplot table[x=nComp,y=count_put]{\data};
+                \addlegendentry{put};
+                \addplot table[x=nComp,y=count_pg]{\data};
+                \addlegendentry{pg};
+                \addplot table[x=nComp,y=count_xpg]{\data};
+                \addlegendentry{cpg/kpg/xpg};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \subfloat[\textit{rassoc-comp-replace}]{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode = normal,
+                ymode = normal,
+                xlabel = {number of compositions},
+                width = 0.55\linewidth,
+                legend style = {font=\scriptsize,at={(0.03,0.78)},anchor=west},
+            ]
+                \pgfplotstableread[col sep=comma]{csv/count-rassoc-comp-replace.csv}\data
+                \addplot table[x=nComp,y=count_get]{\data};
+                \addlegendentry{get};
+                \addplot table[x=nComp,y=count_put]{\data};
+                \addlegendentry{put};
+                \addplot table[x=nComp,y=count_pg]{\data};
+                \addlegendentry{pg};
+                \addplot table[x=nComp,y=count_xpg]{\data};
+                \addlegendentry{cpg/kpg/xpg};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \hspace{0mm}
+    \subfloat[\textit{lassoc-comp-phead}]{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode = normal,
+                ymode = normal,
+                xlabel = {number of compositions},
+                ylabel = {number of calls},
+                width = 0.55\linewidth,
+                legend style = {font=\scriptsize,at={(0.15,0.78)},anchor=west},
+            ]
+                \pgfplotstableread[col sep=comma]{csv/count-lassoc-comp-phead.csv}\data
+                \addplot table[x=nComp,y=count_get]{\data};
+                \addlegendentry{get};
+                \addplot table[x=nComp,y=count_put]{\data};
+                \addlegendentry{put};
+                \addplot table[x=nComp,y=count_pg]{\data};
+                \addlegendentry{pg};
+                \addplot table[x=nComp,y=count_xpg]{\data};
+                \addlegendentry{cpg/kpg/xpg};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \subfloat[\textit{rassoc-comp-phead}]{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode = normal,
+                ymode = normal,
+                xlabel = {number of compositions},
+                width = 0.55\linewidth,
+                legend style = {font=\scriptsize,at={(0.03,0.78)},anchor=west},
+            ]
+                \pgfplotstableread[col sep=comma]{csv/count-rassoc-comp-phead.csv}\data
+                \addplot table[x=nComp,y=count_get]{\data};
+                \addlegendentry{get};
+                \addplot table[x=nComp,y=count_put]{\data};
+                \addlegendentry{put};
+                \addplot table[x=nComp,y=count_pg]{\data};
+                \addlegendentry{pg};
+                \addplot table[x=nComp,y=count_xpg]{\data};
+                \addlegendentry{cpg/kpg/xpg};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \vspace{2mm}
+    \subfloat[\textit{breverse}]{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode = normal,
+                ymode = normal,
+                xlabel = {number of compositions},
+                ylabel = {number of calls},
+                width = 0.55\linewidth,
+                legend style = {font=\scriptsize,at={(0.47,0.78)},anchor=west},
+            ]
+                \pgfplotstableread[col sep=comma]{csv/count-breverse.csv}\data
+                \addplot table[x=nComp,y=count_get]{\data};
+                \addlegendentry{get};
+                \addplot table[x=nComp,y=count_put]{\data};
+                \addlegendentry{put};
+                \addplot table[x=nComp,y=count_pg]{\data};
+                \addlegendentry{pg};
+                \addplot table[x=nComp,y=count_xpg]{\data};
+                \addlegendentry{cpg/kpg/xpg};
+            \end{axis}
+        \end{tikzpicture}
+    }
+    \caption{Number of calls}
+    \label{fig:count-calls}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \subfloat[\textit{lassoc-comp-replace}]{
+        \begin{tikzpicture}
+            \begin{axis}[
+                xmode = normal,
+                ymode = normal,
+                xlabel = {number of compositions},
                 ylabel = {evaluation time (s)},
                 width = 0.55\linewidth,
-                legend style = {font=\scriptsize},
-                legend pos = north west
+                legend style = {font=\scriptsize,at={(0.2,0.75)},anchor=west},
             ]
                 \pgfplotstableread[col sep=comma]{csv/time-lassoc-comp-replace.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data};
@@ -632,10 +746,9 @@ We conducted experiments on 5 test cases while changing the number of compositio
             \begin{axis}[
                 xmode = normal,
                 ymode = normal,
-                xlabel = {number of composition},
+                xlabel = {number of compositions},
                 width = 0.55\linewidth,
-                legend style = {font=\scriptsize},
-                legend pos = north west
+                legend style = {font=\scriptsize,at={(0.03,0.75)},anchor=west},
             ]
                 \pgfplotstableread[col sep=comma]{csv/time-rassoc-comp-replace.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data};
@@ -657,11 +770,10 @@ We conducted experiments on 5 test cases while changing the number of compositio
             \begin{axis}[
                 xmode = normal,
                 ymode = normal,
-                xlabel = {number of composition},
+                xlabel = {number of compositions},
                 ylabel = {evaluation time (s)},
                 width = 0.55\linewidth,
-                legend style = {font=\scriptsize},
-                legend pos = north west
+                legend style = {font=\scriptsize,at={(0.2,0.75)},anchor=west},
             ]
                 \pgfplotstableread[col sep=comma]{csv/time-lassoc-comp-phead.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data};
@@ -682,10 +794,9 @@ We conducted experiments on 5 test cases while changing the number of compositio
             \begin{axis}[
                 xmode = normal,
                 ymode = normal,
-                xlabel = {number of composition},
+                xlabel = {number of compositions},
                 width = 0.55\linewidth,
-                legend style = {font=\scriptsize},
-                legend pos = north east
+                legend style = {font=\scriptsize,at={(0.03,0.75)},anchor=west},
             ]
                 \pgfplotstableread[col sep=comma]{csv/time-rassoc-comp-phead.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data};
@@ -707,11 +818,10 @@ We conducted experiments on 5 test cases while changing the number of compositio
             \begin{axis}[
                 xmode = normal,
                 ymode = normal,
-                xlabel = {number of composition},
+                xlabel = {number of compositions},
                 ylabel = {evaluation time (s)},
                 width = 0.55\linewidth,
-                legend style = {font=\scriptsize},
-                legend pos = north east
+                legend style = {font=\scriptsize,at={(1.03,0.75)},anchor=west},
             ]
                 \pgfplotstableread[col sep=comma]{csv/time-breverse.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data};
@@ -738,11 +848,10 @@ We conducted experiments on 5 test cases while changing the number of compositio
             \begin{axis}[
                 xmode = normal,
                 ymode = normal,
-                xlabel = {number of composition},
+                xlabel = {number of compositions},
                 ylabel = {memory allocation (MBytes)},
                 width = 0.55\linewidth,
-                legend style = {font=\scriptsize},
-                legend pos = north west
+                legend style = {font=\scriptsize,at={(0.2,0.75)},anchor=west},
             ]
                 \pgfplotstableread[col sep=comma]{csv/mem-lassoc-comp-replace.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data};
@@ -763,10 +872,9 @@ We conducted experiments on 5 test cases while changing the number of compositio
             \begin{axis}[
                 xmode = normal,
                 ymode = normal,
-                xlabel = {number of composition},
+                xlabel = {number of compositions},
                 width = 0.55\linewidth,
-                legend style = {font=\scriptsize},
-                legend pos = north west
+                legend style = {font=\scriptsize,at={(0.03,0.75)},anchor=west},
             ]
                 \pgfplotstableread[col sep=comma]{csv/mem-rassoc-comp-replace.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data};
@@ -788,11 +896,10 @@ We conducted experiments on 5 test cases while changing the number of compositio
             \begin{axis}[
                 xmode = normal,
                 ymode = normal,
-                xlabel = {number of composition},
+                xlabel = {number of compositions},
                 ylabel = {memory allocation (MBytes)},
                 width = 0.55\linewidth,
-                legend style = {font=\scriptsize},
-                legend pos = north west
+                legend style = {font=\scriptsize,at={(0.2,0.75)},anchor=west},
             ]
                 \pgfplotstableread[col sep=comma]{csv/mem-lassoc-comp-phead.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data};
@@ -813,14 +920,13 @@ We conducted experiments on 5 test cases while changing the number of compositio
             \begin{axis}[
                 xmode = normal,
                 ymode = normal,
-                xlabel = {number of composition},
+                xlabel = {number of compositions},
                 width = 0.55\linewidth,
-                legend style = {font=\scriptsize},
-                legend pos = north east
+                legend style = {font=\scriptsize,at={(0.2,0.75)},anchor=west},
             ]
                 \pgfplotstableread[col sep=comma]{csv/mem-rassoc-comp-phead.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data};
-                \addlegendentry{minbigul};
+                \addlegendentry{minbigul};x
                 \addplot table[x=nComp,y=pg]{\data};
                 \addlegendentry{pg};
                 \addplot table[x=nComp,y=cpg]{\data};
@@ -838,11 +944,10 @@ We conducted experiments on 5 test cases while changing the number of compositio
             \begin{axis}[
                 xmode = normal,
                 ymode = normal,
-                xlabel = {number of composition},
+                xlabel = {number of compositions},
                 ylabel = {memory allocation (MBytes)},
                 width = 0.55\linewidth,
-                legend style = {font=\scriptsize},
-                legend pos = north east
+                legend style = {font=\scriptsize,at={(0.57,0.75)},anchor=west},
             ]
                 \pgfplotstableread[col sep=comma]{csv/mem-breverse.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data};
@@ -861,6 +966,28 @@ We conducted experiments on 5 test cases while changing the number of compositio
     \caption{Memory allocation (MBytes)}
     \label{fig:memory-allocation}
 \end{figure}
+
+\begin{table}[]
+    \centering
+    \caption{Comparison}
+    \label{tab:comparison}
+    \resizebox{\textwidth}{!}{%
+        \begin{tabular}{|l|l|l|l|}
+            \hline
+            \multicolumn{1}{|c|}{Name} & \multicolumn{1}{c|}{Properties} & \multicolumn{1}{c|}{Evaluation time order} & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}Memory allocation order\\ (stack\_overflow point / 100000)\end{tabular}} \\ \hline
+            lassoc-comp-replace & l, NR & kpg $\sim$ xpg $<$ cpg $<$ minbigul $<$ pg & minbigul $<$ cpg $<$ kpg $\sim$ xpg (95299) $<$ pg (ND) \\ \hline
+            rassoc-comp-replace & r, NR & minbigul $<$ pg $<$ xpg $<$ cpg $<$ kpg & minbigul $<$ pg $<$ xpg $<$ cpg (95299) $<$ kpg (80638) \\ \hline
+            lassoc-comp-phead & l, NR & xpg $<$ kpg $<$ minbigul $<$ cpg $<$ pg & minbigul $<$ kpg $\sim$ xpg (80638) $<$ cpg (ND) $<$ pg (ND) \\ \hline
+            rassoc-comp-phead & r, NR & minbigul $<$ pg $<$ xpg $<$ cpg $<$ kpg & minbigul $<$ pg $<$ xpg $<$ cpg (43680) $<$ kpg (61665) \\ \hline
+            breverse & l, R & xpg $<$ kpg $<$ minbigul $<$ cpg $<$ pg & xpg (ND) $<$ kpg (ND) $<$ cpg (ND) $<$ minbigul (ND) $<$ pg (ND) \\ \hline
+            \multicolumn{4}{r}{} \\
+            \multicolumn{4}{r}{l/r: left/right associative} \\
+            \multicolumn{4}{r}{NR/R: non-recursive/recursive} \\
+            \multicolumn{4}{r}{ND: not determined} \\
+            \multicolumn{4}{r}{best $< \ldots <$ worst} \\
+        \end{tabular}%
+    }
+    \end{table}
 
 \section{Conclusion and Future Work}
 
