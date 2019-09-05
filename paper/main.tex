@@ -726,19 +726,9 @@ We are conducted tests on 5 cases, including many composition styles such as lef
 
 In table \ref{tab:test-cases}, $s_r$ and $v_r$ are respectively updated source and view which are produced by applying $put$ and $get$ on original source $s_0$ and original view $v_0$. This means: $s_r = \putbx{bx}{s_0}{v_0}$ and $v_r = \getbx{bx}{s_0}$, where $bx$ is one of the 5 cases mentioned in the table. Note that the results $s_r$ and $v_r$ do not depend on the associative style of the composition.\\
 
-The first 4 test cases simply use $n$ compose operators to make a composition of $n + 1$ similar $BX$ programs which are non-recursive. For example, \textit{lassoc-comp-replace} looks like $(\ldots((Replace \circ Replace) \circ Replace) \circ \ldots \circ Replace) \circ Replace$, while \textit{rassoc-comp-replace} is like $Replace \circ (Replace \circ (Replace \circ \ldots \circ (Replace \circ Replace)\ldots))$, where there are $n + 1 \ Replace$s in each case. \textit{lassoc-comp-phead} and \textit{rassoc-comp-phead} are similar to the above two. While $Replace$ is a primitive BX program, $phead$ is a combination of such programs. The following is the definition of $phead$ in BiGUL [?]:
+The first 4 test cases simply use $n$ compose operators to make a composition of $n + 1$ similar $BX$ programs which are non-recursive. For example, \textit{lassoc-comp-replace} looks like $(\ldots((Replace \circ Replace) \circ Replace) \circ \ldots \circ Replace) \circ Replace$, while \textit{rassoc-comp-replace} is like $Replace \circ (Replace \circ (Replace \circ \ldots \circ (Replace \circ Replace)\ldots))$, where there are $n + 1 \ Replace$s in each case. \textit{lassoc-comp-phead} and \textit{rassoc-comp-phead} are similar to the above two.
 
-    $\tab phead :: Show \ s \Rightarrow BiGUL \ [s] \ s\\
-    \tab phead = \$(RearrS \ [\![\lambda(s:ss) \to (s,ss)]\!])\$\\
-        \qtab \qtab \quad \$(RearrV \ [\![\lambda v \to (v,())]\!])\$\\
-            \qtab \qtab \qquad Replace \ `prod\text{'} \ (Skip \ (const \ ()))$
-
-We also provide the same $phead$ program in our OCaml system. It rearranges the source, a non-empty list, to a pair of its head element $s$ and its tail $ss$, and the view to a pair $(v, ())$, then we can use $v$ to replace $s$ and $()$ to keep $ss$. $\putbx{phead}{s_0}{v_0}$ returns a list whose head is $v_0$ and tail is the tail of $s_0$. $\getbx{phead}{s_0}$ returns the head of $s_0$. For instance, $\putbx{phead}{[1,2,3]}{100} = [100,2,3]$ and $\getbx{phead}{[1,2,3]} = 1$. If we wanna update the head element of the head element of a list of lists by using the view, we can define a composition like $phead \circ phead$. For example:
-
-    \tab $\putbx{phead \circ phead}{[[1,2,3],[\ ],[4,5]]}{100} = [[100,2,3],[\ ],[4,5]]$\\
-    \tab $\getbx{phead \circ phead}{[[1,2,3],[\ ],[4,5]]} = 1$
-
-Similarly, we can use the view to update head element in the nested lists with a composition of a specific number of $phead$s. For both \textit{lassoc-comp-phead} and \textit{rassoc-comp-phead}, we choose input view $v_0$ is 100 and input source $s_0$ is one of the smallest nested lists which make $put$ and $get$ direction on the composition valid.\\
+In section 5, we defined a composition $phead \circ phead$ for updating the head element of the head element of a list of lists by using the view. Similarly, we can use the view to update head element in the nested lists with a composition of a specific number of $phead$s. For both \textit{lassoc-comp-phead} and \textit{rassoc-comp-phead}, we choose input view $v_0$ is 100 and input source $s_0$ is one of the smallest nested lists which make $put$ and $get$ direction on the composition valid.\\
 
 The last test case, $bReverse$, is a recursive composition. It is defined in terms of $bFoldr$, a putback function for $foldr$ in BiGUL as well as minbigul. What we know about $foldr$, an important higher-order function on lists, is as follows:\\
     $\tab foldr :: (a \to b \to b) \to b \to [a] \to b\\
