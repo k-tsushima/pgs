@@ -178,7 +178,7 @@ let pg_bmapreplace_with_case n =
   let (s, v) = pg bmapreplace_with_case s v [] in 
   (s, v)
 
-let pg_lassoc_comp_replace_count n =
+(* let pg_lassoc_comp_replace_count n =
   count_pg := 0;
   let s = Int 1 in
   let v = Int 100 in
@@ -219,4 +219,4 @@ let pg_bmapreplace_count n =
   let s = make_consecutive_list n in
   let v = make_consecutive_list n in 
   let (s, v) = pg bmapreplace s v [] in 
-  !count_pg
+  !count_pg *)

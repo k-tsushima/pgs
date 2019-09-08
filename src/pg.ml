@@ -21,20 +21,8 @@ let rec pg (bx:bigul) s v env =
   | Replace ->
     (v, s)
   | Prod(bx1, bx2) ->
-    let (s1, v1) =
-      pg
-        bx1
-        ((fun x -> match x with (Con(s1, s2)) -> s1 | _ -> assert false) s)
-        ((fun x -> match x with (Con(v1, v2)) -> v1 | _ -> assert false) v)
-        env
-    in
-    let (s2, v2) = 
-      pg
-        bx2
-        ((fun x -> match x with (Con(s1, s2)) -> s2 | _ -> assert false) s)
-        ((fun x -> match x with (Con(v1, v2)) -> v2 | _ -> assert false) v)
-        env
-    in
+    let (s1, v1) = pg bx1 (first s) (first v) env in
+    let (s2, v2) = pg bx2 (second s) (second v) env in
     (Con(s1, s2), Con(v1, v2))
   | RearrS(f1, f2, bx) ->
     let (s, v) = pg bx ((fun m -> f1 m) s) v env in
@@ -43,13 +31,20 @@ let rec pg (bx:bigul) s v env =
     let (s, v) = pg bx s ((fun m -> g1 m) v) env in
     (s, (fun m -> g2 m) v)
   | Case(condsv, conds, bx1, bx2) ->
-    if condsv s v then
-      pg bx1 s v env
+    if (condsv s v) && (conds s) then
+        let (s', v') = pg bx1 s v env in 
+            if (conds s') && (condsv s v') then
+                (s', v')
+            else
+                assert false
     else
-      pg bx2 s v env
+        let (s', v') = pg bx2 s v env in 
+            if not (conds s' || condsv s v') then
+                (s', v')
+            else
+                assert false
   | Compose(bx1, bx2) ->
-    (* let (s1, v1) = pg bx1 s (construct_dummy v) env in *)
-    let (s1, v1) = pg bx1 s v env in
+    let (s1, v1) = pg bx1 s (construct_dummy s) env in
     let (s2, v2) = pg bx2 v1 v env in
     let (s3, v3) = pg bx1 s1 s2 env in
     (s3, v2)

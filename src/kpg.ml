@@ -1,140 +1,73 @@
 open Syntax
 open Utils
 
-let count_kpg = ref 0 
+(* let count_kpg = ref 0  *)
 
-let rec kpg (bx:bigul) (ks:data->data) (kv:data->data) (ks':data->data) (kv':data->data) s' v' env = 
-  count_kpg := !count_kpg + 1;
+let rec kpg bx ks kv ks' kv' s v env = 
+  (* count_kpg := !count_kpg + 1; *)
   match bx with
   | Def(name, bx1, bx2) ->
-    kpg bx2 ks kv ks' kv' s' v' ((name, bx1) :: env)
+    kpg bx2 ks kv ks' kv' s v ((name, bx1) :: env)
   | Var(name) -> ( 
       try
         let bx = snd (List.find (fun (x, t) -> x = name) env) in
-        kpg bx ks kv ks' kv' s' v' env
+        kpg bx ks kv ks' kv' s v env
       with Not_found -> 
         Printf.printf "%s is not found" name; 
         assert false
     )
   | Skip(h) ->
-    let r = ks' s' in
-    let t = kv' v' in
-    if h r = t then
-      (ks, kv, id, id, r, t)
+    let s = ks' s in
+    let v = kv' v in
+    let ks' = id in 
+    let kv' = id in 
+    if h s = v then
+      (ks, kv, kv', ks', s, v)
     else
       assert false
   | Replace ->
-    (kv, ks, kv', ks', v', s')
+    (kv, ks, kv', ks', v, s)
   | Prod(bx1, bx2) ->
-    let s' = ks' s' in 
-    let v' = kv' v' in 
+    let s = ks' s in 
+    let v = kv' v in 
     let ks' = id in 
     let kv' = id in 
-    let (ks1, kv1, ks1', kv1', s1', v1') = 
-      kpg
-        bx1
-        (fun m -> (fun x -> match x with Con(s1, s2) -> s1 | _ -> assert false) (ks m)) 
-        (fun m -> (fun x -> match x with Con(v1, v2) -> v1 | Dummy -> Dummy | _ -> assert false) (kv m))
-        (fun m -> (fun x -> match x with Con(s1, s2) -> s1 | _ -> assert false) (ks' m))
-        (fun m -> (fun x -> match x with Con(v1, v2) -> v1 | Dummy -> Dummy | _ -> assert false) (kv' m))
-        s'
-        v'
-        env
-    in
-    let (ks2, kv2, ks2', kv2', s2', v2') = 
-      kpg
-        bx2
-        (fun m -> (fun x -> match x with Con(s1, s2) -> s2 | _ -> assert false) (ks m)) 
-        (fun m -> (fun x -> match x with Con(v1, v2) -> v2 | Dummy -> Dummy | _ -> assert false) (kv m))
-        (fun m -> (fun x -> match x with Con(s1, s2) -> s2 | _ -> assert false) (ks' m))
-        (fun m -> (fun x -> match x with Con(v1, v2) -> v2 | Dummy -> Dummy | _ -> assert false) (kv' m))
-        s'
-        v'
-        env
-    in
+    let (ks1, kv1, ks1', kv1', s1, v1) = 
+      kpg bx1 (fun m -> first (ks m)) (fun m -> first (kv m)) (fun m -> first (ks' m)) (fun m -> first (kv' m)) s v env in
+    let (ks2, kv2, ks2', kv2', s2, v2) = 
+      kpg bx2 (fun m -> second (ks m)) (fun m -> second (kv m)) (fun m -> second (ks' m)) (fun m -> second (kv' m)) s v env in
     (
       (fun x -> Con(ks1 x, ks2 x)),
       (fun x -> Con(kv1 x, kv2 x)),
-      (fun x -> match x with Con(s1', s2') -> Con(ks1' s1', ks2' s2') | _ -> assert false),
-      (fun x -> match x with Con(v1', v2') -> Con(kv1' v1', kv2' v2') | _ -> assert false),
-      (Con(s1', s2')),
-      (Con(v1', v2'))
+      (fun x -> Con(ks1' (first x), ks2' (second x))),
+      (fun x -> Con(kv1' (first x), kv2' (second x))),
+      Con(s1, s2),
+      Con(v1, v2)
     )
   | RearrS(f1, f2, bx) ->
-    let (ks, kv, ks', kv', s', v') = 
-      kpg
-        bx
-        (fun m -> f1 (ks m))
-        kv
-        (fun m -> f1 (ks' m)) 
-        kv'
-        s'
-        v' 
-        env
-    in
-    (
-      (fun m -> f2 (ks m)), 
-      kv, 
-      (fun m -> f2 (ks' m)), 
-      kv', 
-      s', 
-      v'
-    )
+    let (ks, kv, ks', kv', s, v) = kpg bx (fun m -> f1 (ks m)) kv (fun m -> f1 (ks' m)) kv' s v env in
+    ((fun m -> f2 (ks m)), kv, (fun m -> f2 (ks' m)), kv', s, v)
   | RearrV(g1, g2, bx) ->
-    let (ks, kv, ks', kv', s', v') = 
-      kpg 
-        bx 
-        ks 
-        (fun m -> g1 (kv m)) 
-        ks' 
-        (fun m -> g1 (kv' m)) 
-        s'
-        v'
-        env 
-    in
-    (
-      ks, 
-      (fun m -> g2 (kv m)), 
-      ks', 
-      (fun m -> g2 (kv' m)), 
-      s', 
-      v'
-    )
+    let (ks, kv, ks', kv', s, v) = kpg bx ks (fun m -> g1 (kv m)) ks' (fun m -> g1 (kv' m)) s v env in
+    (ks, (fun m -> g2 (kv m)), ks', (fun m -> g2 (kv' m)), s, v)
   | Case(condsv, conds, bx1, bx2) ->
-    let (ks', s') = (id, ks' s') in
-    let (kv', v') = (id, kv' v') in
-    if (condsv s' v') then
-      kpg bx1 ks kv ks' kv' s' v' env
+    let s = ks' s in 
+    let v = kv' v in 
+    let ks' = id in 
+    let kv' = id in 
+    if (condsv s v) && (conds s) then
+      let (ks, kv, ks', kv', s', v') = kpg bx1 ks kv ks' kv' s v env in 
+        if (conds (ks' s')) && (condsv s (kv' v')) then
+            (ks, kv, ks', kv', s', v')
+        else
+            assert false
     else
-      kpg bx2 ks kv ks' kv' s' v' env
+      let (ks, kv, ks', kv', s', v') = kpg bx2 ks kv ks' kv' s v env in 
+        if not ((conds (ks' s')) || (condsv s (kv' v'))) then
+            (ks, kv, ks', kv', s', v')
+        else
+            assert false
   | Compose(bx1, bx2) ->
-    let (ks1, kv1, ks1', kv1', s1', v1') =
-      kpg
-        bx1
-        ks
-        id
-        ks'
-        id
-        s'
-        v'
-        env
-    in
-    let (ks2, kv2, ks2', kv2', s2', v2') =
-      kpg
-        bx2
-        kv1
-        kv
-        kv1'
-        kv'
-        v1'
-        v'
-        env
-    in
-    (
-      (fun x -> ks1 (ks2 x)),
-      kv2,
-      (fun m -> ks1 (ks2' m)),
-      kv2',
-      s2',
-      v2'
-    )
+    let (ks1, kv1, ks1', kv1', s1, v1) = kpg bx1 ks id ks' id s (construct_dummy s) env in
+    let (ks2, kv2, ks2', kv2', s2, v2) = kpg bx2 kv1 kv kv1' kv' v1 v env in
+    ((fun x -> ks1 (ks2 x)), kv2, (fun m -> ks1 (ks2' m)), kv2', s2, v2)

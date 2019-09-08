@@ -1,4 +1,5 @@
 open Syntax
+open Utils
 
 let count_get = ref 0
 let count_put = ref 0
@@ -21,8 +22,8 @@ let rec get (bx:bigul) s env =
   | Replace ->
     s
   | Prod(bx1, bx2) ->
-    let v1 = get bx1 ((fun x -> match x with (Con(s1, s2)) -> s1 | _ -> assert false) s) env in
-    let v2 = get bx2 ((fun x -> match x with (Con(s1, s2)) -> s2 | _ -> assert false) s) env in
+    let v1 = get bx1 (first s) env in
+    let v2 = get bx2 (second s) env in
     Con(v1, v2)
   | RearrS(f1, f2, bx) ->
     let v = get bx ((fun m -> f1 m) s) env in
@@ -61,20 +62,8 @@ let rec put (bx:bigul) s v env =
   | Replace -> 
     v
   | Prod(bx1, bx2) ->
-    let s1 =
-      put
-        bx1
-        ((fun x -> match x with (Con(s1, s2)) -> s1 | _ -> assert false) s)
-        ((fun x -> match x with (Con(v1, v2)) -> v1 | _ -> assert false) v)
-        env
-    in
-    let s2 =
-      put
-        bx2
-        ((fun x -> match x with (Con(s1, s2)) -> s2 | _ -> assert false) s)
-        ((fun x -> match x with (Con(v1, v2)) -> v2 | _ -> assert false) v)
-        env
-    in
+    let s1 = put bx1 (first s) (first v) env in
+    let s2 = put bx2 (second s) (second v) env in
     Con(s1, s2)
   | RearrS(f1, f2, bx) ->
     let s = put bx ((fun m -> f1 m) s) v env in
@@ -82,13 +71,13 @@ let rec put (bx:bigul) s v env =
   | RearrV(g1, g2, bx) ->
     let s = put bx s ((fun m -> g1 m) v) env in
     s
-  | Compose(bx1, bx2) ->
-    let v1 = get bx1 s env in
-    let s2 = put bx2 v1 v env in
-    let s3 = put bx1 s s2 env in
-    s3
   | Case(condsv, conds, bx1, bx2) ->
     if condsv s v then 
       put bx1 s v env
     else 
       put bx2 s v env
+  | Compose(bx1, bx2) ->
+    let v1 = get bx1 s env in
+    let s2 = put bx2 v1 v env in
+    let s3 = put bx1 s s2 env in
+    s3

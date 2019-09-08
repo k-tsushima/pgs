@@ -304,7 +304,7 @@ let put_rassoc_comp_phead_with_multi_case_2 n =
   let s' = put (rassoc_comp phead_with_multi_case_2 n) s v [] in
   s'
 
-let put_breverse_count n =
+(* let put_breverse_count n =
   count_put := 0;
   count_get := 0;
   let s = make_consecutive_list n in
@@ -350,4 +350,33 @@ let put_rassoc_comp_replace_count n =
   let s = Int 1 in
   let v = Int 100 in
   let s' = put (rassoc_comp Replace n) s v [] in
-  (!count_put, !count_get)
+  (!count_put, !count_get) *)
+
+(* let put_lassoc_comp_phead_get_time n =
+  get_time := 0.0;
+  let s = make_smallest_nested_list (n + 1) in
+  let v = Int 100 in
+  let s' = put (lassoc_comp phead n) s v [] in
+  !get_time
+
+let put_lassoc_comp_replace_get_time n =
+  get_time := 0.0;
+  let s = Int 1 in
+  let v = Int 100 in
+  let s' = put (lassoc_comp Replace n) s v [] in
+  !get_time
+
+let put_rassoc_comp_replace_get_time n =
+  get_time := 0.0;
+  let s = Int 1 in
+  let v = Int 100 in
+  let s' = put (rassoc_comp Replace n) s v [] in
+  !get_time
+
+let put_rassoc_comp_phead_get_time n =
+  get_time := 0.0;
+  let s = make_smallest_nested_list (n + 1) in
+  let v = Int 100 in
+  let s' = put (rassoc_comp phead n) s v [] in
+  !get_time
+  *)

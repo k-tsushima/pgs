@@ -199,7 +199,7 @@ let kpg_rassoc_comp_phead_no_evaluation n =
   let (ks, kv, ks', kv', s', v') = kpg (rassoc_comp phead_no_evaluation n) (fun _ -> s) id id id s v [] in
   (ks', kv')
 
-let kpg_lassoc_comp_replace_count n =
+(* let kpg_lassoc_comp_replace_count n =
   count_kpg := 0;
   let s = Int 1 in
   let v = Int 100 in
@@ -240,4 +240,38 @@ let kpg_bmapreplace_count n =
   let s = make_consecutive_list n in
   let v = make_consecutive_list n in
   let (ks, kv, ks', kv', s', v') = kpg bmapreplace (fun _ -> s) id id id s v [] in
-  !count_kpg
+  !count_kpg *)
+
+
+(* 
+
+  let kpg2_skip1 =
+  let s = Con(Int 1, Int 2) in
+  let v = Unit in
+  let (ks', kv', s', v') = kpg2 skip1 id id s v [] in
+  (s', v')
+
+(* test kpg replace *)
+let kpg2_replace = 
+  let s = Con(Int 1, Int 2) in
+  let v = Con(Int 3, Int 4) in
+  let (ks', kv', s', v') = kpg2 Replace id id s v [] in
+  (s', v')
+
+let kpg2_rearrV =
+  let s = Con(Int 1, Int 1) in
+  let v = Int 100 in
+  let (ks', kv', s', v') = kpg2 rearrV_d id id s v [] in
+  (ks' s', kv' v')
+
+let kpg2_phead =
+  let s = Con(Int 1, Con(Int 2, Unit)) in
+  let v = Int 100 in
+  let (ks', kv', s', v') = kpg2 phead id id s v [] in
+  (ks' s', kv' v')
+
+let kpg2_lassoc_comp_phead n =
+  let s = make_smallest_nested_list (n + 1) in
+  let v = Int 100 in
+  let (ks', kv', s', v') = kpg2 (lassoc_comp phead n) id id s v [] in
+  (ks', kv', s', v') *)
