@@ -233,90 +233,6 @@ $\getbx{bx_1 \circ bx_2}{s} = \getbx{bx_2}{(\getbx{bx_1}{s})}$
 \item Avoiding this, our implementation requires users to write inverse function f$^{-1}$ and g$^{-1}$.
 \end{itemize}
 
-\section{Remove?:Reversible langauge: Rwhile}
-
-% Maybe we should skip
-
-\begin{itemize}
-\item Usually programs receives inputs and produces outputs. It is impossible to produce inputs from outputs in general. Obtaining the inverse program of a program is difficult.
-\item Using reversible language, we can obtain inverse programs easily.
-\item Explanation of Rwhile: we need fi-condition.
-\item syntax, how to work.
-\end{itemize}
-
-\section{Remove?:First approach}
-
-% We should skip this 
-
-\begin{itemize}
-\item Make put and get to be reversible. We need garbages (g) to keep lost infomation after evaluation.
-\item put$_{REV}$ = s * v $\to$ s * gb
-\item get$_{REV}$ = s $\to$ v * gb
-\item introduce (put$_{REV}^{-1}$: s * gb $\to$ s * v) and (get$_{REV}^{-1}$:v * gb $\to$ s)
-\item \textcolor{red}{(Missing part?)} Relationship between put$_{REV}$, get$_{REV}$, put$_{REV}^{-1}$, get$_{REV}^{-1}$ 
-\end{itemize}
-
-$\putrev{Skip \ h}{s}{v} =  \sif{h \ s = v}{(s, v)}{\text{fail}}$
-
-$\putrev{Replace}{s}{v} = (v, s)$
-
-$\putrev{\product{bx_1}{bx_2}}{(s_1 :: s_2)}{(v_1 :: v_2)} =\\
-    \tab (s_1, gb_1) \Leftarrow \putrev{bx_1}{s_1}{v_1};\\
-    \tab (s_2, gb_2) \Leftarrow \putrev{bx_2}{s_2}{v_2};\\
-        \qtab (s_1 :: s_2, gb_1 :: gb_2)$
-
-$\putrev{\rearrs{f_1}{f_2}{bx}}{s}{v} =\\
-    \tab (s_1, gb_1) \Leftarrow \putrev{bx}{(f_1 \ s)}{v};\\
-        \qtab (f_2 \ s_1, gb_1)$
-
-$\putrev{\rearrv{g_1}{g_2}{bx}}{s}{v} =\\
-    \tab (s_1, gb_1) \Leftarrow \putrev{bx}{s}{(g_1 \ v)};\\
-        \qtab (s_1, gb_1)$
-
-$\putrev{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s}{v} =\\
-    \tab \text{if} \ cond_{sv} \ s \ v\\
-    \tab \text{then} \ (s', gb) \Leftarrow \putrev{bx_1}{s}{v};\\
-    \tab \text{else} \ (s', gb) \Leftarrow \putrev{bx_2}{s}{v};\\
-    \tab \text{fi} \ cond_{s} \ s'; \ \text{return} \ (s', gb)$
-
-$\putrev{bx_1 \circ bx_2}{s}{v} =\\
-    \tab (s_1, gb_1) \Leftarrow \getrev{bx_1}{s};\\
-    \tab (s_2, gb_2) \Leftarrow \putrev{bx_2}{s_1}{v};\\
-    \tab (s_3, gb_3) \Leftarrow \putrev{bx_1}{s}{s_2} \ \text{in (* need to copy s *)}\\
-        \qtab (s_3, gb_1 :: gb_2 :: gb_3)$
-
-\vspace{5mm}
-
-$\getrev{Skip \ h}{s} = {(h \ s, s)}$
-
-$\getrev{Replace}{s} = (s, \textcolor{red}{\text{Nil}})$
-
-$\getrev{\product{bx_1}{bx_2}}{(s_1 :: s_2)} = \\
-    \tab (v_1, gb_1) \Leftarrow \getrev{bx_1}{s_1};\\
-    \tab (v_2, gb_2) \Leftarrow \getrev{bx_2}{s_2};\\
-        \qtab (v_1 :: v_2, gb_1 :: gb_2)$
-
-$\getrev{\rearrs{f_1}{f_2}{bx}}{s}{v} =\\
-    \tab (v_1, gb_1) \Leftarrow \getrev{bx}{(f_1 \ s)};\\
-        \qtab (v_1, gb_1)$
-
-$\getrev{\rearrv{g_1}{g_2}{bx}}{s}{v} =\\
-    \tab (v_1, gb_1) \Leftarrow \getrev{bx}{s};\\
-        \qtab (g_2 \ v_1, gb_1)$
-
-$\getrev{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s} =\\
-    \tab \text{if} \ cond_{s} \ s\\
-    \tab \text{then} \ (v', gb) \Leftarrow \getrev{bx_1}{s};\\
-    \tab \text{else} \ (v', gb) \Leftarrow \getrev{bx_2}{s};\\
-    \tab \text{fi} \ cond_{sv} \ s \ v'; \ \text{return} \ (v', gb)$
-
-$\getrev{bx_1 \circ bx_2}{s}{v} =\\
-    \tab (v_1, gb_1) \Leftarrow \getrev{bx_1}{s};\\
-    \tab (v_2, gb_2) \Leftarrow \getrev{bx_1}{s};\\
-        \qtab (v_2, gb_1 :: gb_2)$
-
-\textcolor{red}{If we use Rwhile for target language, we do not need to introduce inverse.}
-
 \section{pg}
 \subsection{Self-inverse function: pg}
 
@@ -395,23 +311,22 @@ $\pg{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s}{v} \\
 
 A restriction for $\pginline{Case}$ needs to be introduced here. We know that there is one entering condition and one exit condition when evaluating $\putbxinline{Case}$ as well as $\getbxinline{Case}$. If a tupling $put$ and $get$ occurs, there will be 4 combinations of these conditions. This means that two entering conditions of $\putbxinline{Case}$ and $\getbxinline{Case}$ are not always simultaneously satified. The evaluated BXs are distinct in the $put$ and $get$ directions for combinations $((cond_{sv} \ s \ v) \ \&\& \ (not (cond_{s} \ s)))$ and $((not (cond_{sv} \ s \ v) \ \&\& \ (cond_{s} \ s))$, which are restricted in this paper. This does not happen for the others, which the construction of $\pginline{Case}$ uses above. \\
 
-\textcolor{blue}{(should substitute a, b, c, d, e, f by s1, s2, v1, v2...)}\\
 $\pg{bx_1 \circ bx_2}{s}{v} \\
     \tab = (\putbx{bx_1}{s}{(\putbx{bx_2}{(\getbx{bx_1}{s})}{v})}, \getbx{bx_2}{(\getbx{bx_1}{s})}) \\
-    \tab = a \Leftarrow \getbx{bx_1}{s}; \\
-        \qtab (b, c) \Leftarrow \pg{bx_2}{a}{v}; \\
-        \qtab (d, e) \Leftarrow \pg{bx_1}{s}{b}; \\
-            \qtab \tab (d, c) \\
-    \tab = (f, a) \Leftarrow \pg{bx_1}{s}{dummy}; \\
-        \qtab (b, c) \Leftarrow \pg{bx_2}{a}{v}; \\
-        \qtab (d, e) \Leftarrow \pg{bx_1}{s}{b}; \\
-            \qtab \tab (d, c) \\
-    \tab = (f, a) \Leftarrow \pg{bx_1}{s}{dummy}; \\
-        \qtab (b, c) \Leftarrow \pg{bx_2}{a}{v}; \\
-        \qtab (d, e) \Leftarrow \pg{bx_1}{f}{b}; \\
-            \qtab \tab (d, c)$\\
+    \tab = v_1 \Leftarrow \getbx{bx_1}{s}; \\
+        \qtab (s_2, v_2) \Leftarrow \pg{bx_2}{v_1}{v}; \\
+        \qtab (s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2}; \\
+            \qtab \tab (s_3, v_2) \\
+    \tab = (s_1, v_1) \Leftarrow \pg{bx_1}{s}{dummy}; \\
+        \qtab (s_2, v_2) \Leftarrow \pg{bx_2}{v_1}{v}; \\
+        \qtab (s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2}; \\
+            \qtab \tab (s_3, v_2) \\
+    \tab = (s_1, v_1) \Leftarrow \pg{bx_1}{s}{construct\_dummy \ s}; \\
+        \qtab (s_2, v_2) \Leftarrow \pg{bx_2}{v_1}{v}; \\
+        \qtab (s_3, v_3) \Leftarrow \pg{bx_1}{s_1}{s_2}; \\
+            \qtab \tab (s_3, v_2)$\\
 
-The construction of $\pginline{bx_1 \circ bx_2}$ can be considered as the soul of the $pg$ function. The first two equalities comes from mentioned definitions and some basic transformations. The third one rewrites $a \Leftarrow \getbx{bx_1}{s}$ into $(f, a) \Leftarrow \pg{bx_1}{s}{dummy}$. It is possible if we consider $\getbx{bx_1}{s}$ as the second element of $\pg{bx_1}{s}{dummy}$ where $dummy$ is a special value that make the $put \, [\![bx_1]\!]$ valid. The last equality substitutes $s$ in $(d, e) \Leftarrow \pg{bx_1}{s}{b}$ by $f$ which is the evaluated result of $\putbx{bx_1}{s}{dummy}$. This transformation is feasible due to the PUTPUT law. Then, $e$ in the result pair $(d,e)$ equals $dummy$. So we can realize that there is no loss information when computing a composition.
+The construction of $\pginline{bx_1 \circ bx_2}$ can be considered as the soul of the $pg$ function. The first two equalities comes from mentioned definitions and some basic transformations. The third one rewrites $v_1 \Leftarrow \getbx{bx_1}{s}$ into $(s_1, v_1) \Leftarrow \pg{bx_1}{s}{dummy}$. It is possible if we consider $\getbx{bx_1}{s}$ as the second element of $\pg{bx_1}{s}{dummy}$ where $dummy$ is a special value that make the $put \, [\![bx_1]\!]$ valid. The last equality substitutes $s$ in $(s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2}$ by $s_1$ which is the evaluated result of $\putbx{bx_1}{s}{dummy}$. This transformation is feasible due to the PUTPUT law. Then, $v_3$ in the result pair $(s_3,v_3)$ equals $dummy$. So we can realize that there is no loss information when computing a composition.
 
 \subsection{Evaluation by pg}
 
@@ -598,13 +513,13 @@ $\cpg{RearrV \ g_1 \ g_2 \ bx}{ks}{kv}{s}{v} =\\
     \qtab (ks, g_2 \circ kv, ks, g_2 \ v)$\\
 
 $\cpg{Case \ cond_{sv} \ cond_{s} \ bx_1 \ bx_2}{ks}{kv}{s}{v} =\\
-    \tab \text{if} \ cond_{sv} \ s \ v\\
-    \tab \text{then} \ (ks, kv, s, v) \Leftarrow \cpg{bx_1}{ks}{kv}{s}{v}\\
-    \tab \text{else} \ (ks, kv, s, v) \Leftarrow \cpg{bx_2}{ks}{kv}{s}{v}\\
-    \tab \text{fi} \ cond_{s} \ s; \ \text{return} \ (ks, kv, s, v)$\\
+    \tab \text{if} \ cond_{sv} \ s \ v \ \&\& \ cond_{s} \ s\\
+    \tab \text{then} \ (ks, kv, s', v') \Leftarrow \cpg{bx_1}{ks}{kv}{s}{v}\\
+    \tab \text{else} \ (ks, kv, s', v') \Leftarrow \cpg{bx_2}{ks}{kv}{s}{v}\\
+    \tab \text{fi} \ cond_{s} \ s' \&\& \ cond_{sv} s v'; \ \text{return} \ (ks, kv, s', v')$\\
 
 $\cpg{bx_1 \circ bx_2}{ks}{kv}{s}{v} =\\
-    \tab (ks_1, kv_1, \underline{s_1}, v_1) \Leftarrow \cpg{bx_1}{ks}{id}{s}{const$\_$dummy \ v};\\
+    \tab (ks_1, kv_1, \underline{s_1}, v_1) \Leftarrow \cpg{bx_1}{ks}{id}{s}{construct\_dummy \ s};\\
     \tab (ks_2, kv_2, s_2, v_2) \Leftarrow \cpg{bx_2}{kv_1}{kv}{v_1}{v};\\
         \qtab (ks_1 \circ ks_2, kv_2,  ks_1 \ s_2, v_2)$\\
 
@@ -612,15 +527,11 @@ Apart from the last construction, the others are quite similar to the correspond
 
 For $\cpginline{bx_1 \circ bx_2}$, there are only two $cpg$ calls. The first $cpg$ call is assigned to a 4-tuple $(ks_1, kv_1, \underline{s_1}, v_1)$ where $s_1$ is redundant because it is not used in the later evaluation process. Some computations to get $s_1$ are seen as redundant. Such values and computations have negative impacts on the runtime as well as the memory allocation in the system. The second $cpg$ call uses the input as $(kv_1, kv, v_1, v)$ where $kv_1$ and $v_1$ are obtained from the result of the first assignment, and $kv$ and $v$ come from the input. After two first $cpg$ calls, we used a function application, $ks_1 \ s_2$, to produce the updated source instead of calling $\cpginline{bx_1}$ one more time like in $\pginline{bx_1 \circ bx_2}$.
 
-\textcolor{blue}{(how to explain parameters of $cpg$ in the composition?)}
-
 Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated source and view $(s, v)$ where $s = \putbx{bx}{s_0}{v_0}$ and $v = \getbx{bx}{s_0}$ can be obtained using $cpg$ as follows:
 
     $\tab s \Leftarrow s_0; v \Leftarrow v_0;\\
-    \tab (ks, kv, s, v) \Leftarrow \cpg{bx}{\lambda \_.s}{\lambda \_.v}{s}{v};\\
+    \tab (ks, kv, s, v) \Leftarrow \cpg{bx}{\lambda \_.s}{id}{s}{v};\\
         \qtab (s; v)$
-
-\textcolor{blue}{(some explanation for parameters $\lambda \_.s, \lambda \_.v$)}
 
 \section{kpg}
 
@@ -632,8 +543,6 @@ Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated so
     $\tab s \Leftarrow s_0; v \Leftarrow v_0;\\
     \tab (ks, kv, ks', kv', s, v) \Leftarrow \kpg{bx}{\lambda \_.s}{id}{id}{id}{s}{v};\\
         \qtab (ks' \ s; kv' \ v)$
-
-\textcolor{blue}{(some explanation for parameters $\lambda \_.s, id, id, id$)}\\
 
 The construction of $kpg$ is as follows:\\
 
@@ -664,15 +573,15 @@ $\kpg{RearrV \ g_1 \ g_2 \ bx}{ks}{kv}{ks'}{kv'}{s}{v} =\\
 $\kpg{Case \ cond_{sv} \ cond_{s} \ bx_1 \ bx_2}{ks}{kv}{ks'}{kv'}{s}{v} =\\
     \tab s \Leftarrow ks' \ s; \tab v \Leftarrow kv' \ v;\\
     \tab ks' \Leftarrow id ; \tab kv' \Leftarrow id;\\
-    \tab \text{if} \ cond_{sv} \ s \ v \\
-    \tab \text{then} \ (ks, kv, ks', kv', s, v) \Leftarrow \kpg{bx_1}{ks}{kv}{ks'}{kv'}{s}{v}\\
-    \tab \text{else} \ (ks, kv, ks', kv', s, v) \Leftarrow \kpg{bx_2}{ks}{kv}{ks'}{kv'}{s}{v}\\
-    \tab \text{fi} \ cond_s \ (ks' \ s); \ \text{return} \ (ks, kv, ks', kv', s, v)$\\
+    \tab \text{if} \ cond_{sv} \ s \ v \&\& \ cond_{s} \ s\\
+    \tab \text{then} \ (ks, kv, ks', kv', s', v') \Leftarrow \kpg{bx_1}{ks}{kv}{ks'}{kv'}{s}{v}\\
+    \tab \text{else} \ (ks, kv, ks', kv', s', v') \Leftarrow \kpg{bx_2}{ks}{kv}{ks'}{kv'}{s}{v}\\
+    \tab \text{fi} \ cond_s \ (ks' \ s') \&\& \ cond_{sv} \ s \ (kv' v'); \ \text{return} \ (ks, kv, ks', kv', s', v')$\\
 
 $\kpg{bx_1 \circ bx_2}{ks}{kv}{ks'}{kv'}{s}{v} =\\
-    \tab (ks_1, kv_1, \underline{ks_1'}, kv_1', \underline{s_1}, v_1) \Leftarrow \kpg{bx_1}{ks}{id}{ks'}{id}{s}{const$\_$dummy \ v};\\
+    \tab (ks_1, kv_1, \underline{ks_1'}, kv_1', \underline{s_1}, v_1) \Leftarrow \kpg{bx_1}{ks}{id}{ks'}{id}{s}{construct\_dummy \ s};\\
     \tab (ks_2, kv_2, ks_2', kv_2', s_2, v_2) \Leftarrow \kpg{bx_2}{kv_1}{kv}{kv_1'}{kv'}{v_1}{v};\\
-    \qtab (ks_1 \circ ks_2, kv_2', ks_1 \circ ks_2', kv_2', s_2, v_2)$\\
+    \qtab (ks_1 \circ ks_2, kv_2, ks_1 \circ ks_2', kv_2', s_2, v_2)$\\
 
 In this construction of $kpg$, $s$ and $v$ hold actual values only in case of $Skip$ and $Case$. Except them, the functions for computation will be kept as $ks'$ and $kv'$.
     
@@ -694,7 +603,7 @@ In $\kpginline{bx_1 \ prod \ bx_2}$, the evaluation of $ks'$ and $kv'$ will be d
 $\xpg{E}{s}{v} = \text{same with } pg \text{ if } E \text{ is not compose}$
 
 $\xpg{bx_1 \circ bx_2}{s}{v} =\\
-    \tab (ks_1,kv_1, ks_1', kv_1', s_1, v_1) \Leftarrow \kpg{bx_1}{\lambda \_.s}{id}{id}{id}{s}{v};\\
+    \tab (ks_1,kv_1, ks_1', kv_1', s_1, v_1) \Leftarrow \kpg{bx_1}{\lambda \_.s}{id}{id}{id}{s}{construct\_dummy \ s};\\
     \tab (s_2, v_2) \Leftarrow \xpg{bx_2}{kv_1' \ v_1}{v};\\
     \qtab (ks_1 \ s_2, v_2)$
 
@@ -728,7 +637,7 @@ In table \ref{tab:test-cases}, $s_r$ and $v_r$ are respectively updated source a
 
 The first 4 test cases simply use $n$ compose operators to make a composition of $n + 1$ similar $BX$ programs which are non-recursive. For example, \textit{lassoc-comp-replace} looks like $(\ldots((Replace \circ Replace) \circ Replace) \circ \ldots \circ Replace) \circ Replace$, while \textit{rassoc-comp-replace} is like $Replace \circ (Replace \circ (Replace \circ \ldots \circ (Replace \circ Replace)\ldots))$, where there are $n + 1 \ Replace$s in each case. \textit{lassoc-comp-phead} and \textit{rassoc-comp-phead} are similar to the above two.
 
-In section 5, we defined a composition $phead \circ phead$ for updating the head element of the head element of a list of lists by using the view. Similarly, we can use the view to update head element in the nested lists with a composition of a specific number of $phead$s. For both \textit{lassoc-comp-phead} and \textit{rassoc-comp-phead}, we choose input view $v_0$ is 100 and input source $s_0$ is one of the smallest nested lists which make $put$ and $get$ direction on the composition valid.\\
+In section 3, we defined a composition $phead \circ phead$ for updating the head element of the head element of a list of lists by using the view. Similarly, we can use the view to update head element in the nested lists with a composition of a specific number of $phead$s. For both \textit{lassoc-comp-phead} and \textit{rassoc-comp-phead}, we choose input view $v_0$ is 100 and input source $s_0$ is one of the smallest nested lists which make $put$ and $get$ direction on the composition valid.\\
 
 The last test case, $bReverse$, is a recursive composition. It is defined in terms of $bFoldr$, a putback function for $foldr$ in BiGUL as well as minbigul. What we know about $foldr$, an important higher-order function on lists, is as follows:\\
     $\tab foldr :: (a \to b \to b) \to b \to [a] \to b\\
@@ -1298,3 +1207,88 @@ and a homepage~\cite{ref_url1}. Multiple citations are grouped
 \cite{ref_article1,ref_lncs_1,ref_book1},
 \cite{ref_article1,ref_book1,ref_proc1,ref_url1}.
 %
+
+
+\section{Remove?:Reversible langauge: Rwhile}
+
+% Maybe we should skip
+
+\begin{itemize}
+\item Usually programs receives inputs and produces outputs. It is impossible to produce inputs from outputs in general. Obtaining the inverse program of a program is difficult.
+\item Using reversible language, we can obtain inverse programs easily.
+\item Explanation of Rwhile: we need fi-condition.
+\item syntax, how to work.
+\end{itemize}
+
+\section{Remove?:First approach}
+
+% We should skip this 
+
+\begin{itemize}
+\item Make put and get to be reversible. We need garbages (g) to keep lost infomation after evaluation.
+\item put$_{REV}$ = s * v $\to$ s * gb
+\item get$_{REV}$ = s $\to$ v * gb
+\item introduce (put$_{REV}^{-1}$: s * gb $\to$ s * v) and (get$_{REV}^{-1}$:v * gb $\to$ s)
+\item \textcolor{red}{(Missing part?)} Relationship between put$_{REV}$, get$_{REV}$, put$_{REV}^{-1}$, get$_{REV}^{-1}$ 
+\end{itemize}
+
+$\putrev{Skip \ h}{s}{v} =  \sif{h \ s = v}{(s, v)}{\text{fail}}$
+
+$\putrev{Replace}{s}{v} = (v, s)$
+
+$\putrev{\product{bx_1}{bx_2}}{(s_1 :: s_2)}{(v_1 :: v_2)} =\\
+    \tab (s_1, gb_1) \Leftarrow \putrev{bx_1}{s_1}{v_1};\\
+    \tab (s_2, gb_2) \Leftarrow \putrev{bx_2}{s_2}{v_2};\\
+        \qtab (s_1 :: s_2, gb_1 :: gb_2)$
+
+$\putrev{\rearrs{f_1}{f_2}{bx}}{s}{v} =\\
+    \tab (s_1, gb_1) \Leftarrow \putrev{bx}{(f_1 \ s)}{v};\\
+        \qtab (f_2 \ s_1, gb_1)$
+
+$\putrev{\rearrv{g_1}{g_2}{bx}}{s}{v} =\\
+    \tab (s_1, gb_1) \Leftarrow \putrev{bx}{s}{(g_1 \ v)};\\
+        \qtab (s_1, gb_1)$
+
+$\putrev{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s}{v} =\\
+    \tab \text{if} \ cond_{sv} \ s \ v\\
+    \tab \text{then} \ (s', gb) \Leftarrow \putrev{bx_1}{s}{v};\\
+    \tab \text{else} \ (s', gb) \Leftarrow \putrev{bx_2}{s}{v};\\
+    \tab \text{fi} \ cond_{s} \ s'; \ \text{return} \ (s', gb)$
+
+$\putrev{bx_1 \circ bx_2}{s}{v} =\\
+    \tab (s_1, gb_1) \Leftarrow \getrev{bx_1}{s};\\
+    \tab (s_2, gb_2) \Leftarrow \putrev{bx_2}{s_1}{v};\\
+    \tab (s_3, gb_3) \Leftarrow \putrev{bx_1}{s}{s_2} \ \text{in (* need to copy s *)}\\
+        \qtab (s_3, gb_1 :: gb_2 :: gb_3)$
+
+\vspace{5mm}
+
+$\getrev{Skip \ h}{s} = {(h \ s, s)}$
+
+$\getrev{Replace}{s} = (s, \textcolor{red}{\text{Nil}})$
+
+$\getrev{\product{bx_1}{bx_2}}{(s_1 :: s_2)} = \\
+    \tab (v_1, gb_1) \Leftarrow \getrev{bx_1}{s_1};\\
+    \tab (v_2, gb_2) \Leftarrow \getrev{bx_2}{s_2};\\
+        \qtab (v_1 :: v_2, gb_1 :: gb_2)$
+
+$\getrev{\rearrs{f_1}{f_2}{bx}}{s}{v} =\\
+    \tab (v_1, gb_1) \Leftarrow \getrev{bx}{(f_1 \ s)};\\
+        \qtab (v_1, gb_1)$
+
+$\getrev{\rearrv{g_1}{g_2}{bx}}{s}{v} =\\
+    \tab (v_1, gb_1) \Leftarrow \getrev{bx}{s};\\
+        \qtab (g_2 \ v_1, gb_1)$
+
+$\getrev{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s} =\\
+    \tab \text{if} \ cond_{s} \ s\\
+    \tab \text{then} \ (v', gb) \Leftarrow \getrev{bx_1}{s};\\
+    \tab \text{else} \ (v', gb) \Leftarrow \getrev{bx_2}{s};\\
+    \tab \text{fi} \ cond_{sv} \ s \ v'; \ \text{return} \ (v', gb)$
+
+$\getrev{bx_1 \circ bx_2}{s}{v} =\\
+    \tab (v_1, gb_1) \Leftarrow \getrev{bx_1}{s};\\
+    \tab (v_2, gb_2) \Leftarrow \getrev{bx_1}{s};\\
+        \qtab (v_2, gb_1 :: gb_2)$
+
+\textcolor{red}{If we use Rwhile for target language, we do not need to introduce inverse.}
