@@ -32,7 +32,7 @@
 \newcommand{\qtab}{\hspace*{5mm} \ \quad}
 
 \newcommand{\sif}[3]{\text{if } #1 \text{ then } #2 \text{ else } #3}
-\newcommand{\product}[2]{#1 \ prod \ #2}
+\newcommand{\product}[2]{#1 \times #2}
 \newcommand{\tuple}[2]{(#1 :: #2)}
 \newcommand{\rearrs}[3]{RearrS \ #1 \ #2 \ #3}
 \newcommand{\rearrv}[3]{RearrV \ #1 \ #2 \ #3}
@@ -173,84 +173,203 @@ Points to discuss
 
 \section{Bidirectional Programming Language: minBiGUL}
 
-\begin{itemize}
-\item our target language is minBiGUL (BiGUL minus adaptive case) : very well-behaved
-\item Basic explanation of bidirectional transformation
-  \begin{itemize}
-  \item get = s $\to$ v
-  \item put = s * v $\to$ s
-  \item explanation about get and put.
-  \item We assume putget and getput hold (explanation about putget and getput)
-  \item Because our target language satisfies very well-behaved (No adaptive case) $\to$ putput hold.
-  \end{itemize}
-\item explanation about put-based BX language: BiGUL
-\end{itemize}
+MinBiGUL, our target language in this paper, is a subset of BiGUL [?] which is a simple yet powerful putback-based bidirectional language. BiGUL supports two transformations: a forward transformation $get$ producing a view from a source and a backward transformation $put$ taking a source and a modified view to produce an updated source. Intuitively, if we have a BiGUL program $bx$, these two transformations are following functions:\\
+    $\tab \getbxinline{bx} = fun \ s \to v \\
+    \tab \putbxinline{bx} = fun \ s \ v \to v$
+
+BiGUL is well-behaved since two functions $\putbxinline{bx}$ and $\getbxinline{bx}$ satify the round-trip laws as follows:\\
+    $\tab \putbx{bx}{s}{(\getbx{bx}{s})} = s \qquad [\text{GETPUT}]\\
+    \tab \getbx{bx}{(\putbx{bx}{s}{v})} = v \qquad [\text{PUTGET}]$
+
+The GETPUT law means that if there is no change to the view, there should be no change to the source. The PUTGET law means that we can recover the modified view by applying the forward transformation to the updated source.
+
+MinBiGUL inherited from BiGUL also supports transformations $put$ and $get$ which are satify two above laws. In addition, we restrict adaptive cases of BiGUL on minBiGUL. Then $put$ and $get$ satify one more law, PUTPUT, like the following:\\
+    $\tab \putbx{bx}{(\putbx{bx}{s}{v'})}{v} = \putbx{bx}{s}{v} \qquad [\text{PUTPUT}]$
+
+The PUTPUT law means that a source update should overwrite the effect of previous source updates.
+
+Due to the satisfaction of three laws, GETPUT, PUTGET and PUTPUT, minBiGUL is very well-behaved.
+
+In the remaining of this section, we will present about the syntax and semantics of minBiGUL through formal definitions and examples.
 
 \subsection{Syntax}
 
-$data := Unit \\ 
-    \qtab | \ Int \ x \\ 
-    \qtab | \ Con(data_1, data_2)$\\
+The syntax of minBiGUL is briefly written as follows:
 
 $bx := Skip \ h \\ 
     \qtab | \ Replace \\ 
-    \qtab | \ bx_1 \ prod \ bx_2 \ \\ 
+    \qtab | \ Prod \ bx_1 \ bx_2 \\ 
     \qtab | \ RearrS \ f_1 \ f_2 \ bx \\
     \qtab | \ RearrV \ g_1 \ g_2 \ bx \\
     \qtab | \ Case \ cond_{sv} \ cond_{s} \ bx_1 \ bx_2 \\ 
-    \qtab | \ bx_1 \circ bx_2$
+    \qtab | \ Compose \ bx_1 \ bx_2$
 
-\subsection{Semantics of minBiGUL}
+A minBiGUL program may be either a skip of a function or a replacement or a product of two minBiGUL programs or a source / view rearrangement or a case combinatator without adaptive cases or a composition of some minBiGUL programs.
 
-$\putbx{Skip \ h}{s}{v} = \sif{h \ s = v}{s}{\text{fail}}$
+For source / view rearrangement, BiGUL use just one lambda expression to express how to deconstruct as well as reconstruct data. It is a kind of bijection. However, to be able to implement it in OCaml, the environment used for developing minBiGUL and solutions in the paper, we need give two functions which one is the inverse of the other. In the above syntax, $f_2 = f_1^{-1}$ and $g_2 = g_1^{-1}$.
 
-$\putbx{Replace}{s}{v} = v$
+To help make demonstration more direct, we provide the following alternatives representation:
 
-$\putbx{\product{bx_1}{bx_2}}{(s_1 :: s_2)}{(v_1 :: v_2)} =\\
-    \tab (\putbx{bx_1}{s_1}{v_1}) :: (\putbx{bx_2}{s_2}{v_2})$
+    $\tab Prod \ bx_1 \ bx_2 \equiv bx_1 \times bx_2$\\
+    $\tab Compose \ bx_1 \ bx_2 \equiv bx_1 \circ bx_2$
 
-$\putbx{\rearrs{f_1}{f_2}{bx}}{s}{v} = f_2 \ (\putbx{bx}{(f_1 \ s)}{v})$
+In general, $\circ$ has a higher priority than $\times$. Since only consider a product of two minBiGUL programs is considered, it is unnecessary to define the associativity precedence of $\times$. The one of $\circ$ may be left or right, however we do not declare the default.
 
-$\putbx{\rearrv{g_1}{g_2}{bx}}{s}{v} = \putbx{bx}{s}{(g_1 \ v)}$
+In the next part, we will introduce the semantics of minBiGUL.
 
-$\putbx{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s}{v} = \\
-    \tab \text{if} \ {cond_{sv} \ s \ v} \\
-    \tab \text{then} \ s' \Leftarrow \putbx{bx_1}{s}{v} \\
-    \tab \text{else} \ s' \Leftarrow \putbx{bx_2}{s}{v} \\
-    \tab \text{fi} \ cond_{s} \ s'; \ \text{return} \ s'$
+\subsection{Semantics}
 
-$\putbx{bx_1 \circ bx_2}{s}{v} = \putbx{bx_1}{s}{(\putbx{bx_2}{(\getbx{bx_1}{s})}{v})}$
+\begin{definition}
+    $\putbx{bx}{s}{v}$
 
-\vspace{5mm}
+    $\putbx{Skip \ h}{s}{v} = \sif{h \ s = v}{s}{\text{fail}}$
 
-$\getbx{Skip \ h}{s} = h \ s$
+    $\putbx{Replace}{s}{v} = v$
 
-$\getbx{Replace}{s} = s$
+    $\putbx{\product{bx_1}{bx_2}}{(s_1, s_2)}{(v_1, v_2)} =\\
+        \tab ((\putbx{bx_1}{s_1}{v_1}),(\putbx{bx_2}{s_2}{v_2}))$
 
-$\getbx{\product{bx_1}{bx_2}}{(s_1 :: s_2)} = \\
-    \tab (\getbx{bx_1}{s_1}) :: (\getbx{bx_2}{s_2})$
+    $\putbx{\rearrs{f_1}{f_2}{bx}}{s}{v} = f_2 \ (\putbx{bx}{(f_1 \ s)}{v})$
 
-$\getbx{\rearrs{f_1}{f_2}{bx}}{s} = \getbx{bx}{(f_1 \ s)}$
+    $\putbx{\rearrv{g_1}{g_2}{bx}}{s}{v} = \putbx{bx}{s}{(g_1 \ v)}$
 
-$\getbx{\rearrv{g_1}{g_2}{bx}}{s} = g_2 \ (\getbx{bx}{s})$
+    $\putbx{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s}{v} = \\
+        \tab \text{if} \ {cond_{sv} \ s \ v} \\
+        \tab \text{then} \ s' \Leftarrow \putbx{bx_1}{s}{v} \\
+        \tab \text{else} \ s' \Leftarrow \putbx{bx_2}{s}{v} \\
+        \tab \text{fi} \ cond_{s} \ s'; \ \text{return} \ s'$
 
-$\getbx{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s} =\\
-    \tab \text{if} \ {cond_{s} \ s}\\
-    \tab \text{then} \ v' \Leftarrow \getbx{bx_1}{s}\\
-    \tab \text{else} \ v' \Leftarrow \getbx{bx_2}{s}\\
-    \tab \text{fi} \ {cond_{sv} \ s \ v'}; \ \text{return} \ v'$
+    $\putbx{bx_1 \circ bx_2}{s}{v} = \putbx{bx_1}{s}{(\putbx{bx_2}{(\getbx{bx_1}{s})}{v})}$
+\end{definition}
 
-$\getbx{bx_1 \circ bx_2}{s} = \getbx{bx_2}{(\getbx{bx_1}{s})}$
+\begin{definition}
+    $\getbx{bx}{s}$
 
-\begin{itemize}
-\item To implement these function in OCaml, we need some way to produce inverse function for $f$ and $g$.
-\item $f_2 = f_1^{-1}, g_2 = g_1^{-1}$
-\end{itemize}
+    $\getbx{Skip \ h}{s} = h \ s$
+
+    $\getbx{Replace}{s} = s$
+
+    $\getbx{\product{bx_1}{bx_2}}{(s_1,s_2)} = \\
+        \tab ((\getbx{bx_1}{s_1}),(\getbx{bx_2}{s_2}))$
+
+    $\getbx{\rearrs{f_1}{f_2}{bx}}{s} = \getbx{bx}{(f_1 \ s)}$
+
+    $\getbx{\rearrv{g_1}{g_2}{bx}}{s} = g_2 \ (\getbx{bx}{s})$
+
+    $\getbx{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s} =\\
+        \tab \text{if} \ {cond_{s} \ s}\\
+        \tab \text{then} \ v' \Leftarrow \getbx{bx_1}{s}\\
+        \tab \text{else} \ v' \Leftarrow \getbx{bx_2}{s}\\
+        \tab \text{fi} \ {cond_{sv} \ s \ v'}; \ \text{return} \ v'$
+
+    $\getbx{bx_1 \circ bx_2}{s} = \getbx{bx_2}{(\getbx{bx_1}{s})}$
+\end{definition}
+
+In defintions 1 and 2, we use if-then-else-fi statements to express semantics of $\putbxinline{Case}$ and $\getbxinline{Case}$. Statement (if $E_1$ then $X_1$ else $X_2$ fi $E_2$) means if the test $E_1$ is true, the statement $X_1$ is executed and the assertion $E_2$ must be true, otherwise, i.e. $E_2$ is false, the statement $X_2$ is executed and the assertion $E_2$ must be false. If the values of $E_1$ and $E_2$ are distinct, the if-then-else-fi structure is undefined. We can write the equivalent if-then-else statement as follows:
+
+$\tab \text{if } E_1 \text{ then } X_1 \text{ else } X_2 \text{ fi } E_2; S\\
+\tab \equiv \text{if }E_1 = true \text{ then}\\ 
+    \qtab \tab X_1;\\ 
+    \qtab \tab \text{if } E_2 = true \text{ then } S \text{ else assert } false;\\
+    \qtab \text{else}\\ 
+    \qtab \tab X_2;\\ 
+    \qtab \tab \text{if } E_2 = false \text{ then } S \text{ else assert } false;$
+
+The if-then-else-fi statement is useful to describe many functions related to $Case$ in this paper.
+
+Next, let's take a look at some examples to better understand about minBiGUL. We start with quite obivious things as follows:\\
+$\putbx{Skip \ (\lambda x.(x*x))}{10}{100} = 10$\\
+$\putbx{Skip \ (\lambda \_.())}{1}{()} = 1$\\ 
+$\getbx{Skip \ (\lambda x.(x*x))}{10} = 100$\\
+$\getbx{Skip \ (\lambda \_.())}{1} = ()$\\
+$\putbx{Replace}{1}{100} = 100$\\
+$\getbx{Replace}{1} = 1$\\
+
+Now, let's consider the definition of $phead$ in BiGUL [?]:
+
+$\tab phead :: Show \ s \Rightarrow BiGUL \ [s] \ s\\
+\tab phead = \$(RearrS \ [\![\lambda(s:ss) \to (s,ss)]\!])\$\\
+    \qtab \qtab \quad \$(RearrV \ [\![\lambda v \to (v,())]\!])\$\\
+        \qtab \qtab \qquad Replace \ `prod\text{'} \ (Skip \ (const \ ()))$
+
+The above program rearranges the source, a non-empty list, to a pair of its head element $s$ and its tail $ss$, and the view to a pair $(v, ())$, then we can use $v$ to replace $s$ and $()$ to keep $ss$. $\putbx{phead}{s_0}{v_0}$ returns a list whose head is $v_0$ and tail is the tail of $s_0$. $\getbx{phead}{s_0}$ returns the head of $s_0$. For instance, $\putbx{phead}{[1,2,3]}{100} = [100,2,3]$ and $\getbx{phead}{[1,2,3]} = 1$.\\
+
+In minBiGUL, we can express $phead$ as follows:
+
+$\tab phead = RearrS \ f_1 \ f_2 \ bx_s \ \text{where:}\\
+    \qtab f_1 = \lambda (s::ss).(s,ss)\\
+    \qtab f_2 = \lambda (s,ss).(s::ss)\\
+    \qtab bx_s = RearrV \ g_1 \ g_2 \ bx_v \ \text{where:}\\
+        \qtab \qtab g_1 = \lambda v.(v,())\\
+        \qtab \qtab g_2 = \lambda (v,()).v\\
+        \qtab \qtab bx_v = \product{Replace}{(Skip \ (\lambda \_.())}$\\
+
+Then, we can evaluate $\putbxinline{phead}$ and $\getbxinline{phead}$ based on their definitions:
+
+$\putbx{phead}{[1,2,3]}{100}\\
+\tab = \putbx{\rearrs{f_1}{f_2}{bx_s}}{[1,2,3]}{100}\\
+\tab = f_2 \ (\putbx{bx_s}{(f_1 \ [1,2,3])}{100})\\
+\tab = f_2 \ (\putbx{\rearrv{g_1}{g_2}{bx_v}}{(1,[2,3])}{100})\\
+\tab = f_2 \ (\putbx{bx_v}{(1,[2,3])}{(g_1 \ 100}))\\
+\tab = f_2 \ (\putbx{\product{Replace}{(Skip \ (\lambda \_.()))}}{(1,[2,3])}{(100,())})\\
+\tab = f_2 \ ((\putbx{Replace}{1}{100}), (\putbx{(Skip \ (\lambda \_.()))}{[2,3]}{()}))\\
+\tab = f_2 \ (100, [2,3])\\
+\tab = [100,2,3]$\\
+
+$\getbx{phead}{[1,2,3]}\\
+\tab = \getbx{\rearrs{f_1}{f_2}{bx_s}}{[1,2,3]}\\
+\tab = \getbx{bx_s}{(f_1 \ [1,2,3])}\\
+\tab = \getbx{\rearrv{g_1}{g_2}{bx_v}}{(1,[2,3])}\\
+\tab = g_2 \ (\getbx{bx_v}{(1,[2,3])})\\
+\tab = g_2 \ (\getbx{\product{Replace}{(Skip \ (\lambda \_.()))}}{(1,[2,3])})\\
+\tab = g_2 \ ((\getbx{Replace}{1}), (\getbx{(Skip \ (\lambda \_.()))}{[2,3]}))\\
+\tab = g_2 \ (1,())\\
+\tab = 1$\\
+
+If we wanna update the head element of the head element of a list of lists by using the view, we can define a composition like $phead \circ phead$. For example:
+
+    \tab $\putbx{phead \circ phead}{[[1,2,3],[\,],[4,5]]}{100} = [[100,2,3],[\,],[4,5]]$\\
+    \tab $\getbx{phead \circ phead}{[[1,2,3],[\,],[4,5]]} = 1$\\
+
+We distingwish two $phead$s in the composition by indices. According to definitions of $\putbxinline{bx}$ and $\getbxinline{bx}$, we have:
+
+$\getbx{phead_1 \circ phead_2}{[[1,2,3],[\,],[4,5]]}\\
+    \tab = \getbx{phead_2}{(\getbx{phead_1}{[[1,2,3],[\,],[4,5]]})}\\
+    \tab = \getbx{phead_2}{[1,2,3]}\\
+    \tab = 1$\\
+
+$\putbx{phead_1 \circ phead_2}{[[1,2,3],[\,],[4,5]]}{100}\\
+    \tab = \putbx{phead_1}{[[1,2,3],[\,],[4,5]]}{(\putbx{phead_2}{(\getbx{phead_1}{[[1,2,3],[\,],[4,5]]})}{100})}\\
+    \tab = \putbx{phead_1}{[[1,2,3],[\,],[4,5]]}{(\putbx{phead_2}{[1,2,3]}{100})}\\
+    \tab = \putbx{phead_1}{[[1,2,3],[\,],[4,5]]}{[100,2,3]}\\
+    \tab = [[100,2,3],[\,],[4,5]]$\\
+
+One more example we would like to present is $replaceAll$ whose definition in BiGUL as follows:\\
+$\tab replaceAll :: (Eq \ s, Show \ s) \Rightarrow BiGUL \ [s] \ s \\ 
+\tab replaceAll = Case \ [\\
+    \qtab \$(normal \ [\![\lambda s \ v \to length \ s == 1]\!][\![\lambda s \to length \ s == 1]\!]) \\ 
+    \qtab \Longrightarrow \$(rearrS \ [\![\lambda [x] \to x]\!]) Replace,\\
+    \qtab \$(normal \ [\![\lambda s \ v \to length \ s > 1]\!][\![\lambda s \to length \ s > 1]\!]) \\ 
+    \qtab \Longrightarrow \$(rearrS \ [\![\lambda (x:xs) \to (x,xs)]\!])\$\\ 
+    \qtab \qtab \$(rearrV \ [\![\lambda v \to (v,v)]\!])\$\\ 
+    \qtab \qtab Replace \ `prod\text{'} \ replaceAll\\
+\tab ]$\\
+
+The following expresses $replaceAll$ in minBiGUL:\\
+$\tab replaceAll = Case \ cond_{sv} \ cond_{s} \ bx_1 \ bx_2 \ \text{where:}\\ 
+    \qtab cond_{sv} = \lambda s.\lambda v.length \ s == 1\\
+    \qtab cond_{s} = \lambda s.length \ s == 1\\ 
+    \qtab bx_1 = RearrS \ (\lambda [x] \to x) \ (\lambda x \to [x]) \ Replace\\ 
+    \qtab bx_2 = RearrS \ (\lambda (x::xs) \to (x,xs)) \ (\lambda (x,xs) \to (x::xs)) \ bx_s \ \text{where:}\\ 
+        \qtab \tab bx_s = RearrV \ (\lambda v \to (v,v)) \ (\lambda (v,v) \to v) \ bx_v \ \text{where:}\\
+            \qtab \qtab bx_v = \product{Replace}{replaceAll}$
+
+We can also evaluate $\putbxinline{replaceAll}$ and $\getbxinline{replaceAll}$ similarly to the previous examples if we pay attention to conditions $cond_sv$ and $cond_s$ as well as the if-then-esle-fi structure. $\putbxinline{replaceAll}$ uses the view to update all elements in the source list, while $\getbxinline{replaceAll}$ returns the an element of the source list with same elements. For example, $\putbx{replaceAll}{[1,2,3]}{100} = [100,100,100]$ and $\getbx{replaceAll}{[1,1,1]} = 1$.
 
 \section{pg}
 \subsection{Self-inverse function: pg}
 
-For the approaches so far, when evaluating a composition of BX programs, $get$s are re-evaluated so many times since no intermediate state is stored during the evaluation. This is a kind of information loss. One question is whether it is possible to calculate the above programs without losing information. And the answer is yes. It comes from the the idea of reversible computation where all information during the evaluation need to be kept. In minBiGUL, we can do that by tupling $put$ and $get$. The such pair is accepted as input of a function named $pg$ to produce a new one that contains the actual result of a BX program.
+In minBiGUL or even BiGUL, when evaluating a composition of many programs, $get$s are re-evaluated so many times since no intermediate state is stored during the evaluation. This is a kind of information loss. One question is whether it is possible to calculate such programs without losing information. And the answer is yes. It comes from the the idea of reversible computation where all information during the evaluation need to be kept. In minBiGUL, we can do that by tupling $put$ and $get$. A pair of a source and a view is accepted as the input of a function named $pg$ to produce a new pair that contains the actual result of a corresponding minBiGUL program.
 
 \begin{definition}
     $\pg{bx}{s}{v} = (\putbx{bx}{s}{v}, \getbx{bx}{s})$
@@ -279,11 +398,11 @@ There is a trick in the construction of $\pginline{Skip \ h}$. The first equalit
 $\pg{Replace}{s}{v}\\
     \tab = (v, s)$
 
-$\pg{\product{bx_1}{bx_2}}{s_1 :: s_2}{v_1 :: v_2} \\
-    \tab = ((\putbx{bx_1}{s_1}{v_1}) :: (\putbx{bx_2}{s_2}{v_2}), (\getbx{bx_1}{s_1}) :: (\getbx{bx_2}{s_2})) \\
+$\pg{\product{bx_1}{bx_2}}{(s_1,s_2)}{(v_1,v_2)} \\
+    \tab = ((\putbx{bx_1}{s_1}{v_1}),(\putbx{bx_2}{s_2}{v_2}), (\getbx{bx_1}{s_1}), (\getbx{bx_2}{s_2})) \\
     \tab = (s_1, v_1) \Leftarrow \pg{bx_1}{s_1}{v_1}; \\
         \qtab (s_2, v_2) \Leftarrow \pg{bx_2}{s_2}{v_2}; \\
-        \qtab \tab (s_1 :: s_2, v_1 :: v_2)$
+        \qtab \tab ((s_1,s_2), (v_1,v_2))$
 
 $\pg{\rearrs{f_1}{f_2}{bx}}{s}{v} \\
     \tab = (f_2 \ (\putbx{bx}{(f_1 \ s)}{v}), \getbx{bx}{(f_1 \ s)}) \\
@@ -295,7 +414,7 @@ $\pg{\rearrv{g_1}{g_2}{bx}}{s}{v} \\
     \tab = (s, v) \Leftarrow \pg{bx}{s}{g_1 \ v}; \\
         \qtab \tab (s, g_2 \ v)$\\
 
-Constructions of $pg$ for $[\![Replace]\!]$, $[\![\product{bx_1}{bx_2}]\!]$, $[\![\rearrs{f_1}{f_2}{bx}]\!]$ and $[\![\rearrv{g_1}{g_2}{bx}]\!]$ are very clear when just paring $put$ and $get$ respectively, then doing basic changes.\\
+Constructions of $pg$ for the replacement, the product and the source / view rearrangements are very clear when just paring $put$ and $get$ respectively, then doing basic changes.\\
 
 $\pg{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s}{v} \\
     \tab = (\text{if} \ {cond_{sv} \ s \ v} \\
@@ -311,7 +430,7 @@ $\pg{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s}{v} \\
         \qtab \text{else} \ (s', v') \Leftarrow \pg{bx_2}{s}{v}\\
         \qtab \text{fi} \ cond_{s} \ s' \ \&\& \ cond_{sv} \ s \ v'; \text{ return } (s',v')$\\
 
-A restriction for $\pginline{Case}$ needs to be introduced here. We know that there is one entering condition and one exit condition when evaluating $\putbxinline{Case}$ as well as $\getbxinline{Case}$. If a tupling $put$ and $get$ occurs, there will be 4 combinations of these conditions. This means that two entering conditions of $\putbxinline{Case}$ and $\getbxinline{Case}$ are not always simultaneously satified. The evaluated BXs are distinct in the $put$ and $get$ directions for combinations $((cond_{sv} \ s \ v) \ \&\& \ (not (cond_{s} \ s)))$ and $((not (cond_{sv} \ s \ v) \ \&\& \ (cond_{s} \ s))$, which are restricted in this paper. This does not happen for the others, which the construction of $\pginline{Case}$ uses above. \\
+A restriction for $\pginline{Case}$ needs to be introduced here. We know that there is one entering condition and one exit condition when evaluating $\putbxinline{Case}$ as well as $\getbxinline{Case}$. If a tupling $put$ and $get$ occurs, there will be 4 combinations of these conditions. This means that two entering conditions of $\putbxinline{Case}$ and $\getbxinline{Case}$ are not always simultaneously satified. The evaluated branches are distinct in the $put$ and $get$ directions for combinations $((cond_{sv} \ s \ v) \ \&\& \ (not (cond_{s} \ s)))$ and $((not (cond_{sv} \ s \ v) \ \&\& \ (cond_{s} \ s))$, which are restricted in this paper. This does not happen for the others which is used in the construction of $\pginline{Case}$ above. \\
 
 $\pg{bx_1 \circ bx_2}{s}{v} \\
     \tab = (\putbx{bx_1}{s}{(\putbx{bx_2}{(\getbx{bx_1}{s})}{v})}, \getbx{bx_2}{(\getbx{bx_1}{s})}) \\
@@ -328,52 +447,9 @@ $\pg{bx_1 \circ bx_2}{s}{v} \\
         \qtab (s_3, v_3) \Leftarrow \pg{bx_1}{s_1}{s_2}; \\
             \qtab \tab (s_3, v_2)$\\
 
-The construction of $\pginline{bx_1 \circ bx_2}$ can be considered as the soul of the $pg$ function. The first two equalities comes from mentioned definitions and some basic transformations. The third one rewrites $v_1 \Leftarrow \getbx{bx_1}{s}$ into $(s_1, v_1) \Leftarrow \pg{bx_1}{s}{dummy}$. It is possible if we consider $\getbx{bx_1}{s}$ as the second element of $\pg{bx_1}{s}{dummy}$ where $dummy$ is a special value that make the $put \, [\![bx_1]\!]$ valid. The last equality substitutes $s$ in $(s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2}$ by $s_1$ which is the evaluated result of $\putbx{bx_1}{s}{dummy}$. This transformation is feasible due to the PUTPUT law. Then, $v_3$ in the result pair $(s_3,v_3)$ equals $dummy$. So we can realize that there is no loss information when computing a composition.
+The construction of $\pginline{bx_1 \circ bx_2}$ can be considered as the soul of the $pg$ function. The first two equalities comes from mentioned definitions and some basic transformations. The third one rewrites $v_1 \Leftarrow \getbx{bx_1}{s}$ into $(s_1, v_1) \Leftarrow \pg{bx_1}{s}{dummy}$. It is possible if we consider $\getbx{bx_1}{s}$ as the second element of $\pg{bx_1}{s}{dummy}$ where $dummy$ is a special value that makes the $put \, [\![bx_1]\!]$ valid. Due to GETPUT law, we can use $get \ s$ to update the source $s$ in the $put$ direction. Then it is feasible to construct a dummy from the source. The last equality changes $dummy$ by an application $construct\_dummy \ s$, and also substitutes $s$ in $(s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2}$ by $s_1$ which is the evaluated result of $\putbx{bx_1}{s}{construct\_dummy \ s}$. This transformation is possible due to the PUTPUT law. Then, $v_3$ in the result pair $(s_3,v_3)$ equals $dummy$. So we can realize that there is no loss information when computing a composition.
 
 \subsection{Evaluation by pg}
-
-To better understand about $pg$, let's take a look at some examples. The following is the definition of $phead$ in BiGUL [?]:
-
-    $\tab phead :: Show \ s \Rightarrow BiGUL \ [s] \ s\\
-    \tab phead = \$(RearrS \ [\![\lambda(s:ss) \to (s,ss)]\!])\$\\
-        \qtab \qtab \quad \$(RearrV \ [\![\lambda v \to (v,())]\!])\$\\
-            \qtab \qtab \qquad Replace \ `prod\text{'} \ (Skip \ (const \ ()))$
-
-The above program rearranges the source, a non-empty list, to a pair of its head element $s$ and its tail $ss$, and the view to a pair $(v, ())$, then we can use $v$ to replace $s$ and $()$ to keep $ss$. $\putbx{phead}{s_0}{v_0}$ returns a list whose head is $v_0$ and tail is the tail of $s_0$. $\getbx{phead}{s_0}$ returns the head of $s_0$. For instance, $\putbx{phead}{[1,2,3]}{100} = [100,2,3]$ and $\getbx{phead}{[1,2,3]} = 1$.\\
-
-In minBiGUL, we can express $phead$ as follows:
-
-    $\tab phead = RearrS \ f_1 \ f_2 \ bx_s \ \text{where:}\\
-        \qtab f_1 = \lambda (s:ss).(s,ss)\\
-        \qtab f_2 = \lambda (s,ss).(s:ss)\\
-        \qtab bx_s = RearrV \ g_1 \ g_2 \ bx_v \ \text{where:}\\
-            \qtab \qtab g_1 = \lambda v.(v,())\\
-            \qtab \qtab g_2 = \lambda (v,()).v\\
-            \qtab \qtab bx_v = Replace \ prod \ (Skip (const ()))$\\
-
-Now, we evaluate $\putbxinline{phead}$ and $\getbxinline{phead}$ based on their definitions:
-
-$\putbx{phead}{[1,2,3]}{100}\\
-    \tab = \putbx{\rearrs{f_1}{f_2}{bx_s}}{[1,2,3]}{100}\\
-    \tab = f_2 \ (\putbx{bx_s}{(f_1 \ [1,2,3])}{100})\\
-    \tab = f_2 \ (\putbx{\rearrv{g_1}{g_2}{bx_v}}{(1,[2,3])}{100})\\
-    \tab = f_2 \ (\putbx{bx_v}{(1,[2,3])}{(g_1 \ 100}))\\
-    \tab = f_2 \ (\putbx{Replace \ prod \ (Skip (const ()))}{(1,[2,3])}{(100,())})\\
-    \tab = f_2 \ ((\putbx{Replace}{1}{100}) :: (\putbx{(Skip (const ()))}{[2,3]}{()}))\\
-    \tab = f_2 \ (100 :: [2,3])\\
-    \tab = f_2 \ (100, [2,3])\\
-    \tab = [100,2,3]$\\
-
-$\getbx{phead}{[1,2,3]}\\
-    \tab = \getbx{\rearrs{f_1}{f_2}{bx_s}}{[1,2,3]}\\
-    \tab = \getbx{bx_s}{(f_1 \ [1,2,3])}\\
-    \tab = \getbx{\rearrv{g_1}{g_2}{bx_v}}{(1,[2,3])}\\
-    \tab = g_2 \ (\getbx{bx_v}{(1,[2,3])})\\
-    \tab = g_2 \ (\getbx{Replace \ prod \ (Skip (const ()))}{(1,[2,3])})\\
-    \tab = g_2 \ ((\getbx{Replace}{1}) :: (\getbx{(Skip (const ()))}{[2,3]}))\\
-    \tab = g_2 \ (1 :: ())\\
-    \tab = g_2 \ (1,())\\
-    \tab = 1$\\
 
 By the definition of $pg$, we have:
 $\pg{phead}{[1,2,3]}{100}\\
@@ -393,15 +469,15 @@ $\pg{phead}{[1,2,3]}{100}\\
         \qtab \};\\
         \qtab \tab (f_2 \ s, v)\\
     \tab = (s, v) \Leftarrow \{\\
-        \qtab \tab (s, v) \Leftarrow \pg{Replace \ prod \ (Skip (const ()))}{(1,[2,3])}{((100,()))};\\
+        \qtab \tab (s, v) \Leftarrow \pg{\product{Replace}{(Skip \ (\lambda \_.()))}}{(1,[2,3])}{((100,()))};\\
         \qtab \tab (s, g_2 \ v)\\
         \qtab \};\\
         \qtab \tab (f_2 \ s, v)\\
     \tab = (s, v) \Leftarrow \{\\
         \qtab \tab (s, v) \Leftarrow \{\\
             \qtab \qtab (s_1, v_1) \Leftarrow \pg{Replace}{1}{100};\\
-            \qtab \qtab (s_2, v_2) \Leftarrow \pg{(Skip (const ()))}{[2,3]}{()};\\
-            \qtab \qtab (s_1 :: s_2, v_1 :: v_2)\\
+            \qtab \qtab (s_2, v_2) \Leftarrow \pg{(Skip \ (\lambda \_.()))}{[2,3]}{()};\\
+            \qtab \qtab ((s_1,s_2), (v_1,v_2))\\
         \qtab \tab \};\\
         \qtab \tab (s, g_2 \ v)\\
         \qtab \};\\
@@ -410,7 +486,7 @@ $\pg{phead}{[1,2,3]}{100}\\
         \qtab \tab (s, v) \Leftarrow \{\\
             \qtab \qtab (s_1, v_1) \Leftarrow (100, 1);\\
             \qtab \qtab (s_2, v_2) \Leftarrow ([2,3], ());\\
-            \qtab \qtab (s_1 :: s_2, v_1 :: v_2)\\
+            \qtab \qtab ((s_1,s_2), (v_1,v_2))\\
         \qtab \tab \};\\
         \qtab \tab (s, g_2 \ v)\\
         \qtab \};\\
@@ -424,76 +500,40 @@ $\pg{phead}{[1,2,3]}{100}\\
         \qtab \tab (f_2 \ s, v)\\
     \tab = ([100,2,3], 1)$\\
 
-If we wanna update the head element of the head element of a list of lists by using the view, we can define a composition like $phead \circ phead$. For example:
-
-    \tab $\putbx{phead \circ phead}{[[1,2,3],[\ ],[4,5]]}{100} = [[100,2,3],[\ ],[4,5]]$\\
-    \tab $\getbx{phead \circ phead}{[[1,2,3],[\ ],[4,5]]} = 1$\\
-
-We distingwish two $phead$s in the composition by indices. According to definitions of $\putbxinline{bx}$ and $\getbxinline{bx}$, we have:
-
-$\getbx{phead_1 \circ phead_2}{[[1,2,3],[\ ],[4,5]]}\\
-    \tab = \getbx{phead_2}{(\getbx{phead_1}{[[1,2,3],[\ ],[4,5]]})}\\
-    \tab = \getbx{phead_2}{[1,2,3]}\\
-    \tab = 1$\\
-
-$\putbx{phead_1 \circ phead_2}{[[1,2,3],[\ ],[4,5]]}{100}\\
-    \tab = \putbx{phead_1}{[[1,2,3],[\ ],[4,5]]}{(\putbx{phead_2}{(\getbx{phead_1}{[[1,2,3],[\ ],[4,5]]})}{100})}\\
-    \tab = \putbx{phead_1}{[[1,2,3],[\ ],[4,5]]}{(\putbx{phead_2}{[1,2,3]}{100})}\\
-    \tab = \putbx{phead_1}{[[1,2,3],[\ ],[4,5]]}{[100,2,3]}\\
-    \tab = [[100,2,3],[\ ],[4,5]]$\\
-
 We also have the evaluation of $\pginline{phead_1 \circ phead_2}$ as follows:
 
-$\pg{phead_1 \circ phead_2}{[[1,2,3],[\ ],[4,5]]}{100}\\
-    \tab = (f, a) \Leftarrow \pg{phead_1}{[[1,2,3],[\ ],[4,5]}{dummy};\\
-        \qtab (b, c) \Leftarrow \pg{phead_2}{a}{100};\\
-        \qtab (d, e) \Leftarrow \pg{phead_1}{f}{b};\\
-            \qtab \tab (d, c)\\
-    \tab = (f, a) \Leftarrow ([dummy,[\ ],[4,5]], [1,2,3]);\\
-        \qtab (b, c) \Leftarrow \pg{phead_2}{[1,2,3]}{100};\\
-        \qtab (d, e) \Leftarrow \pg{phead_1}{f}{b};\\
-            \qtab \tab (d, c)\\
-    \tab = (f, a) \Leftarrow ([dummy,[\ ],[4,5]], [1,2,3]);\\
-        \qtab (b, c) \Leftarrow ([100,2,3], 1);\\
-        \qtab (d, e) \Leftarrow \pg{phead_1}{[dummy,[\ ],[4,5]]}{[100,2,3]};\\
-            \qtab \tab (d, c)\\
-    \tab = (f, a) \Leftarrow ([dummy,[\ ],[4,5]], [1,2,3]);\\
-        \qtab (b, c) \Leftarrow ([100,2,3], 1);\\
-        \qtab (d, e) \Leftarrow ([[100,2,3],[\ ],[4,5]], dummy);\\
-            \qtab \tab (d, c)\\
-    \tab = ([[100,2,3],[\ ],[4,5]], 1)$\\
+$\pg{phead_1 \circ phead_2}{[[1,2,3],[\,],[4,5]]}{100}\\
+    \tab = (s_1, v_1) \Leftarrow \pg{phead_1}{[[1,2,3],[\,],[4,5]}{dummy};\\
+        \qtab (s_2, v_2) \Leftarrow \pg{phead_2}{v_1}{100};\\
+        \qtab (s_3, v_3) \Leftarrow \pg{phead_1}{s_1}{s_2};\\
+            \qtab \tab (s_3, v_2)\\
+    \tab = (s_1, v_1) \Leftarrow ([dummy,[\,],[4,5]], [1,2,3]);\\
+        \qtab (s_2, v_2) \Leftarrow \pg{phead_2}{[1,2,3]}{100};\\
+        \qtab (s_3, v_3) \Leftarrow \pg{phead_1}{s_1}{s_2};\\
+            \qtab \tab (s_3, v_2)\\
+    \tab = (s_1, v_1) \Leftarrow ([dummy,[\,],[4,5]], [1,2,3]);\\
+        \qtab (s_2, v_2) \Leftarrow ([100,2,3], 1);\\
+        \qtab (s_3, v_3) \Leftarrow \pg{phead_1}{[dummy,[\,],[4,5]]}{[100,2,3]};\\
+            \qtab \tab (s_3, v_2)\\
+    \tab = (s_1, v_1) \Leftarrow ([dummy,[\,],[4,5]], [1,2,3]);\\
+        \qtab (s_2, v_2) \Leftarrow ([100,2,3], 1);\\
+        \qtab (s_3, v_3) \Leftarrow ([[100,2,3],[\,],[4,5]], dummy);\\
+            \qtab \tab (s_3, v_2)\\
+    \tab = ([[100,2,3],[\,],[4,5]], 1)$\\
 
-In the above evaluation, we do not clearly define what $dummy$ is. As we mentioned, $dummy$ is a special value which makes the first $\pginline{phead_1}$ valid. In this case, if we care about the type of $dummy$, it should be a list of integers.
-
-\textcolor{red}{
-    \begin{itemize}
-    \item In pg approach we always need to supply source and view.
-    \item If we would like to evaluate get, we do not have any view.
-    \item For this, we require the programmer to write a function to produce view from source. (This can be the same with get??)
-    \end{itemize}
-}
-
-%\begin{itemize}
-%\item Because we combine put and get, we need to supply view for evaluation of get.
-%\item introduce dummy?
-%\item automatic analysis for domain \& range?
-%\item 
-%\item partial evaluation of put(s(D), dummy(S)).
-%\item \textcolor{red}{Not good? Basically put (BX) is often a recursion on the source. If source is static, partial evaluation will work well. On the other hand, view is small data. So partial evaluation might not work well.}
-%\item \textcolor{red}{lazy evaluation is also a possibility?}
-%\end{itemize}
+In the above evaluation, we do not clearly contruct what $dummy$ is. As we mentioned, $dummy$ is a special value which makes the first $\pginline{phead_1}$ valid. In this case, if we care about the type of $dummy$, it should be a list of integers. Thus, we can choose $dummy$ is an arbitrary list which has that type, for instance, an empty list or the head element of the source.
 
 \section{cpg}
 
-When evaluating $\pginline{bx_1 \circ bx_2}$, we realize that there are three $pg$ calls, of which twice for $\pginline{bx_1}$ and once for $\pginline{bx_2}$. If a given BX program is a left-associative composition, the number of $pg$ calls will be exponential. Therefore, the runtime inefficiency is inevitable.
+When evaluating $\pginline{bx_1 \circ bx_2}$, we realize that there are three $pg$ calls, of which twice for $\pginline{bx_1}$ and once for $\pginline{bx_2}$. If a given program is a left-associative composition, the number of $pg$ calls will be exponential. Therefore, the runtime inefficiency is inevitable.
 
 In this section, we introduce a new function, $cpg$, accumulates changes in the source and the view to solve that problem. $\cpg{bx}{ks}{kv}{s}{v}$ is an extension of $\pg{bx}{s}{v}$ where $ks$ and $kv$ are continuations used to hold the modification information, and $s$ and $v$ are used to keep evaluated values. The output of this function is a 4-tuple $(ks, kv, s, v)$.
 
-To be more convenient for presenting the definition of $cpg$ as well as the other functions later, we will use some following utility functions:
+To be more convenient for presenting the definition of $cpg$ as well as the other functions later, we provide some following utility functions:
 
-$\tab fst = \lambda (x_1 :: x_2). x_1\\
- \tab snd = \lambda (x_1 :: x_2). x_2\\
- \tab con = \lambda ks_1. \lambda ks_2. \lambda x. ((ks_1 \ x) :: (ks_2 \ x))$\\
+$\tab fst = \lambda (x_1,x_2). x_1\\
+ \tab snd = \lambda (x_1,x_2). x_2\\
+ \tab con = \lambda ks_1. \lambda ks_2. \lambda x. ((ks_1 \ x),(ks_2 \ x))$\\
 
 \begin{definition}
 $\cpg{bx}{ks}{kv}{s}{v}$
@@ -505,7 +545,7 @@ $\cpg{Replace}{ks}{kv}{s}{v} = (kv, ks, v, s)$\\
 $\cpg{\product{bx_1}{bx_2}}{ks}{kv}{s}{v} =\\
     \tab (ks_1, kv_1, s_1, v_1) \Leftarrow \cpg{bx_1}{fst \circ ks}{fst \circ kv}{fst \ s}{fst \ v};\\
     \tab (ks_2, kv_2, s_2, v_2) \Leftarrow \cpg{bx_2}{snd \circ ks}{snd \circ kv}{snd \ s}{snd \ v};\\
-    \qtab (con \ ks_1 \ ks_2, con \ kv_1 \ kv_2, s_1 :: s_2, v_1 :: v_2)$\\
+    \qtab (con \ ks_1 \ ks_2, con \ kv_1 \ kv_2, (s_1,s_2), (v_1,v_2))$\\
 
 $\cpg{RearrS \ f_1 \ f_2 \ bx}{ks}{kv}{s}{v} =\\
     \tab (ks, kv, s, v) \Leftarrow \cpg{bx}{f_1 \circ ks}{kv}{f_1 \ s}{v};\\
@@ -539,10 +579,27 @@ Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated so
 
 In general, the begining of a continuation should be an identity function. However, to be able to use the function application to get the result of $\cpginline{bx_1 \circ bx_2}$, the accumulative function on the source $s$ needs to be initiated as a constant function $\lambda \_.s$.
 
+Suppose the begining of continuations $ks$ and $kv$ are $ks_0$ and $id$ respectively. Let's consider $\cpg{phead_1 \circ phead_2}{ks_0}{id}{s}{v}$ where $s = [[1,2,3], [\,], [4,5]]$ and $v = 100$.\\ 
+After the first two assignments in the definition of $cpg$ for the composition, we have:\\ 
+    $\tab ks_1 = f_2 \circ (con \ (fst \circ g_1 \circ id) \ (snd \circ f_1 \circ ks_0))\\
+    \tab s_2 = [100,2,3]$\\
+where $f_1 = \lambda (s::ss).(s,ss)$, $f_2 = \lambda (s,ss).(s::ss)$, $g_1 = \lambda v.(v,())$\\
+Then:\\ 
+$\tab ks_1 \ s_2 \\ 
+\tab = (f_2 \circ (con \ (fst \circ g_1 \circ id) \ (snd \circ f_1 \circ ks_0))) \ s_2 \\
+\tab = f_2 \ (\ (fst(g_1(id(s_2))) \ , \ snd(f_1(ks_0(s_2))))\ )\\
+\tab = fst(g_1(id(s_2))) :: snd(f_1(ks_0(s_2)))\\
+\tab = [100,2,3] :: snd(f_1(ks_0([100,2,3])))$
+
+If $ks_0$ is an identity function, $ks_1 \ s_2 = [100,2,3] :: [2,3]$. This is an unexpected result when we target it to be the updated source. If $ks_0 = \lambda \_.s$ where $s = [[1,2,3], [\,], [4,5]]$, $ks_1 \ s_2 = [100,2,3] :: [[\,], [4,5]] = [[100,2,3], [\,], [4,5]]$. This time, the result is what we want to see.
+
+Through the above example, using the continuation $ks$ as a constant function at the beginning contributes to keep the unchanged parts in the source.
+
+
 \section{kpg}
 
 In the previous section, we have known that there are some variables which are evaluated but not used later when evaluating $\cpginline{bx_1 \circ bx_2}$. Now we introduce $kpg$, an extension of $cpg$, for keeping away such redundant computations. 
-While $cpg$ evaluate values eagerly, $kpg$ does the opposite. Every values are evaluated lazily in a computation of $kpg$. The input of $\kpginline{bx}$ is expanded to a 6-tuple $(ks, kv, ks', kv', s, v)$ where $ks$, $kv$ and $s$, $v$ are still used to keep the modifcation information and evaluated values respectively, $ks'$ and $kv'$ are used for lazy evaluation of actual values. The output of this function is also a 6-tuple $(ks, kv, ks', kv', s, v)$.\\
+While $cpg$ evaluate values eagerly, $kpg$ does the opposite. Every values are evaluated lazily in a computation of $kpg$. The input of $\kpginline{bx}$ is expanded to a 6-tuple $(ks, kv, ks', kv', s, v)$ where $ks$ and $kv$ keep the modifcation information, $s$ and $v$ hold evaluated values, and $ks'$ and $kv'$ are used for lazy evaluation of actual values. The output of this function is also a 6-tuple $(ks, kv, ks', kv', s, v)$.\\
 
 Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated source and view $(s, v)$ where $s = \putbx{bx}{s_0}{v_0}$ and $v = \getbx{bx}{s_0}$ can be obtained using $kpg$ as follows:
 
@@ -550,7 +607,7 @@ Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated so
     \tab (ks, kv, ks', kv', s, v) \Leftarrow \kpg{bx}{\lambda \_.s}{id}{id}{id}{s}{v};\\
         \qtab (ks' \ s; kv' \ v)$
 
-The begining of accumulative functions $kv$, $ks'$, $kv'$ are set as identity, while $ks$ is initiated as a constant function over the source for the same reason as in $cpg$.
+The begining of accumulative functions $ks'$ and $kv'$ are set as identity, while $ks$ and $kv$ are initiated as the same with the corresponding ones in $cpg$.
 
 \begin{definition}
 $\kpg{bx}{ks}{kv}{ks'}{kv'}{s}{v}$
@@ -562,14 +619,14 @@ $\kpg{Skip \ h}{ks}{kv}{ks'}{kv'}{s}{v} =\\
 
 $\kpg{Replace}{ks}{kv}{ks'}{kv'}{s}{v} = (kv, ks, kv', ks', v, s)$\\
 
-$\kpg{bx_1 \ prod \ bx_2}{ks}{kv}{ks'}{kv'}{s}{v} =\\
+$\kpg{\product{bx_1}{bx_2}}{ks}{kv}{ks'}{kv'}{s}{v} =\\
     \tab s \Leftarrow ks' \ s; \quad v \Leftarrow kv' \ v;\\
     \tab ks' \Leftarrow id; \quad kv' \Leftarrow id;\\
     \tab (ks_1, kv_1, ks_1', kv_1', s_1, v_1) \Leftarrow \kpg{bx_1}{fst \circ ks}{fst \circ kv}{fst \circ ks'}{fst \circ kv'}{s}{v};\\
     \tab (ks_2, kv_2, ks_2', kv_2', s_2, v_2) \Leftarrow \kpg{bx_2}{snd \circ ks}{snd \circ kv}{snd \circ ks'}{snd \circ kv'}{s}{v};\\
     \tab ( con \ ks_1 \ ks_2, con \ kv_1 \ kv_2, \\
     \tab con \ (ks_1' \circ fst) \ (ks_2' \circ snd), con \ (kv_1' \circ fst) \ (kv_2' \circ snd), \\
-    \tab s_1 :: s_2, v_1 :: v_2)$\\
+    \tab (s_1, s_2), (v_1,v_2))$\\
 
 $\kpg{RearrS \ f_1 \ f_2 \ bx}{ks}{kv}{ks'}{kv'}{s}{v} =\\
     \tab (ks, kv, ks', kv', s, v) \Leftarrow \kpg{bx}{f_1 \circ ks}{kv}{f_1 \circ ks'}{kv'}{s}{v};\\
@@ -585,7 +642,7 @@ $\kpg{Case \ cond_{sv} \ cond_{s} \ bx_1 \ bx_2}{ks}{kv}{ks'}{kv'}{s}{v} =\\
     \tab \text{if} \ cond_{sv} \ s \ v \&\& \ cond_{s} \ s\\
     \tab \text{then} \ (ks, kv, ks', kv', s', v') \Leftarrow \kpg{bx_1}{ks}{kv}{ks'}{kv'}{s}{v}\\
     \tab \text{else} \ (ks, kv, ks', kv', s', v') \Leftarrow \kpg{bx_2}{ks}{kv}{ks'}{kv'}{s}{v}\\
-    \tab \text{fi} \ cond_s \ (ks' \ s') \&\& \ cond_{sv} \ s \ (kv' v'); \ \text{return} \ (ks, kv, ks', kv', s', v')$\\
+    \tab \text{fi} \ cond_s \ (ks' \ s') \ \&\& \ cond_{sv} \ s \ (kv' v'); \ \text{return} \ (ks, kv, ks', kv', s', v')$\\
 
 $\kpg{bx_1 \circ bx_2}{ks}{kv}{ks'}{kv'}{s}{v} =\\
     \tab (ks_1, kv_1, \underline{ks_1'}, kv_1', \underline{s_1}, v_1) \Leftarrow \kpg{bx_1}{ks}{id}{ks'}{id}{s}{construct\_dummy \ s};\\
@@ -593,11 +650,11 @@ $\kpg{bx_1 \circ bx_2}{ks}{kv}{ks'}{kv'}{s}{v} =\\
     \qtab (ks_1 \circ ks_2, kv_2, ks_1 \circ ks_2', kv_2', s_2, v_2)$
 \end{definition}
 
-In this construction of $kpg$, $s$ and $v$ hold actual values only in case of $Skip$ and $Case$. Except them, the functions for computation will be kept as $ks'$ and $kv'$.
+In this construction of $kpg$, $s$ and $v$ hold actual values only in case of $Skip$ and $Case$. Except them, the functions for computation will be kept in $ks'$ and $kv'$.
     
 When evaluating $\kpginline{bx_1 \circ bx_2}$, $ks_1'$ and $s_1$ in the result of the first assignment are still redundant but they are not evaluated. 
 
-In $\kpginline{bx_1 \ prod \ bx_2}$, the evaluation of $ks'$ and $kv'$ will be done indendently in $\kpginline{bx_1}$ and $\kpginline{bx_2}$. It is possible to evaluate actual values in $s$ and $v$ to remove redundant recomputations.
+In $\kpginline{bx_1 \ prod \ bx_2}$, the evaluation of $ks'$ and $kv'$ will be done indendently in two assingments using $\kpginline{bx_1}$ and $\kpginline{bx_2}$. There may be some recomputations in $fst \circ ks'$ and $snd \circ ks'$ as well as $fst \circ kv'$ and $snd \circ kv'$. It is possible to evaluate actual values in $s$ and $v$ before calling $\kpginline{bx_1}$ to remove the redundancy like that.
 
 \section{xpg}
 
@@ -606,7 +663,7 @@ So far, when computing a composition, we only recursively call an unique functio
 \begin{definition}
 $\xpg{bx}{s}{v}$
 
-$\xpg{bx}{s}{v} = \text{same with } pg \text{ if } bx \text{ is not compose}$
+$\xpg{bx}{s}{v} = \text{same with } pg \text{ if } bx \neq bx_1 \circ bx_2$
 
 $\xpg{bx_1 \circ bx_2}{s}{v} =\\
     \tab (ks_1,kv_1, ks_1', kv_1', s_1, v_1) \Leftarrow \kpg{bx_1}{\lambda \_.s}{id}{id}{id}{s}{construct\_dummy \ s};\\
@@ -614,7 +671,7 @@ $\xpg{bx_1 \circ bx_2}{s}{v} =\\
     \qtab (ks_1 \ s_2, v_2)$
 \end{definition}
 
-Similar to $pg$, $\xpginline{bx}$ accepts a pair of the source and the view $(s,v)$ to produce the updated pair. The constructions of $\xpginline{bx}$ when $bx$ is not a composition are the same as the ones of $\pginline{bx}$. Here, $xpg$ is called recursively instead of $pg$. For $\xpginline{bx_1 \circ bx_2}$, we use two function calls and a function application to calculate the result. The first call and the function application are come from $kpg$ approaches, while the second call is based on $pg$ approach.
+Similar to $pg$, $\xpginline{bx}$ accepts a pair of the source and the view $(s,v)$ to produce the new pair. The constructions of $\xpginline{bx}$ when $bx$ is not a composition are the same as the ones of $\pginline{bx}$. Note that, $xpg$ is called recursively instead of $pg$. For $\xpginline{bx_1 \circ bx_2}$, we use two function calls and a function application to calculate the result. The first call and the function application come from $kpg$ approaches, while the second call is based on $pg$ approach.
 
 \section{Experiment}
 
@@ -644,19 +701,19 @@ We are conducted tests on 5 cases, including many composition styles such as lef
 
 In table \ref{tab:test-cases}, $s_r$ and $v_r$ are respectively updated source and view which are produced by applying $put$ and $get$ on original source $s_0$ and original view $v_0$. This means: $s_r = \putbx{bx}{s_0}{v_0}$ and $v_r = \getbx{bx}{s_0}$, where $bx$ is one of the 5 cases mentioned in the table. Note that the results $s_r$ and $v_r$ do not depend on the associative style of the composition.\\
 
-The first 4 test cases simply use $n$ compose operators to make a composition of $n + 1$ similar $BX$ programs which are non-recursive. For example, \textit{lassoc-comp-replace} looks like $(\ldots((Replace \circ Replace) \circ Replace) \circ \ldots \circ Replace) \circ Replace$, while \textit{rassoc-comp-replace} is like $Replace \circ (Replace \circ (Replace \circ \ldots \circ (Replace \circ Replace)\ldots))$, where there are $n + 1 \ Replace$s in each case. \textit{lassoc-comp-phead} and \textit{rassoc-comp-phead} are similar to the above two.
+The first 4 test cases simply use $n$ compose operators to make a composition of $n + 1$ similar $BX$ programs which are non-recursive. For example, \textit{lassoc-comp-replace}, left-associative composition of $Replace$s, looks like $(\ldots((Replace \circ Replace) \circ Replace) \circ \ldots \circ Replace) \circ Replace$, while \textit{rassoc-comp-replace}, right-associative composition of $Replace$s, is like $Replace \circ (Replace \circ (Replace \circ \ldots \circ (Replace \circ Replace)\ldots))$, where there are $n + 1 \ Replace$s in each case. \textit{lassoc-comp-phead} and \textit{rassoc-comp-phead} are similar to the above two.
 
-In section 3, we defined a composition $phead \circ phead$ for updating the head element of the head element of a list of lists by using the view. Similarly, we can use the view to update head element in the nested lists with a composition of a specific number of $phead$s. For both \textit{lassoc-comp-phead} and \textit{rassoc-comp-phead}, we choose input view $v_0$ is 100 and input source $s_0$ is one of the smallest nested lists which make $put$ and $get$ direction on the composition valid.\\
+In section 3, we defined a composition $phead \circ phead$ for updating the head element of the head element of a list of lists by using the view. Similarly, we can use the view to update head element in the nested lists with a composition of a specific number of $phead$s. For both \textit{lassoc-comp-phead} and \textit{rassoc-comp-phead}, we choose input view $v_0$ is 100 and input source $s_0$ is one of the smallest nested lists which make $put$ and $get$ directions on the composition valid.\\
 
 The last test case, $bReverse$, is a recursive composition. It is defined in terms of $bFoldr$, a putback function for $foldr$ in BiGUL as well as minbigul. What we know about $foldr$, an important higher-order function on lists, is as follows:\\
     $\tab foldr :: (a \to b \to b) \to b \to [a] \to b\\
-    \tab foldr \ f \ e \ [\ ] = e\\
+    \tab foldr \ f \ e \ [\,] = e\\
     \tab foldr \ f \ e \ (x:xs) = f \ x \ (foldr \ f \ e \ xs)$
 
 We can define function $reverse$ on lists based on $foldr$:\\
-    $\tab reverse \ [\ ] = [\ ]\\
+    $\tab reverse \ [\,] = [\,]\\
     \tab reverse \ (x:xs) = snoc \ x \ (reverse \ xs)\\
-    \tab reverse = foldr \ snoc \ [\ ]$
+    \tab reverse = foldr \ snoc \ [\,]$
 
 Let's see the following definition of $bFoldr$ which is a restricted version of $lensFoldr$ in [?] without adaptive cases:
 
@@ -679,7 +736,7 @@ Suppose that we haved $bSnoc$, a bidirectional version of $snoc$, in BiGUL. Then
         \qtab Case \ [ \$(adaptive \ [\![ \lambda s \ v \to length \ s \neq length \ v ]\!])\\
         \qtab \qtab \quad \lambda s \ v \to v\\
         \qtab \qtab , \$(normal \ [\![ \lambda s \ v \to True ]\!] \ [\![ \lambda s \to True ]\!])\\
-        \qtab \qtab \quad \$(RearrS \ [\![ \lambda s \to (s,[\ ]) ]\!])\$\\
+        \qtab \qtab \quad \$(RearrS \ [\![ \lambda s \to (s,[\,]) ]\!])\$\\
             \qtab \qtab \qquad bFoldr \ bSnoc\\
        \qtab \qtab ]$
 
