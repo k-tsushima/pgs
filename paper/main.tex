@@ -103,22 +103,27 @@ The abstract should briefly summarize the contents of the paper in
 %
 %
 
-Points to discuss
+Schedule
 \begin{itemize}
-\item Schedule:
+
 \item Introduction (story), Contribution, positions, examples, beginning of September?
 \item zero draft : mid of September 
   
-\item When will be the deadline of PEPM2020 (October 18th)
+\item deadline of PEPM2020 (October 18th)
 \item ESOP (?)
 \item Need to change the style file of latex..
 \item []
+\end{itemize}
 
-
+Points to discuss
+\begin{itemize}
+\item Introduction (story)
+\item Contributions
 \item Related work?
-\item 
+\item One week to revise current version.
+  After that, Prof. Hu and Robert, could you send comments?
 
-\item TODO: %relationship between result (original vs \{cpg, kpg, xpg\})
+%\item TODO: %relationship between result (original vs \{cpg, kpg, xpg\})
 %\item right assoc \& Recursive example?
 %\item current foldr is not efficient? Are there any efficient foldr? Question to Prof. Hu.
 %\item Language to show semantics: fi?, $f^{-1}$, $cond_{sv}$ and $cond_{s}$
@@ -171,8 +176,8 @@ Figure that shows many gets re-evaluation
 To solve this problem and make BiGUL evaluation efficient, we use two techniques. The first technique is tupling, well-known technique for efficiency \cite{}. Its basic idea is to reduce the common computations by combining two evaluations. In our work, we combines the evaluation of $put$ and $get$, and introduce $pg$. Thanks to tupling, we do not lose information like intermediate states.
 The second technique is lazy update and lazy computation. $pg$ itself includes some inefficiency. For removing the inefficiency we do the update and computation lazily.
 
-The rest of this paper is the following. We introduce a subset of BiGUL, miniBiGUL, and show syntax, semantics, and properties in Section 2. Combining the semantics of put and get in Section 2, we construct $pg$ and show that it is self-inverse in Section 3.
-We apply three optimizations to $pg$ in sequence. The first one is keeping update of BX lazily, and obtain $cpg$ in Section 4. The second one is lazy evaluation to avoid redundant computation, and obtain $kpg$ in Section 5. The third one is combination of $pg$ and $kpg$ in Section 6, because they are strong for different type of programs. In Section 7, we show experiemntal result of $pg$, $cpg$, $kpg$, $xpg$ and the original miniBiGUL.
+The rest of this paper is the following. We introduce a subset of BiGUL, miniBiGUL, and show its syntax, semantics, and properties in Section 2. Combining the semantics of put and get in Section 2, we construct $pg$ and show that it is self-inverse in Section 3.
+We apply three optimizations to $pg$ in sequence. The first one is keeping update of BX lazily, and we obtain $cpg$ in Section 4. The second one is lazy evaluation to avoid redundant computations, and we obtain $kpg$ in Section 5. The third one is combination of $pg$ and $kpg$ in Section 6, because they are strong for different type of programs. In Section 7, we show experiemntal results of $pg$, $cpg$, $kpg$, $xpg$ and miniBiGUL.
 In Section 8 we discuss about related work, and conclude in Section 9.
 
 
@@ -216,18 +221,18 @@ In Section 8 we discuss about related work, and conclude in Section 9.
 %    put(s, dummy) can be a complement function.
   \end{itemize}
 
-\subsection{Construction of this paper}
+%\subsection{Construction of this paper}
 
-\begin{itemize}
-\item BiGUL 
-\item pg (pair of put and get)
-\item cpg (extention of pg. Keep eval information for reusing)
-\item kpg (extention of cpg. Lazy evaluation)
-\item xpg (combination of pg and kpg)
-\item Experiment
-\item Related work
-\item Conclusion and Future work
-\end{itemize}
+%\begin{itemize}
+%\item BiGUL 
+%\item pg (pair of put and get)
+%\item cpg (extention of pg. Keep eval information for reusing)
+%\item kpg (extention of cpg. Lazy evaluation)
+%\item xpg (combination of pg and kpg)
+%\item Experiment
+%\item Related work
+%\item Conclusion and Future work
+%\end{itemize}
 
 \section{Bidirectional Programming Language: minBiGUL}
 
@@ -1219,6 +1224,13 @@ Fig \ref{fig:memory-allocation} shows the memory usage which depends on the inpu
 Table \ref{tab:comparison} indicates a general comparison of the above results over the evaluation time and the memory allocation. This table provides some additional information about the point where a stack overflow error occurs in our OCaml system. We conducted tests while increasing the number of compositions from 10 to 100000. By default, the stack overflow point in the table is larger than 100000. In some cases, we limited the number of compositions because the corresponding evaluation times are too long. Then the above points are not determined.  
 
 \section{Related Work}
+
+\begin{itemize}
+\item BiGUL papers (PEPM, POPL, tutorial?)
+\item the first BX paper
+\item view update problem paper
+\item get-based 
+\end{itemize}
 
 
 
