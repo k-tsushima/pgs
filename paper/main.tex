@@ -23,7 +23,7 @@
 % to display URLs in blue roman font according to Springer's eBook style:
 % \renewcommand\UrlFont{\color{blue}\rmfamily}
 
-\pgfplotsset{compat=1.12}
+\pgfplotsset{compat=1.11}
 
 \setlength{\parindent}{0pt}
 \renewcommand{\indent}{\hspace*{0pt}}
@@ -103,6 +103,18 @@ The abstract should briefly summarize the contents of the paper in
 %
 %
 
+% plan to pages
+% abstraction & title & Introduction: 3pages
+% miniBiGUL: 1.5page
+% pg: 3pages
+% cpg: 2page
+% kpg: 1page
+% xpg:0.5page
+% evaluation:2pages
+% related work:1page
+% conclusion:1page (including reference)
+% page limit : 15
+
 Schedule
 \begin{itemize}
 
@@ -110,7 +122,8 @@ Schedule
 \item zero draft : mid of September 
   
 \item deadline of PEPM2020 (October 18th)
-\item ESOP (?)
+\item ESOP (October 24th)
+\item FLOPS (the middle of November??)
 \item Need to change the style file of latex..
 \item []
 \end{itemize}
@@ -173,6 +186,11 @@ Figure that shows many gets re-evaluation
 
 \vspace{5mm}
 
+% general, concrete problem
+% get-based also have the same problem. even in lenses. more general problem in
+% The example should be from lenses.
+% traversal, not exactly the same computation
+
 To solve this problem and make BiGUL evaluation efficient, we use two techniques. The first technique is tupling, well-known technique for efficiency \cite{}. Its basic idea is to reduce the common computations by combining two evaluations. In our work, we combines the evaluation of $put$ and $get$, and introduce $pg$. Thanks to tupling, we do not lose information like intermediate states.
 The second technique is lazy update and lazy computation. $pg$ itself includes some inefficiency. For removing the inefficiency we do the update and computation lazily.
 
@@ -200,6 +218,11 @@ In Section 8 we discuss about related work, and conclude in Section 9.
 %\item 
 %\end{itemize}
 
+% get & put independently, but for efficient computation
+% we need to tuple them to help composition
+% 2 or 3 examples to show tupling solves the problem.
+% other examples are for showing kpg and cpg is needed.
+
 \subsection{Contribution}
 
 \begin{itemize}
@@ -208,11 +231,14 @@ In Section 8 we discuss about related work, and conclude in Section 9.
   \item Quadratic to exponential? 
   \item The introduced extentions (maybe) use more memory than the original approach, but they are faster than the original.
   \end{itemize}
-\item Tupling is also effective in bidirectional programming.
+\item Get and put more tight
+
+\item (Tupling introduces some constructions)
   \begin{itemize}
   \item A pair of put and get is self-inverse (involution).
   \end{itemize}
-\item lazy update \& lazy computation is also good optimization for BX.
+\item careful lazyness is needed in our implementation for efficiency
+%  lazy update \& lazy computation are also good optimization for BX.
 %\item Reveal a part of relationship between BX and Reversible.
 %  \begin{itemize}
 %  \item Very well-behaved (no adaptive-case) \& The same evaluation path $\to$ No garbage Reversible Computation.
@@ -1226,10 +1252,13 @@ Table \ref{tab:comparison} indicates a general comparison of the above results o
 \section{Related Work}
 
 \begin{itemize}
-\item BiGUL papers (PEPM, POPL, tutorial?)
-\item the first BX paper
-\item view update problem paper
-\item get-based 
+%\item BiGUL papers (PEPM, POPL, tutorial?)
+%\item the first BX paper
+%\item get-based BX
+%\item put-based BX?
+\item implementation of BX, they might have the same problem, this paper will be first attempt, semantics and correctness is considered more, but efficiency is  lacked.
+\item optimization techniques : tupling, lazy computation, fusion transformation?
+\item (view update problem paper)
 \end{itemize}
 
 
