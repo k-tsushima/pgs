@@ -1,0 +1,14 @@
+\section{xpg}
+So far, when computing a composition, we only recursively call an unique function, either $pg$ or $cpg$ or $kpg$. To be more flexible, we make a new extension, $xpg$, allowing to call external functions.
+
+\begin{definition}
+$\xpg{bx}{s}{v}$
+
+$\xpg{bx}{s}{v} = \text{same with } pg \text{ if } bx \neq bx_1 \circ bx_2$
+
+$\xpg{bx_1 \circ bx_2}{s}{v} =\\
+    \tab (ks_1,kv_1, ks_1', kv_1', s_1, v_1) \Leftarrow \kpg{bx_1}{\lambda \_.s}{id}{id}{id}{s}{construct\_dummy \ s};\\
+    \tab (s_2, v_2) \Leftarrow \xpg{bx_2}{kv_1' \ v_1}{v};\\
+    \qtab (ks_1 \ s_2, v_2)$
+\end{definition}
+Similar to $pg$, $\xpginline{bx}$ accepts a pair of the source and the view $(s,v)$ to produce the new pair. The constructions of $\xpginline{bx}$ when $bx$ is not a composition are the same as the ones of $\pginline{bx}$. Note that, $xpg$ is called recursively instead of $pg$. For $\xpginline{bx_1 \circ bx_2}$, we use two function calls and a function application to calculate the result. The first call and the function application come from $kpg$ approaches, while the second call is based on $pg$ approach.

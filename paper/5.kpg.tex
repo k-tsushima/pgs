@@ -1,0 +1,48 @@
+\section{kpg}
+
+In the previous section, we have known that there are some variables which are evaluated but not used later when evaluating $\cpginline{bx_1 \circ bx_2}$. Now we introduce $kpg$, an extension of $cpg$, for keeping away such redundant computations. 
+While $cpg$ evaluate values eagerly, $kpg$ does the opposite. Every values are evaluated lazily in a computation of $kpg$. The input of $\kpginline{bx}$ is expanded to a 6-tuple $(ks, kv, ks', kv', s, v)$ where $ks$ and $kv$ keep the modifcation information, $s$ and $v$ hold evaluated values, and $ks'$ and $kv'$ are used for lazy evaluation of actual values. The output of this function is also a 6-tuple $(ks, kv, ks', kv', s, v)$.\\
+Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated source and view $(s, v)$ where $s = \putbx{bx}{s_0}{v_0}$ and $v = \getbx{bx}{s_0}$ can be obtained using $kpg$ as follows:\\
+    $\tab s \Leftarrow s_0; v \Leftarrow v_0; (ks, kv, ks', kv', s, v) \Leftarrow \kpg{bx}{\lambda \_.s}{id}{id}{id}{s}{v};\\
+        \qtab (ks' \ s; kv' \ v)$\\
+The begining of accumulative functions $ks'$ and $kv'$ are set as identity, while $ks$ and $kv$ are initiated as the same with the corresponding ones in $cpg$.
+
+\begin{definition}
+$\kpg{bx}{ks}{kv}{ks'}{kv'}{s}{v}$
+
+$\kpg{Skip \ h}{ks}{kv}{ks'}{kv'}{s}{v} =\\
+    \tab s \Leftarrow ks' \ s; \quad v \Leftarrow kv' \ v; \quad ks' \Leftarrow id; \quad kv' \Leftarrow id;\\
+    \tab \text{if} \ h \ s = v \ \text{then} \ (ks, kv, ks', kv', s, v) \ \text{else fail}$
+
+$\kpg{Replace}{ks}{kv}{ks'}{kv'}{s}{v} = (kv, ks, kv', ks', v, s)$
+
+$\kpg{\product{bx_1}{bx_2}}{ks}{kv}{ks'}{kv'}{s}{v} =\\
+    \tab s \Leftarrow ks' \ s; \quad v \Leftarrow kv' \ v; \quad ks' \Leftarrow id; \quad kv' \Leftarrow id;\\
+    \tab (ks_1, kv_1, ks_1', kv_1', s_1, v_1) \Leftarrow \kpg{bx_1}{fst \circ ks}{fst \circ kv}{fst \circ ks'}{fst \circ kv'}{s}{v};\\
+    \tab (ks_2, kv_2, ks_2', kv_2', s_2, v_2) \Leftarrow \kpg{bx_2}{snd \circ ks}{snd \circ kv}{snd \circ ks'}{snd \circ kv'}{s}{v};\\
+    \qtab ( con \ ks_1 \ ks_2, con \ kv_1 \ kv_2, con \ (ks_1' \circ fst) \ (ks_2' \circ snd),\\
+    \qtab con \ (kv_1' \circ fst) \ (kv_2' \circ snd), \\
+    \qtab (s_1, s_2), (v_1,v_2))$
+
+$\kpg{RearrS \ f_1 \ f_2 \ bx}{ks}{kv}{ks'}{kv'}{s}{v} =\\
+    \tab (ks, kv, ks', kv', s, v) \Leftarrow \kpg{bx}{f_1 \circ ks}{kv}{f_1 \circ ks'}{kv'}{s}{v};\\
+    \qtab (f_2 \circ ks, kv, f_2 \circ ks', kv', s, v)$
+
+$\kpg{RearrV \ g_1 \ g_2 \ bx}{ks}{kv}{ks'}{kv'}{s}{v} =\\
+    \tab (ks, kv, ks', kv', s, v) \Leftarrow \kpg{bx}{ks}{g_1 \circ kv}{ks'}{g_1 \circ kv'}{s}{v};\\
+    \qtab (ks, g_2 \circ kv, ks', g_2 \circ kv', s, v)$
+
+$\kpg{Case \ cond_{sv} \ cond_{s} \ bx_1 \ bx_2}{ks}{kv}{ks'}{kv'}{s}{v} =\\
+    \tab s \Leftarrow ks' \ s; \quad v \Leftarrow kv' \ v; \quad ks' \Leftarrow id ; \quad kv' \Leftarrow id;\\
+    \tab \text{if} \ cond_{sv} \ s \ v \&\& \ cond_{s} \ s\\
+    \tab \text{then} \ (ks, kv, ks', kv', s', v') \Leftarrow \kpg{bx_1}{ks}{kv}{ks'}{kv'}{s}{v}\\
+    \tab \text{else} \ (ks, kv, ks', kv', s', v') \Leftarrow \kpg{bx_2}{ks}{kv}{ks'}{kv'}{s}{v}\\
+    \tab \text{fi} \ cond_s \ (ks' \ s') \ \&\& \ cond_{sv} \ s \ (kv' \ v'); \ \text{return} \ (ks, kv, ks', kv', s', v')$
+
+$\kpg{bx_1 \circ bx_2}{ks}{kv}{ks'}{kv'}{s}{v} =\\
+    \tab (ks_1, kv_1, \underline{ks_1'}, kv_1', \underline{s_1}, v_1) \Leftarrow \kpg{bx_1}{ks}{id}{ks'}{id}{s}{construct\_dummy \ s};\\
+    \tab (ks_2, kv_2, ks_2', kv_2', s_2, v_2) \Leftarrow \kpg{bx_2}{kv_1}{kv}{kv_1'}{kv'}{v_1}{v};\\
+    \qtab (ks_1 \circ ks_2, kv_2, ks_1 \circ ks_2', kv_2', s_2, v_2)$
+\end{definition}
+
+In the construction of $kpg$, $s$ and $v$ hold actual values only in case of $Skip$ and $Case$. Except them, the functions for computation will be kept in $ks'$ and $kv'$. When evaluating $\kpginline{bx_1 \circ bx_2}$, $ks_1'$ and $s_1$ in the result of the first assignment are still redundant but they are not evaluated. In $\kpginline{bx_1 \ prod \ bx_2}$, the evaluation of $ks'$ and $kv'$ will be done indendently in two assingments using $\kpginline{bx_1}$ and $\kpginline{bx_2}$. There may be some recomputations in $fst \circ ks'$ and $snd \circ ks'$ as well as $fst \circ kv'$ and $snd \circ kv'$. It is possible to evaluate actual values in $s$ and $v$ before calling $\kpginline{bx_1}$ to remove the redundancy like that.

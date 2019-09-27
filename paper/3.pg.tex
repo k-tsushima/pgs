@@ -1,0 +1,65 @@
+\section{pg}
+\subsection{Self-inverse function: pg}
+
+In minBiGUL or even BiGUL, when evaluating a composition of many programs, $get$s are re-evaluated so many times since no intermediate state is stored during the evaluation. This is a kind of information loss. One question is whether it is possible to calculate such programs without losing information. And the answer is yes. It comes from the the idea of reversible computation where all information during the evaluation need to be kept. In minBiGUL, we can do that by tupling $put$ and $get$. A pair of a source and a view is accepted as the input of a function named $pg$ to produce a new pair that contains the actual result of the corresponding minBiGUL program.
+
+\begin{definition}
+    $\pg{bx}{s}{v} = (\putbx{bx}{s}{v}, \getbx{bx}{s})$
+\end{definition}
+
+$pg$ is an involution that is self-inverse. An involution is a function $f$ that satifies $f(f(x)) = x \text{ for all } x \text{ in the domain of } f$.
+
+\begin{proof}
+$pg [\![bx]\!] \ (\pg{bx}{s}{v}) \\
+    \tab = \pg{bx}{(\putbx{bx}{s}{v})}{(\getbx{bx}{s})} \quad [pg \text{ definition}] \\
+    \tab = (put \ [\![bx]\!] \ (\putbx{bx}{s}{v}) \ (\getbx{bx}{s}), \getbx{bx}{(\putbx{bx}{s}{v})})  \quad [pg \text{ definition}] \\
+    \tab = (put \ [\![bx]\!] \ (\putbx{bx}{s}{v}, \getbx{bx}{s}), v) \quad [\textsc{PutGet}] \\
+    \tab = (put \ [\![bx]\!] \ (s, \getbx{bx}{s}), v) \quad [\textsc{PutPut}] \\
+    \tab = (s, v) \quad [\textsc{GetPut}]$
+\end{proof}
+
+\subsection{Construction of pg}
+
+$\tab \pg{Skip \ h}{s}{v} \overset{1}{=} (\sif{h \ s = v}{s}{\text{fail}}, h \ s) \\
+    \qtab \overset{2}{=} \sif{h \ s = v}{(s, h \ s)}{\text{fail}} \\
+    \qtab \overset{3}{=} \sif{h \ s = v}{(s, v)}{\text{fail}}$\\
+There is a trick in the construction of $\pginline{Skip \ h}$. The first equality is simply based on the definitions of $pg$, $\putbxinline{Skip \ h}$ and $\getbxinline{Skip \ h}$. The second one tuples two results of $put$ and $get$ in the body of the if-expression. And the last one is quite obivious. What we call the trick here is in the second equality where in some cases, the result of $pg$ may be fail although there is no fail when evaluating $\getbxinline{Skip \ h}$.
+
+$\tab \pg{Replace}{s}{v} = (v, s)$\\
+$\tab \pg{\product{bx_1}{bx_2}}{(s_1,s_2)}{(v_1,v_2)}\\
+    \qtab \overset{1}{=} ((\putbx{bx_1}{s_1}{v_1}),(\putbx{bx_2}{s_2}{v_2}), (\getbx{bx_1}{s_1}), (\getbx{bx_2}{s_2})) \\
+    \qtab \overset{2}{=} (s_1, v_1) \Leftarrow \pg{bx_1}{s_1}{v_1}; \\
+        \qtab \tab \ \, (s_2, v_2) \Leftarrow \pg{bx_2}{s_2}{v_2}; \\
+        \qtabs{2} ((s_1,s_2), (v_1,v_2))$\\
+$\tab \pg{\rearrs{f_1}{f_2}{bx}}{s}{v} \overset{1}{=} (f_2 \ (\putbx{bx}{(f_1 \ s)}{v}), \getbx{bx}{(f_1 \ s)}) \\
+    \qtab \overset{2}{=} (s, v) \Leftarrow \pg{bx}{f_1 \ s}{v};\\
+        \qtabs{2} (f_2 \ s, v)$\\
+$\tab \pg{\rearrv{g_1}{g_2}{bx}}{s}{v} \overset{1}{=} (\putbx{bx}{s}{(g_1 \ v)}, g_2 \ (\getbx{bx}{s})) \\
+    \qtab \overset{2}{=} (s, v) \Leftarrow \pg{bx}{s}{g_1 \ v}; \\
+        \qtabs{2} (s, g_2 \ v)$\\
+Constructions of $pg$ for the replacement, the product and the source/view rearrangements are very clear when just paring $put$ and $get$ respectively, then doing basic changes.
+
+$\tab \pg{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s}{v} \\
+\tabs{2} \overset{1}{=} (\text{if} \ {cond_{sv} \ s \ v} \qtabs{3} \tab \overset{2}{=} \text{if} \ {cond_{sv} \ s \ v} \ \&\& \ {cond_{s} \ s} \\
+\tab \qtab \text{then} \ s' \Leftarrow \putbx{bx_1}{s}{v} \qtabs{2} \, \text{then} \ (s', v') \Leftarrow \pg{bx_1}{s}{v}\\
+\tab \qtab \text{else} \ s' \Leftarrow \putbx{bx_2}{s}{v} \qtabs{2} \ \, \text{else} \ (s', v') \Leftarrow \pg{bx_2}{s}{v}\\
+\tab \qtab \text{fi} \ cond_{s} \ s'; \text{ return } s', \qtabs{2} \tab \ \, \text{fi} \ cond_{s} \ s' \ \&\& \ cond_{sv} \ s \ v'; \text{ return } (s',v')\\
+\tab \qtab \quad \text{if} \ {cond_{s} \ s}\\
+\tab \qtab \quad \text{then} \ v' \Leftarrow \getbx{bx_1}{s}\\
+\tab \qtab \quad \text{else} \ v' \Leftarrow \getbx{bx_2}{s}\\
+\tab \qtab \quad \text{fi} \ {cond_{sv} \ s \ v'}; \text{ return } v')$
+
+A restriction for $\pginline{Case}$ needs to be introduced here. We know that there is one entering condition and one exit condition when evaluating $\putbxinline{Case}$ as well as $\getbxinline{Case}$. If a tupling $put$ and $get$ occurs, there will be 4 combinations of these conditions. This means that two entering conditions of $\putbxinline{Case}$ and $\getbxinline{Case}$ are not always simultaneously satified. The evaluated branches are distinct in the $put$ and $get$ directions for combinations $((cond_{sv} \ s \ v) \ \&\& \ (not (cond_{s} \ s)))$ and $((not (cond_{sv} \ s \ v) \ \&\& \ (cond_{s} \ s))$, which are restricted in this paper. This does not happen for the others which is used in the construction of $\pginline{Case}$.
+
+$\tab \pg{bx_1 \circ bx_2}{s}{v} \\
+    \tabs{2} \overset{1}{=} (\putbx{bx_1}{s}{(\putbx{bx_2}{(\getbx{bx_1}{s})}{v})}, \getbx{bx_2}{(\getbx{bx_1}{s})}) \\
+    \tabs{2} \overset{2}{=} v_1 \Leftarrow \getbx{bx_1}{s}; \qtabs{3} \ \, \overset{3}{=} (s_1, v_1) \Leftarrow \pg{bx_1}{s}{dummy};\\
+        \tab \qtab (s_2, v_2) \Leftarrow \pg{bx_2}{v_1}{v}; \qtabs{2} (s_2, v_2) \Leftarrow \pg{bx_2}{v_1}{v};\\
+        \tab \qtab (s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2}; \qtabs{2} (s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2};\\
+            \qtab \tabs{2} (s_3, v_2) \qtabs{6} (s_3, v_2)\\
+    \tabs{2} \overset{4}{=} (s_1, v_1) \Leftarrow \pg{bx_1}{s}{construct\_dummy \ s}; \\
+        \tab \qtab (s_2, v_2) \Leftarrow \pg{bx_2}{v_1}{v}; \\
+        \tab \qtab (s_3, v_3) \Leftarrow \pg{bx_1}{s_1}{s_2}; \\
+            \qtab \tabs{2} (s_3, v_2)$
+
+The construction of $\pginline{bx_1 \circ bx_2}$ can be considered as the soul of the $pg$ function. The first two equalities comes from mentioned definitions and some basic transformations. The third one rewrites $v_1 \Leftarrow \getbx{bx_1}{s}$ into $(s_1, v_1) \Leftarrow \pg{bx_1}{s}{dummy}$. It is possible if we consider $\getbx{bx_1}{s}$ as the second element of $\pg{bx_1}{s}{dummy}$ where $dummy$ is a special value that makes the $put \, [\![bx_1]\!]$ valid. Due to \textsc{GetPut} law, we can use $get \ s$ to update the source $s$ in the $put$ direction. Then it is feasible to construct a $dummy$ from the source. The last equality changes $dummy$ by an application $construct\_dummy \ s$, and also substitutes $s$ in $(s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2}$ by $s_1$ which is the evaluated result of $\putbx{bx_1}{s}{(construct\_dummy \ s)}$. This transformation is possible because of the \textsc{PutPut} law. Then, $v_3$ in the result pair $(s_3,v_3)$ equals $dummy$. So we can realize that there is no loss information when computing a composition.

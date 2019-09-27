@@ -1,0 +1,103 @@
+\section{Introduction}
+
+%\begin{itemize}
+%\item Importance of BX, BX is a solution of view update problem in database.
+%\item goodness of 
+%\item Explanation of put-based BX: BiGUL.
+%\item Current status of BiGUL: Fastest BX language in the world
+%\item But there is a problem: Efficiency of compose evaluation. The current implementation of BiGUL does not save the intermediate states, the number of get is quadratic. This is not good.
+%\item To solve this problem we use an idea: introduce pg : combination of put and get. Then, no information will be lost in a specific condition.
+%  an idea from reversible computation: not to lose any information.
+%\item We extend pg with several ideas to produce faster implementation.
+%\item 
+%\end{itemize}
+
+%\begin{itemize}
+%\item Importance of BX, BX is a solution of view update problem in database.
+%\item goodness of 
+%\item Explanation of put-based BX: BiGUL.
+%\item Current status of BiGUL: Fastest BX language in the world
+%\item But there is a problem: Efficiency of compose evaluation. The current implementation of BiGUL does not save the intermediate states, the number of get is quadratic. This is not good.
+%\item To solve this problem we use an idea: introduce pg : combination of put and get. Then, no information will be lost in a specific condition.
+%  an idea from reversible computation: not to lose any information.
+%\item We extend pg with several ideas to produce faster implementation.
+%\item 
+%\end{itemize}
+
+In software, there are strong demands for synchronizing the data. In database community it is known as ``view update problem'' and researched for a long time \cite{}.
+% A Survey to View Update Problem 
+As a solution for this problem, bidirectional transformation is introduced \cite{}. It enables the evaluation of source updating: ``put'' produces the updated source from the original source and the updated view.
+% The first paper of bidirectional transformation
+
+There are two types of bidirectional transformation. One is get-based bidirectional transformation \cite{} that receives the definition of $get$ and provides $put$. A problem of this approach is that it is possible to derive many correct $put$s. To choose one put, hulistics and programmer's intentions are needed. Another approach is put-based bidirectional transformation \cite{} that received the definition of $put$ and provide $get$. From a $put$ we can derive an unique $get$. 
+
+BiGUL \cite{} is one of put-based bidirectional transformation language. It is fastest bidirectional language in the world now. However, it contains a problem when the BiGUL programs including many compositions. BiGUL does not store the intermediate states when $get$s are re-evaluated so many times. In this case the number of get is quadratic.
+
+\vspace{5mm}
+
+Figure that shows many gets re-evaluation 
+
+\vspace{5mm}
+
+% general, concrete problem
+% get-based also have the same problem. even in lenses. more general problem in
+% The example should be from lenses.
+% traversal, not exactly the same computation
+
+To solve this problem and make BiGUL evaluation efficient, we use two techniques. The first technique is tupling, well-known technique for efficiency \cite{}. Its basic idea is to reduce the common computations by combining two evaluations. In our work, we combines the evaluation of $put$ and $get$, and introduce $pg$. Thanks to tupling, we do not lose information like intermediate states.
+The second technique is lazy update and lazy computation. $pg$ itself includes some inefficiency. For removing the inefficiency we do the update and computation lazily.
+
+The rest of this paper is the following. We introduce a subset of BiGUL, miniBiGUL, and show its syntax, semantics, and properties in Section 2. Combining the semantics of put and get in Section 2, we construct $pg$ and show that it is self-inverse in Section 3.
+We apply three optimizations to $pg$ in sequence. The first one is keeping update of BX lazily, and we obtain $cpg$ in Section 4. The second one is lazy evaluation to avoid redundant computations, and we obtain $kpg$ in Section 5. The third one is combination of $pg$ and $kpg$ in Section 6, because they are strong for different type of programs. In Section 7, we show experiemntal results of $pg$, $cpg$, $kpg$, $xpg$ and miniBiGUL.
+In Section 8 we discuss about related work, and conclude in Section 9.
+
+
+% Story ->
+% reversible is needed not to lose any information -> pg is introduced.
+% pg is not good for lassoc -> cpg (xpg_2) is introduced.
+% cpg can be improved -> kpg(xpg) is introduced.
+% kpg is slower than pg for rassoc. combined version -> xpg.
+
+% Evaluation result: Comparison with OCaml implementation of minBiGUL
+
+%\begin{itemize}
+%\item Importance of BX, BX is a solution of view update problem in database.
+%\item Explanation of put-based BX: BiGUL.
+%\item Current status of BiGUL: Fastest BX language in the world
+%\item But there is a problem: Efficiency of compose evaluation. The current implementation of BiGUL does not save the intermediate states, the number of get is quadratic. This is not good.
+%\item To solve this problem we use an idea: introduce pg : combination of put and get. Then, no information will be lost in a specific condition.
+%  an idea from reversible computation: not to lose any information.
+%\item We extend pg with several ideas to produce faster implementation.
+%\item 
+%\end{itemize}
+
+% get & put independently, but for efficient computation
+% we need to tuple them to help composition
+% 2 or 3 examples to show tupling solves the problem.
+% other examples are for showing kpg and cpg is needed.
+
+\subsection{Contribution}
+
+\begin{itemize}
+\item Improvement of evaluation efficiency
+  \begin{itemize}
+  \item Quadratic to exponential? 
+  \item The introduced extentions (maybe) use more memory than the original approach, but they are faster than the original.
+  \end{itemize}
+\item Get and put more tight
+
+\item (Tupling introduces some constructions)
+  \begin{itemize}
+  \item A pair of put and get is self-inverse (involution).
+  \end{itemize}
+\item careful lazyness is needed in our implementation for efficiency
+%  lazy update \& lazy computation are also good optimization for BX.
+%\item Reveal a part of relationship between BX and Reversible.
+%  \begin{itemize}
+%  \item Very well-behaved (no adaptive-case) \& The same evaluation path $\to$ No garbage Reversible Computation.
+%  \item 
+%  \item If we can obtain good parameter (dummy) for a BiGUL program,
+%    put(s, dummy) can be a complement function.
+  \end{itemize}
+
+%\subsection{Construction of this paper}

@@ -1,0 +1,163 @@
+\newcommand{\qaddplot}[1]{
+    \pgfplotstableread[col sep=comma]{csv/#1.csv}\data
+    \addplot table[x=nComp,y=minbigul]{\data};
+    \addplot table[x=nComp,y=pg]{\data};
+    \addplot table[x=nComp,y=cpg]{\data};
+    \addplot table[x=nComp,y=kpg]{\data};
+    \addplot table[x=nComp,y=xpg]{\data};
+}
+
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \pgfplotsset{footnotesize,samples=9}
+        \begin{groupplot}[
+                group style = {
+                    group size = 2 by 5,
+                    horizontal sep = 2.5cm,
+                    vertical sep = 1cm,
+                }, 
+                width = 5cm, 
+                height = 4cm,
+                xmin = 0, xmax = 110000,
+                ymin = 0,
+                scaled x ticks = false,
+                x tick label style = {
+                    /pgf/number format/fixed
+                },
+                scaled y ticks = false,
+                y tick label style = {
+                    /pgf/number format/fixed,
+                    /pgf/number format/precision=2,
+                },
+                every x tick scale label/.style={at={(rel axis cs:1,0)},anchor=south west,inner sep=1pt},
+                every y tick scale label/.style={at={(rel axis cs:0.05,1.05)},anchor=south east,inner sep=1pt},
+                max space between ticks=1000pt,
+                try min ticks = 5,
+                label style={font=\small},
+                tick label style={font=\small} 
+            ]
+
+            \nextgroupplot[ 
+                title = {\textit{lassoc-comp-replace}}, 
+                legend style = {legend to name = legendgroup,},
+                scaled x ticks = {base 10:-5},
+                scaled y ticks = {base 10:-2},
+            ]
+                \pgfplotstableread[col sep=comma]{csv/time-lassoc-comp-replace.csv}\data
+                \addplot table[x=nComp,y=minbigul]{\data}; \label{plots:minbigul};
+                \addplot table[x=nComp,y=pg]{\data}; \label{plots:pg};
+                \addplot table[x=nComp,y=cpg]{\data}; \label{plots:cpg};
+                \addplot table[x=nComp,y=kpg]{\data}; \label{plots:kpg};
+                \addplot table[x=nComp,y=xpg]{\data}; \label{plots:xpg};
+                \coordinate (topl) at (rel axis cs:0,1);
+
+            \nextgroupplot[ 
+                title = {\textit{lassoc-comp-replace}}, 
+                legend style = {legend to name = grouplegend,},
+                scaled x ticks = {base 10:-5},
+                scaled y ticks = {base 10:-2},
+            ]
+                \qaddplot{mem-lassoc-comp-replace};
+                \coordinate (topr) at (rel axis cs:1,1);
+
+            \nextgroupplot[
+                title = {\textit{rassoc-comp-replace}},
+                scaled x ticks = {base 10:-5},
+                scaled y ticks = {base 10:1},
+            ]
+                \qaddplot{time-rassoc-comp-replace};
+
+            \nextgroupplot[
+                title = {\textit{rassoc-comp-replace}},
+                scaled x ticks = {base 10:-5},
+                scaled y ticks = {base 10:-1},
+            ]
+                \qaddplot{mem-rassoc-comp-replace};
+
+            \nextgroupplot[
+                title = {\textit{lassoc-comp-phead}},
+                scaled x ticks = {base 10:-5},
+                scaled y ticks = {base 10:-3},
+                ylabel = {evaluation time (s)},
+            ] 
+                \qaddplot{time-lassoc-comp-phead};
+
+            \nextgroupplot[
+                title = {\textit{lassoc-comp-phead}},
+                scaled x ticks = {base 10:-5},
+                scaled y ticks = {base 10:-5},
+                ylabel = {memory allocation (MBytes)},
+            ] 
+                \qaddplot{mem-lassoc-comp-phead};
+
+            \nextgroupplot[
+                title = {\textit{rassoc-comp-phead}},
+                scaled x ticks = {base 10:-5},
+                scaled y ticks = {base 10:-2},
+            ] 
+                \qaddplot{time-rassoc-comp-phead};
+
+            \nextgroupplot[
+                title = {\textit{rassoc-comp-phead}},
+                scaled x ticks = {base 10:-5},
+                scaled y ticks = {base 10:-2},
+            ] 
+                \qaddplot{mem-rassoc-comp-phead};
+
+            \nextgroupplot[
+                title = {\textit{breverse}},
+                xmax = 10000,
+                scaled x ticks = {base 10:-4},
+                scaled y ticks = {base 10:-3},
+                xlabel = {number of compositions},
+            ] 
+                \qaddplot{time-breverse};
+                \coordinate (botl) at (rel axis cs:0,0);
+
+            \nextgroupplot[
+                title = {\textit{breverse}},
+                xmax = 10000,
+                scaled x ticks = {base 10:-4},
+                scaled y ticks = {base 10:-5},
+                xlabel = {number of compositions},
+            ] 
+                \qaddplot{mem-breverse};
+                \coordinate (botr) at (rel axis cs:1,0);
+        \end{groupplot}
+
+        \path (topl|-current bounding box.north)--
+            coordinate(legendpos)
+            (botr|-current bounding box.north);
+        \matrix[
+            matrix of nodes,
+            anchor = south,
+            draw,
+            inner sep = 0.2em,
+            draw
+        ]at([yshift=1ex]legendpos) {
+            \ref{plots:minbigul} & minbigul & [2pt]
+            \ref{plots:pg} & pg & [2pt]
+            \ref{plots:cpg} & cpg & [2pt]
+            \ref{plots:kpg} & kpg & [2pt]
+            \ref{plots:xpg} & xpg\\
+        };
+
+        \path (botl|-current bounding box.south)--
+            coordinate(subfig)
+            (botr|-current bounding box.south);
+        \matrix[
+            matrix of nodes,
+            anchor = east,
+        ]at([xshift=-2.5cm,yshift=-2ex]subfig) {\textbf{(a)}\\};
+        \matrix[
+            matrix of nodes,
+            anchor = west,
+        ]at([xshift=2.5cm,yshift=-2ex]subfig) {\textbf{(b)}\\};
+
+    \end{tikzpicture}
+
+    \caption{Experimental results \quad \textbf{(a)} evaluation time \quad \textbf{(b)} memory allocation}
+    \label{fig:result}
+
+\end{figure}
