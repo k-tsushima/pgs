@@ -99,10 +99,13 @@ ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
 \maketitle              % typeset the header of the contribution
 %
 \begin{abstract}
-The abstract should briefly summarize the contents of the paper in
-15--250 words.
+%The abstract should briefly summarize the contents of the paper in
+%15--250 words.
+  Bidirectional transformation (BX) is a solution of view update problems and widely used for synchronizing data. Its semantics and correctness are researched well, but the efficiency and optimization are not considered well. In this work we focus on the evaluation of composition, because it includes some problems of evaluation time efficiency and memory allocation. To solve these problems we make $put$ and $get$ more tight, based on the idea of tupling. %42
+  Because simple tupled result includes some redundancies for left associative compositions, we apply two optimization techniques: lazy update and lazy evaluation. We show some experimental results that our optimized approach is faster than the original approach that is used in an actual BX language.
 
-\keywords{First keyword  \and Second keyword \and Another keyword.}
+  
+\keywords{Bidirectional transformation  \and Tupling \and Optimization \and ??.}
 \end{abstract}
 %
 %
@@ -120,17 +123,15 @@ The abstract should briefly summarize the contents of the paper in
 % conclusion:1page (including reference)
 % page limit : 15
 
-Schedule
+%Schedule
 \begin{itemize}
-
-\item Introduction (story), Contribution, positions, examples, beginning of September?
-\item zero draft : mid of September 
-  
-\item deadline of PEPM2020 (October 18th)
-\item ESOP (October 24th)
-\item FLOPS (the middle of November??)
-\item Need to change the style file of latex..
-\item []
+%\item Introduction (story), Contribution, positions, examples, beginning of September?
+%\item zero draft : mid of September  
+%\item deadline of PEPM2020 (October 18th)
+%\item ESOP (October 24th)
+\item FLOPS 2020, 15 November 2019 (AoE): Abstract submission
+\item 22 November 2019 (AoE): Submission deadline
+\item keywords, ORCID id, introduction, contribution, future work, related work 
 \end{itemize}
 
 %\begin{itemize}
@@ -165,6 +166,8 @@ Schedule
 \input{9.conclusion}
 
 
+\textcolor{red}{TODO: FIX reference, order, contents ..}
+
 % From sample code
 % 
 % ---- Bibliography ----
@@ -176,25 +179,70 @@ Schedule
 % \bibliography{mybibliography}
 %
 \begin{thebibliography}{8}
-\bibitem{ref_article1}
-Author, F.: Article title. Journal \textbf{2}(5), 99--110 (2016)
+\bibitem{viewupdate}
+F. Bancilhon and N. Spyratos. ``Update semantics of relational views''. ACM Transactions on Database Systems, 6(4):557--575, 1981.
 
-\bibitem{ref_lncs_1}
-Author, F., Author, S.: Title of a proceedings paper. In: Editor,
-F., Editor, S. (eds.) CONFERENCE 2016, LNCS, vol. 9999, pp. 1--13.
-Springer, Heidelberg (2016). \doi{10.10007/1234567890}
+\bibitem{BXcomp}
+Anthony Anjorin, Thomas Buchmann, Bernhard Westfechtel, Zinovy Diskin, Hsiang-Shang Ko, Romina Eramo, Georg Hinkel, Leila Samimi-Dehkordi, and Albert Zündorf
+``Benchmarking bidirectional transformations: Theory, implementation, application, and assessment'', Software and Systems Modeling, ??, 2019
 
-\bibitem{ref_book1}
-Author, F., Author, S., Author, T.: Book title. 2nd edn. Publisher,
-Location (1999)
+\bibitem{tupling}
+  M. Fokkinga. ``Tupling and mutumorphisms''. Squiggolist, 1(4), 1989.
 
-\bibitem{ref_proc1}
-Author, A.-B.: Contribution title. In: 9th International Proceedings
-on Proceedings, pp. 1--2. Publisher, Location (2010)
+\bibitem{josh_pepm}
+  Hsiang-Shang Ko, Tao Zan, Zhenjiang Hu, BiGUL: A Formally Verified Core Language for Putback-Based Bidirectional Programming, ACM SIGPLAN 2016 Workshop on Partial Evaluation and Program Manipulation (PEPM 2016), pp.61--72, 2016.
 
-\bibitem{ref_url1}
-LNCS Homepage, \url{http://www.springer.com/lncs}. Last accessed 4
-Oct 2017
+\bibitem{josh_popl}
+  Hsiang-Shang Ko, Zhenjiang Hu, An Axiomatic Basis for Bidirectional Programming , 45th ACM SIGPLAN Symposium on Principles of Programming Languages (POPL 2018), 2018.
+
+\bibitem{BXtend}
+  Thomas Buchmann. BXtend -- a framework for (bidirectional) model transformations. In Slimane Hamoudi,Luis Ferreira Pires, and Bran Selic, editors, Proceedings
+of the 6th International Conference on Model-Driven Engineering and Software Development - Volume 1: MODELSWARD (MODELSWARD 2018), pages 336--345, 2018.
+
+\bibitem{eMoflon}
+  Erhan Leblebici, Anthony Anjorin, and Andy Sch"{u}rr. Developing eMoflon with eMoflon. In Davide Di Ruscio and Daniel Varr´o, editors, Theory and Practice of Model Transformations - 7th International Conference, ICMT 2014, Held as Part of STAF 2014, York, UK, 2014. Proceedings, volume 8568 of Lecture Notes in
+Computer Science, pages 138–145. Springer, 2014.
+
+\bibitem{EVL+Strace}
+Leila Samimi-Dehkordi, Bahman Zamani, and Shekoufeh Kolahdouz-Rahimi. EVL+Strace: A novel bidirectional transformation approach. Information and Software
+Technology, 100:47--72, 2018.
+
+\bibitem{JTL}
+Antonio Cicchetti, Davide Di Ruscio, Romina Eramo, and Alfonso Pierantonio. JTL: A bidirectional and change propagating transformation language. In Brian Malloy, Steffen Staab, and Mark van den Brand, editors, Proceedings of the Third International Conference on Software Language Engineering (SLE 2010), volume 6563 of Lecture Notes of Computer Science, pages
+183--202, Springer-Verlag.
+  
+\bibitem{NMF}
+Georg Hinkel and Erik Burger. Change propagation and bidirectionality in internal transformation DSLs. Soft-ware and Systems Modeling, 18(1):249--278, 2019.
+
+  
+\bibitem{SDMLib}
+  SDMLib paper?
+
+\bibitem{lenses}
+  Lense papers?
+
+\bibitem{tutorial}
+  Tutorial paper of BiGUL
+  
+%\bibitem{ref_article1}
+%Author, F.: Article title. Journal \textbf{2}(5), 99--110 (2016)
+
+%\bibitem{ref_lncs_1}
+%Author, F., Author, S.: Title of a proceedings paper. In: Editor,
+%F., Editor, S. (eds.) CONFERENCE 2016, LNCS, vol. 9999, pp. 1--13.
+%Springer, Heidelberg (2016). \doi{10.10007/1234567890}
+
+%\bibitem{ref_book1}
+%Author, F., Author, S., Author, T.: Book title. 2nd edn. Publisher,
+%Location (1999)
+
+%\bibitem{ref_proc1}
+%Author, A.-B.: Contribution title. In: 9th International Proceedings
+%on Proceedings, pp. 1--2. Publisher, Location (2010)
+
+%\bibitem{ref_url1}
+%LNCS Homepage, \url{http://www.springer.com/lncs}. Last accessed 4
+%Oct 2017
 \end{thebibliography}
 
 % \input{appendix.tex}

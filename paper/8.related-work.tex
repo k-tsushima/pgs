@@ -1,11 +1,27 @@
 \section{Related Work}
 
+\subsubsection*{BX langauges and implementations}
+
+There are many BX languages \cite{josh_pepm} \cite{BXtend} \cite{eMoflon} \cite{EVL+Strace} \cite{JTL} \cite{NMF} (memo: BXtend, eMoflon, EVL+Strace, JTL, NMF. SDMLib should be added?) based on several application scenarios and BX researches \cite{} (add papers for lenses). They mostly focus on the theory side, such as semantics and correctness, and do not focus on efficiency so much. For practical implementation of BX languages Anjorin et. al. introduces the first benchmark for BX \cite{BXcomp}. We can say this paper will be first attempt to improve efficiency of BX composition evaluation. In this paper we focus on BiGUL \cite{josh_pepm} \cite{josh_popl}, its implementation uses ``not keeping any intermediate states and obtaining them by evaluation when they are needed'' strategy. Other BX languages might have the same problem, and our approach can be applicable.
+
+\subsubsection*{Optimization techniques}
+
+In this paper, we use several optimization techniques: tupling, lazy update, and lazy computation (\textcolor{red}{also fusion?}). Tupling \cite{tupling} is an optimization technique by combining several computations.
+Lazy update .. delta lenses?
+
+Lazy computation \cite{} is also an old but effective widly-used technique.
+
 \begin{itemize}
+\item This part looks just short introduction of  techniques .. 
+\end{itemize}
+
+
+%\begin{itemize}
     %\item BiGUL papers (PEPM, POPL, tutorial?)
     %\item the first BX paper
     %\item get-based BX
     %\item put-based BX?
-    \item implementation of BX, they might have the same problem, this paper will be first attempt, semantics and correctness is considered more, but efficiency is  lacked.
-    \item optimization techniques : tupling, lazy computation, fusion transformation?
-    \item (view update problem paper)
-\end{itemize}
+%    \item implementation of BX, they might have the same problem, this paper will be first attempt, semantics and correctness is considered more, but efficiency is  lacked.
+%    \item optimization techniques : tupling, lazy computation, fusion transformation?
+%    \item (view update problem paper)
+%\end{itemize}

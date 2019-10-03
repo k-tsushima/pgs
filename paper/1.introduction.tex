@@ -24,32 +24,85 @@
 %\item 
 %\end{itemize}
 
-In software, there are strong demands for synchronizing the data. In database community it is known as ``view update problem'' and researched for a long time \cite{}.
+In software, there are strong demands for synchronizing data. In database community this is known as ``view update problem'' and researched for a long time \cite{viewupdate}.
 % A Survey to View Update Problem 
-As a solution for this problem, bidirectional transformation is introduced \cite{}. It enables the evaluation of source updating: ``put'' produces the updated source from the original source and the updated view.
-% The first paper of bidirectional transformation
+As a solution for this problem, bidirectional transformation (BX) is introduced \cite{}. As an example, let us consider a small BX program of $pHead$\footnote{The actual program is shown in the next section.}. BX provides two functions: $get$ and $put$. The following is one example of $pHead$'s evaluation.
 
-There are two types of bidirectional transformation. One is get-based bidirectional transformation \cite{} that receives the definition of $get$ and provides $put$. A problem of this approach is that it is possible to derive many correct $put$s. To choose one put, hulistics and programmer's intentions are needed. Another approach is put-based bidirectional transformation \cite{} that received the definition of $put$ and provide $get$. From a $put$ we can derive an unique $get$. 
+\begin{center}
+  \includegraphics[width=5cm]{./temp_fig/bxexample1.eps}
+\end{center}
+%\end{picture}
 
-BiGUL \cite{} is one of put-based bidirectional transformation language. It is fastest bidirectional language in the world now. However, it contains a problem when the BiGUL programs including many compositions. BiGUL does not store the intermediate states when $get$s are re-evaluated so many times. In this case the number of get is quadratic.
+Here, the original source \texttt{s}, \texttt{[1,2]}, is given by a user. $get$ is a projection: $get$ of $pHead$ picks the first element of the given original source as a view.
+%\texttt{get pHead [1,2] = 1}.
+After the view \texttt{v} is obtained, the user can modify the view.
+In this case, he or she modified the view to \texttt{8} from \texttt{1}.
+From this updated view, how can we obtain new updated source? This is ``view update problem.'' For this, BX provides $put$, update on the original source.
+In this example, $put$ of $pHead$ constructs a new list \texttt{[8,2]} from the updated view ($v'$) and the original source ($s$).
+%\texttt{put pHead [1,2] 8 = [8,2]}
 
-\vspace{5mm}
+For more various evaluations, we can use composition of programs.
+Let us consider another BX example program, three composition of $pHead$: $pHead \circ pHead \circ pHead$.
+The following is one example of its evaluation.
 
-Figure that shows many gets re-evaluation 
 
-\vspace{5mm}
+\begin{center}
+  \includegraphics[width=10cm]{./temp_fig/bxexample2.eps}
+\end{center}
+
+In this example, the original source \texttt{s} is \texttt{[[[1,2],[3]],[4]]}.
+By repetitious evaluation of $get$s of $pHead$, we can obtain the view $v$, \texttt{1}. To obtain the final updated source \texttt{s'}, we need to evaluate $put$ three times. The first put evaluation is from \texttt{i2} and \texttt{v'} and we can obtain \texttt{i2'}.
+
+For evaluating put-direction, there are two strategies. One is ``not keeping any intermediate states and obtaining them by evaluation when they are needed.'' In this example, ``intermediate states'' are \texttt{i1} and \texttt{i2}.
+If we choose this strategy, the number of $get$s will be quadratic. This is a problem, because the evaluation will be slow if the BX programs include many compositions. In this example, two $get$s are required for obtaining \texttt{i2} and one $get$ is required for obtaining \texttt{i1}. In total, three $get$s are required.
+
+The other strategy is ``keeping all intermediate states and using them when they are needed.'' This strategy causes a storage problem. If views includes most information, for evaluating $put$ the needed parts of the original source will be small. It is redundant to keep all intermediate states.
+
+In this work, we choose another strategy ``keeping complements and using them when they are needed.'' Complements are smaller program fragments than the original intermediate states. Therefore this strategy solves the previous two problems.
+Readers might already know that it is a hard problem to obtain complements \cite{}. In our work, thanks to the following finding it is not hard:
+
+\vspace{2mm}
+In very-well behaved BX programs, 
+$put$ can be a complement function for $get$, $get$ can be a complement function for $put$.
+\vspace{2mm}
+
+For using complement, we combine $put$ and $get$, and produce new function $pg$ in Section 3.
+This is a kind of tupling. Because parts of $put$ and $get$ are doing the same computation, we can make efficient by tupling them.
+
+As an example, let us consider the previous example again: $pHead \circ pHead \circ pHead$.
+
+
+\begin{center}
+  \includegraphics[width=9cm]{./temp_fig/bxexample3.eps}
+\end{center}
+
+
+In the figure, \texttt{c1} and \texttt{c2} are complements. The points in this figure are two. After evaluation of the first $pg$, we do not need to keep the original source \texttt{s}, because all its information is in \texttt{c1} and \texttt{i1}. 
+This evaluation looks better than previous two strategies: this does not require repeated evaluation and require smaller storage than the original sources. 
+Actually, the simple combined $pg$ is not effective for left associative compositions. To achieve efficient evaluation, we introduce $cpg$, lazy update version of $pg$, in Section 4 and $kpg$, lazy evaluation version of $cpg$, in Section 5. In Section 6 we combine $pg$ and $kpg$ to achieve efficiency for both associative compositions. In Section 7 we compare all approaches including the original BX approach by the evaluation time and memory allocation. 
+
+
+%There are two types of bidirectional transformation. One is get-based bidirectional transformation \cite{} that receives the definition of $get$ and provides $put$. A problem of this approach is that it is possible to derive many correct $put$s. To choose one put, hulistics and programmer's intentions are needed. Another approach is put-based bidirectional transformation \cite{} that received the definition of $put$ and provide $get$. From a $put$ we can derive an unique $get$. 
+
+%BiGUL \cite{} is one of put-based bidirectional transformation language. It is fastest bidirectional language in the world now. However, it contains a problem when the BiGUL programs including many compositions. BiGUL does not store the intermediate states when $get$s are re-evaluated so many times. In this case the number of get is quadratic.
+
+%\vspace{5mm}
+
+%Figure that shows many gets re-evaluation 
+
+%\vspace{5mm}
 
 % general, concrete problem
 % get-based also have the same problem. even in lenses. more general problem in
 % The example should be from lenses.
 % traversal, not exactly the same computation
 
-To solve this problem and make BiGUL evaluation efficient, we use two techniques. The first technique is tupling, well-known technique for efficiency \cite{}. Its basic idea is to reduce the common computations by combining two evaluations. In our work, we combines the evaluation of $put$ and $get$, and introduce $pg$. Thanks to tupling, we do not lose information like intermediate states.
-The second technique is lazy update and lazy computation. $pg$ itself includes some inefficiency. For removing the inefficiency we do the update and computation lazily.
+%To solve this problem and make BiGUL evaluation efficient, we use two techniques. The first technique is tupling, well-known technique for efficiency \cite{}. Its basic idea is to reduce the common computations by combining two evaluations. In our work, we combines the evaluation of $put$ and $get$, and introduce $pg$. Thanks to tupling, we do not lose information like intermediate states.
+%The second technique is lazy update and lazy computation. $pg$ itself includes some inefficiency. For removing the inefficiency we do the update and computation lazily.
 
-The rest of this paper is the following. We introduce a subset of BiGUL, miniBiGUL, and show its syntax, semantics, and properties in Section 2. Combining the semantics of put and get in Section 2, we construct $pg$ and show that it is self-inverse in Section 3.
-We apply three optimizations to $pg$ in sequence. The first one is keeping update of BX lazily, and we obtain $cpg$ in Section 4. The second one is lazy evaluation to avoid redundant computations, and we obtain $kpg$ in Section 5. The third one is combination of $pg$ and $kpg$ in Section 6, because they are strong for different type of programs. In Section 7, we show experiemntal results of $pg$, $cpg$, $kpg$, $xpg$ and miniBiGUL.
-In Section 8 we discuss about related work, and conclude in Section 9.
+%The rest of this paper is the following. We introduce a subset of BiGUL, miniBiGUL, and show its syntax, semantics, and properties in Section 2. Combining the semantics of put and get in Section 2, we construct $pg$ and show that it is self-inverse in Section 3.
+%We apply three optimizations to $pg$ in sequence. The first one is keeping update of BX lazily, and we obtain $cpg$ in Section 4. The second one is lazy evaluation to avoid redundant computations, and we obtain $kpg$ in Section 5. The third one is combination of $pg$ and $kpg$ in Section 6, because they are strong for different type of programs. In Section 7, we show experiemntal results of $pg$, $cpg$, $kpg$, $xpg$ and miniBiGUL.
+%In Section 8 we discuss about related work, and conclude in Section 9.
 
 
 % Story ->
@@ -76,21 +129,34 @@ In Section 8 we discuss about related work, and conclude in Section 9.
 % 2 or 3 examples to show tupling solves the problem.
 % other examples are for showing kpg and cpg is needed.
 
-\subsection{Contribution}
+\subsubsection*{Contribution of this paper}
+
+We can summarize contribution of this paper as follows.
 
 \begin{itemize}
 \item Improvement of evaluation efficiency
   \begin{itemize}
-  \item Quadratic to exponential? 
-  \item The introduced extentions (maybe) use more memory than the original approach, but they are faster than the original.
+  \item This is both in evaluation time and memory allocation
   \end{itemize}
-\item Get and put more tight
-
-\item (Tupling introduces some constructions)
+\item Optimization by tupling
   \begin{itemize}
-  \item A pair of put and get is self-inverse (involution).
+  \item In BX, as far as authors know optimization by $get$ and $put$ more tight is the first attempt
   \end{itemize}
-\item careful lazyness is needed in our implementation for efficiency
+\end{itemize}
+
+%\begin{itemize}
+%\item Improvement of evaluation efficiency
+%  \begin{itemize}
+%  \item Quadratic to exponential? 
+%  \item The introduced extentions (maybe) use more memory than the original approach, but they are faster than the original.
+%  \end{itemize}
+%\item Get and put more tight
+
+%\item (Tupling introduces some constructions)
+%  \begin{itemize}
+%  \item A pair of put and get is self-inverse (involution).
+%  \end{itemize}
+%\item careful lazyness is needed in our implementation for efficiency
 %  lazy update \& lazy computation are also good optimization for BX.
 %\item Reveal a part of relationship between BX and Reversible.
 %  \begin{itemize}
@@ -98,6 +164,6 @@ In Section 8 we discuss about related work, and conclude in Section 9.
 %  \item 
 %  \item If we can obtain good parameter (dummy) for a BiGUL program,
 %    put(s, dummy) can be a complement function.
-  \end{itemize}
+%  \end{itemize}
 
 %\subsection{Construction of this paper}
