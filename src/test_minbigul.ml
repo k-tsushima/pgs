@@ -157,19 +157,6 @@ let put_rassoc_comp_phead n =
   let s' = put (rassoc_comp phead n) s v [] in
   s'
 
-(* test put comp of n phead_with_case *)
-let put_lassoc_comp_phead_with_case n =
-  let s = make_smallest_nested_list (n + 1) in
-  let v = Int 100 in
-  let s' = put (lassoc_comp phead_with_case n) s v [] in
-  s'
-
-let put_rassoc_comp_phead_with_case n =
-  let s = make_smallest_nested_list (n + 1) in
-  let v = Int 100 in
-  let s' = put (rassoc_comp phead_with_case n) s v [] in
-  s'
-
 (* test get comp of n phead *)
 let get_lassoc_comp_phead n =
   let s = make_smallest_nested_list (n + 1) in
@@ -179,17 +166,6 @@ let get_lassoc_comp_phead n =
 let get_rassoc_comp_phead n =
   let s = make_smallest_nested_list (n + 1) in
   let v = get (rassoc_comp phead n) s [] in
-  v
-
-(* test get comp of n phead_with_case *)
-let get_lassoc_comp_phead_with_case n =
-  let s = make_smallest_nested_list (n + 1) in
-  let v = get (lassoc_comp phead_with_case n) s [] in
-  v
-
-let get_rassoc_comp_phead_with_case n =
-  let s = make_smallest_nested_list (n + 1) in
-  let v = get (rassoc_comp phead_with_case n) s [] in
   v
 
 (* test put comp of n phead2 *)
@@ -205,19 +181,6 @@ let put_rassoc_comp_phead2 n =
   let s' = put (rassoc_comp phead2 n) s v [] in
   s'
 
-(* test put comp of n phead2_with_case *)
-let put_lassoc_comp_phead2_with_case n =
-  let s = make_consecutive_list n in
-  let v = Con(Int 100, Unit) in
-  let s' = put (lassoc_comp phead2_with_case n) s v [] in
-  s'
-
-let put_rassoc_comp_phead2_with_case n =
-  let s = make_consecutive_list n in
-  let v = Con(Int 100, Unit) in
-  let s' = put (rassoc_comp phead2_with_case n) s v [] in
-  s'
-
 (* test get comp of n phead2 *)
 let get_lassoc_comp_phead2 n =
   let s = make_consecutive_list n in
@@ -227,17 +190,6 @@ let get_lassoc_comp_phead2 n =
 let get_rassoc_comp_phead2 n =
   let s = make_consecutive_list n in
   let v = get (rassoc_comp phead2 n) s [] in
-  v
-
-(* test get comp of n phead2_with_case *)
-let get_lassoc_comp_phead2_with_case n =
-  let s = make_consecutive_list n in
-  let v = get (lassoc_comp phead2_with_case n) s [] in
-  v
-
-let get_rassoc_comp_phead2_with_case n =
-  let s = make_consecutive_list n in
-  let v = get (rassoc_comp phead2_with_case n) s [] in
   v
 
 (* test put breverse *)
@@ -265,44 +217,6 @@ let get_bmapreplace n =
   let s = make_consecutive_list n in
   let v = get bmapreplace s [] in 
   v
-
-(* test put bmapreplace_with_case *)
-let put_bmapreplace_with_case n =
-  let s = make_consecutive_list n in
-  let v = make_consecutive_list n in
-  let s' = put bmapreplace_with_case s v [] in 
-  s'
-
-(* test get bmapreplace_with_case *)
-let get_bmapreplace_with_case n =
-  let s = make_consecutive_list n in
-  let v = get bmapreplace_with_case s [] in 
-  v
-
-(* test put comp of n phead_with_multi_case *)
-let put_lassoc_comp_phead_with_multi_case n =
-  let s = make_smallest_nested_list (n + 1) in
-  let v = Int 100 in
-  let s' = put (lassoc_comp phead_with_multi_case n) s v [] in
-  s'
-
-let put_rassoc_comp_phead_with_multi_case n =
-  let s = make_smallest_nested_list (n + 1) in
-  let v = Int 100 in 
-  let s' = put (rassoc_comp phead_with_multi_case n) s v [] in
-  s'
-
-let put_lassoc_comp_phead_with_multi_case_2 n =
-  let s = make_smallest_nested_list (n + 1) in
-  let v = Int 100 in
-  let s' = put (lassoc_comp phead_with_multi_case_2 n) s v [] in
-  s'
-
-let put_rassoc_comp_phead_with_multi_case_2 n =
-  let s = make_smallest_nested_list (n + 1) in
-  let v = Int 100 in 
-  let s' = put (rassoc_comp phead_with_multi_case_2 n) s v [] in
-  s'
 
 (* let put_breverse_count n =
   count_put := 0;
@@ -351,32 +265,3 @@ let put_rassoc_comp_replace_count n =
   let v = Int 100 in
   let s' = put (rassoc_comp Replace n) s v [] in
   (!count_put, !count_get) *)
-
-(* let put_lassoc_comp_phead_get_time n =
-  get_time := 0.0;
-  let s = make_smallest_nested_list (n + 1) in
-  let v = Int 100 in
-  let s' = put (lassoc_comp phead n) s v [] in
-  !get_time
-
-let put_lassoc_comp_replace_get_time n =
-  get_time := 0.0;
-  let s = Int 1 in
-  let v = Int 100 in
-  let s' = put (lassoc_comp Replace n) s v [] in
-  !get_time
-
-let put_rassoc_comp_replace_get_time n =
-  get_time := 0.0;
-  let s = Int 1 in
-  let v = Int 100 in
-  let s' = put (rassoc_comp Replace n) s v [] in
-  !get_time
-
-let put_rassoc_comp_phead_get_time n =
-  get_time := 0.0;
-  let s = make_smallest_nested_list (n + 1) in
-  let v = Int 100 in
-  let s' = put (rassoc_comp phead n) s v [] in
-  !get_time
-  *)

@@ -45,25 +45,11 @@ let pg_phead =
   let (s, v) = pg phead s v [] in
   (s, v)
 
-(* test pg phead_with_case *)
-let pg_phead_with_case =
-  let s = Con(Int 1, Con(Int 2, Unit)) in
-  let v = Int 100 in
-  let (s, v) = pg phead_with_case s v [] in
-  (s, v)
-
 (* test pg phead2 *)
 let pg_phead2 =
   let s = Con(Int 1, Con(Int 2, Unit)) in
   let v = Con(Int 100, Unit) in
   let (s, v) = pg phead2 s v [] in
-  (s, v)
-
-(* test pg phead2_with_case *)
-let pg_phead2_with_case =
-  let s = Con(Int 1, Con(Int 2, Unit)) in
-  let v = Con(Int 100, Unit) in
-  let (s, v) = pg phead2_with_case s v [] in
   (s, v)
 
 (* test pg replace all *)
@@ -106,19 +92,6 @@ let pg_rassoc_comp_phead n =
   let (s, v) = pg (rassoc_comp phead n) s v [] in
   (s, v)
 
-(* test pg comp of n phead_with_case *)
-let pg_lassoc_comp_phead_with_case n =
-  let s = make_smallest_nested_list (n + 1) in
-  let v = Int 100 in
-  let (s, v) = pg (lassoc_comp phead_with_case n) s v [] in
-  (s, v)
-
-let pg_rassoc_comp_phead_with_case n =
-  let s = make_smallest_nested_list (n + 1) in
-  let v = Int 100 in
-  let (s, v) = pg (rassoc_comp phead_with_case n) s v [] in
-  (s, v)
-
 (* test pg comp of n phead2 *)
 let pg_lassoc_comp_phead2 n =
   let s = make_consecutive_list n in
@@ -130,19 +103,6 @@ let pg_rassoc_comp_phead2 n =
   let s = make_consecutive_list n in
   let v = Con(Int 100, Unit) in
   let (s, v) = pg (rassoc_comp phead2 n) s v [] in
-  (s, v)
-
-(* test pg comp of n phead2_with_case *)
-let pg_lassoc_comp_phead2_with_case n =
-  let s = make_consecutive_list n in
-  let v = Con(Int 100, Unit) in
-  let (s, v) = pg (lassoc_comp phead2_with_case n) s v [] in
-  (s, v)
-
-let pg_rassoc_comp_phead2_with_case n =
-  let s = make_consecutive_list n in
-  let v = Con(Int 100, Unit) in
-  let (s, v) = pg (rassoc_comp phead2_with_case n) s v [] in
   (s, v)
 
 (* test pg breverse *)
@@ -169,13 +129,6 @@ let pg_bmapreplace n =
   let s = make_consecutive_list n in
   let v = make_consecutive_list n in 
   let (s, v) = pg bmapreplace s v [] in 
-  (s, v)
-
-(* test pg bmapreplace_with_case *)
-let pg_bmapreplace_with_case n =
-  let s = make_consecutive_list n in
-  let v = make_consecutive_list n in 
-  let (s, v) = pg bmapreplace_with_case s v [] in 
   (s, v)
 
 (* let pg_lassoc_comp_replace_count n =

@@ -16,69 +16,11 @@ let rearrV_d = RearrV(
 
 let prod_rs = Prod(Replace, skip1)
 
-let phead_no_evaluation = RearrV(
-    (fun v -> Con(v, Unit)), 
-    (fun x -> match x with Con(v, Unit) -> v | _ -> assert false), 
-    Prod(Replace, Replace)
-  ) 
-
 let phead = RearrV(
     (fun v -> Con(v, Unit)), 
     (fun x -> match x with Con(v, Unit) -> v | _ -> assert false), 
     Prod(Replace, skip1)
   ) 
-
-let phead_with_case = Case(
-    (fun s v -> true),
-    (fun s -> true),
-    RearrV(
-      (fun v -> Con(v, Unit)), 
-      (fun x -> match x with Con(v, Unit) -> v | _ -> assert false), 
-      Prod(Replace, skip1)
-    ),
-    skip1
-  )
-
-let phead_with_multi_case = Case(
-    (fun s v -> true),
-    (fun s -> true),
-    RearrV(
-        (fun v -> Con(v, Unit)),
-        (fun x -> match x with Con(v, Unit) -> v | _ -> assert false),
-        Case(
-            (fun s v -> true),
-            (fun s -> true),
-            Prod(Replace, skip1),
-            skip1
-        )
-    ),
-    skip1
-)
-
-let phead_with_multi_case_2 = Case(
-    (fun s v -> true),
-    (fun s -> true),
-    RearrS(
-        (fun x -> match x with Con(s, xs) -> Con(s, xs) | _ -> assert false),
-        (fun x -> match x with Con(s, xs) -> Con(s, xs) | _ -> assert false),
-        Case(
-            (fun s v -> true),
-            (fun s -> true),
-            RearrV(
-                (fun v -> Con(v, Unit)),
-                (fun x -> match x with Con(v, Unit) -> v | _ -> assert false),
-                Case(
-                    (fun s v -> true),
-                    (fun s -> true),
-                    Prod(Replace, skip1),
-                    skip1
-                )
-            ),
-            skip1
-        )
-    ),
-    skip1
-)
 
 let phead2 = RearrS(
     (fun x -> match x with Con(s, ss) -> Con(s, ss) | _ -> assert false),
@@ -88,21 +30,6 @@ let phead2 = RearrS(
       (fun x -> match x with Con(v, Unit) -> Con(v, Unit) | _ -> assert false),
       Prod(Replace, skip1)
     )
-  )
-
-let phead2_with_case = Case(
-    (fun s v -> true),
-    (fun s -> true),
-    RearrS(
-      (fun x -> match x with Con(s, ss) -> Con(s, ss) | _ -> assert false),
-      (fun x -> match x with Con(s, ss) -> Con(s, ss) | _ -> assert false),
-      RearrV(
-        (fun x -> match x with Con(v, Unit) -> Con(v, Unit) | _ -> assert false),
-        (fun x -> match x with Con(v, Unit) -> Con(v, Unit) | _ -> assert false),
-        Prod(Replace, skip1)
-      )
-    ),
-    skip1
   )
 
 let replaceAll = Case(
@@ -186,17 +113,6 @@ let rep2 = RearrV(
     Prod(Replace, Replace)
   )
 
-let rep2_with_case = Case(
-    (fun s v -> true),
-    (fun s -> true),
-    RearrV(
-      (fun x -> match x with Con(v, vs) -> Con(v, vs) | _ -> assert false),
-      (fun x -> match x with Con(v, vs) -> Con(v, vs) | _ -> assert false),
-      Prod(Replace, Replace)
-    ),
-    skip1
-  )
-
 let bfoldr_rep2 = bfoldr (Var "rep2")
 
 let bfoldr_rep2_def = Def("bfoldr_rep2", bfoldr_rep2,  Def("rep2", rep2, Var "bfoldr_rep2"))
@@ -205,14 +121,4 @@ let bmapreplace = RearrS(
     (fun s -> Con(s, Unit)),
     (fun x -> match x with Con(s, Unit) -> s | _ -> assert false),
     bfoldr_rep2_def
-  )
-
-let bfoldr_rep2_with_case = bfoldr (Var "rep2_with_case")
-
-let bfoldr_rep2_with_case_def = Def("bfoldr_rep2_with_case", bfoldr_rep2_with_case, Def("rep2_with_case", rep2_with_case, Var "bfoldr_rep2_with_case"))
-
-let bmapreplace_with_case = RearrS(
-    (fun s -> Con(s, Unit)),
-    (fun x -> match x with Con(s, Unit) -> s | _ -> assert false),
-    bfoldr_rep2_with_case_def
   )

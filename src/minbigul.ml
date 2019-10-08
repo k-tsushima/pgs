@@ -33,9 +33,17 @@ let rec get (bx:bigul) s env =
     (fun m -> g2 m) v
   | Case(condsv, conds, bx1, bx2) ->
     if conds s then 
-      get bx1 s env
+      let v = get bx1 s env in 
+        if condsv s v then 
+            v 
+        else 
+            assert false
     else
-      get bx2 s env
+      let v = get bx2 s env in 
+        if not (condsv s v) then 
+            v 
+        else
+            assert false
   | Compose(bx1, bx2) ->
     let v1 = get bx1 s env in
     let v2 = get bx2 v1 env in
@@ -73,9 +81,17 @@ let rec put (bx:bigul) s v env =
     s
   | Case(condsv, conds, bx1, bx2) ->
     if condsv s v then 
-      put bx1 s v env
+      let s' = put bx1 s v env in 
+        if conds s' then 
+            s'
+        else 
+            assert false
     else 
-      put bx2 s v env
+      let s' = put bx2 s v env in 
+        if not (conds s') then 
+            s' 
+        else 
+            assert false
   | Compose(bx1, bx2) ->
     let v1 = get bx1 s env in
     let s2 = put bx2 v1 v env in

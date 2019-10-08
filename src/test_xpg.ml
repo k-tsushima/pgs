@@ -46,25 +46,11 @@ let xpg_phead =
   let (s, v) = xpg phead s v [] in
   (s, v)
 
-(* test xpg phead_with_case *)
-let xpg_phead_with_case =
-  let s = Con(Int 1, Con(Int 2, Unit)) in
-  let v = Int 100 in
-  let (s, v) = xpg phead_with_case s v [] in
-  (s, v)
-
 (* test xpg phead2 *)
 let xpg_phead2 =
   let s = Con(Int 1, Con(Int 2, Unit)) in
   let v = Con(Int 100, Unit) in
   let (s, v) = xpg phead2 s v [] in
-  (s, v)
-
-(* test xpg phead2_with_case *)
-let xpg_phead2_with_case =
-  let s = Con(Int 1, Con(Int 2, Unit)) in
-  let v = Con(Int 100, Unit) in
-  let (s, v) = xpg phead2_with_case s v [] in
   (s, v)
 
 (* test xpg replace all *)
@@ -107,19 +93,6 @@ let xpg_rassoc_comp_phead n =
   let (s, v) = xpg (rassoc_comp phead n) s v [] in
   (s, v)
 
-(* test xpg comp of n phead_with_case *)
-let xpg_lassoc_comp_phead_with_case n =
-  let s = make_smallest_nested_list (n + 1) in
-  let v = Int 100 in
-  let (s, v) = xpg (lassoc_comp phead_with_case n) s v [] in
-  (s, v)
-
-let xpg_rassoc_comp_phead_with_case n =
-  let s = make_smallest_nested_list (n + 1) in
-  let v = Int 100 in
-  let (s, v) = xpg (rassoc_comp phead_with_case n) s v [] in
-  (s, v)
-
 (* test xpg comp of n phead2 *)
 let xpg_lassoc_comp_phead2 n =
   let s = make_consecutive_list n in
@@ -131,19 +104,6 @@ let xpg_rassoc_comp_phead2 n =
   let s = make_consecutive_list n in
   let v = Con(Int 100, Unit) in
   let (s, v) = xpg (rassoc_comp phead2 n) s v [] in
-  (s, v)
-
-(* test xpg comp of n phead2_with_case *)
-let xpg_lassoc_comp_phead2_with_case n =
-  let s = make_consecutive_list n in
-  let v = Con(Int 100, Unit) in
-  let (s, v) = xpg (lassoc_comp phead2_with_case n) s v [] in
-  (s, v)
-
-let xpg_rassoc_comp_phead2_with_case n =
-  let s = make_consecutive_list n in
-  let v = Con(Int 100, Unit) in
-  let (s, v) = xpg (rassoc_comp phead2_with_case n) s v [] in
   (s, v)
 
 (* test xpg breverse *)
@@ -170,44 +130,6 @@ let xpg_bmapreplace n =
   let s = make_consecutive_list n in
   let v = make_consecutive_list n in 
   let (s, v) = xpg bmapreplace s v [] in 
-  (s, v)
-
-(* test xpg bmapreplace_with_case *)
-let xpg_bmapreplace_with_case n =
-  let s = make_consecutive_list n in
-  let v = make_consecutive_list n in 
-  let (s, v) = xpg bmapreplace_with_case s v [] in 
-  (s, v)
-
-let xpg_bmapreplace_0 =
-  let s = Con(Int 1, Con(Int 2, Unit)) in
-  let v = Con(Int 3, Con(Int 4, Unit)) in 
-  let (s, v) = xpg bmapreplace s v [] in 
-  (s, v)
-
-(* test xpg comp of n phead_with_multi_case *)
-let xpg_lassoc_comp_phead_with_multi_case n =
-  let s = make_smallest_nested_list (n + 1) in
-  let v = Int 100 in
-  let (s, v) = xpg (lassoc_comp phead_with_multi_case n) s v [] in
-  (s, v)
-
-let xpg_rassoc_comp_phead_with_multi_case n =
-  let s = make_smallest_nested_list (n + 1) in
-  let v = Int 100 in
-  let (s, v) = xpg (rassoc_comp phead_with_multi_case n) s v [] in
-  (s, v)
-
-let xpg_lassoc_comp_phead_with_multi_case_2 n =
-  let s = make_smallest_nested_list (n + 1) in
-  let v = Int 100 in
-  let (s, v) = xpg (lassoc_comp phead_with_multi_case_2 n) s v [] in
-  (s, v)
-
-let xpg_rassoc_comp_phead_with_multi_case_2 n =
-  let s = make_smallest_nested_list (n + 1) in
-  let v = Int 100 in
-  let (s, v) = xpg (rassoc_comp phead_with_multi_case_2 n) s v [] in
   (s, v)
 
 (* let xpg_lassoc_comp_replace_count n =

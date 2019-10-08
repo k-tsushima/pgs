@@ -39,6 +39,9 @@ src
 #load "minbigul.cmo";;
 #use "test_minbigul.ml";;
 
+#load "minbigul_m.cmo";;
+#use "test_minbigul_m.ml";;
+
 #load "pg.cmo";;
 #use "test_pg.ml";;
 
