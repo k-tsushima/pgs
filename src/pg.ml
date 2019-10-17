@@ -44,7 +44,8 @@ let rec pg (bx:bigul) s v env =
             else
                 assert false
   | Compose(bx1, bx2) ->
-    let (s1, v1) = pg bx1 s (construct_dummy s) env in
+    (* let (s1, v1) = pg bx1 s (construct_dummy s) env in *)
+    let (s1, v1) = pg bx1 s v env in
     let (s2, v2) = pg bx2 v1 v env in
     let (s3, v3) = pg bx1 s1 s2 env in
     (s3, v2)

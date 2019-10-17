@@ -45,13 +45,12 @@ let rec get_m (bx:bigul) s env =
       else
         assert false
   | Compose(bx1, bx2) ->
-    let v1 = get_m_h bx1 s env in
-    let v2 = get_m_h bx2 v1 env in
-        try (Hashtbl.find table_g (v2, Compose(bx1, bx2))) 
-        with Not_found ->
-            Hashtbl.add table_g (s, bx) v2
-        ;
-        v2
+    try (Hashtbl.find table_g (s, bx)) 
+    with Not_found ->
+        let v1 = get_m_h bx1 s env in
+        let v2 = get_m_h bx2 v1 env in
+            Hashtbl.add table_g (s, bx) v2;
+            v2
 and
   get_m_h bx s env = 
     count_get_m_h := !count_get_m_h + 1;
