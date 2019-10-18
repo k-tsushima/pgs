@@ -106,23 +106,23 @@ let cpg_rassoc_comp_phead2 n =
   (s, v)
 
 (* test breverse *)
-let cpg_breverse_1 =
-  let s = (Con(Int 1, Unit)) in
-  let v = (Con(Int 3, Unit)) in
-  let (ks, kv, s, v) = cpg breverse (fun _ -> s) id s v [] in
-  (s, v)
-
-(* test breverse *)
-let cpg_breverse_3 =
-  let s = (Con(Int 1, Con(Int 2, Con(Int 3, Unit)))) in
-  let v = (Con(Int 4, Con(Int 5, Con(Int 6, Unit)))) in
-  let (ks, kv, s, v) = cpg breverse (fun _ -> s) id s v [] in
-  (s, v)
-
 let cpg_breverse n =
   let s = make_consecutive_list n in
   let v = make_consecutive_list n in
   let (ks, kv, s, v) = cpg breverse (fun _ -> s) id s v [] in
+  (s, v) 
+
+(* test comp of n breverse *)
+let cpg_lassoc_comp_breverse n =
+  let s = make_consecutive_list n in
+  let v = make_consecutive_list n in
+  let (ks, kv, s, v) = cpg (lassoc_comp breverse n) (fun _ -> s) id s v [] in
+  (s, v) 
+
+let cpg_rassoc_comp_breverse n =
+  let s = make_consecutive_list n in
+  let v = make_consecutive_list n in
+  let (ks, kv, s, v) = cpg (rassoc_comp breverse n) (fun _ -> s) id s v [] in
   (s, v) 
 
 (* test bmapreplace *)

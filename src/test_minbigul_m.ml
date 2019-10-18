@@ -189,6 +189,7 @@ count_get_m_h := 0;
   let s = make_smallest_nested_list (n + 1) in
   let v = Int 100 in
   let s' = put_m (lassoc_comp phead n) s v [] in
+  Printf.printf "%d\n" (Hashtbl.length table_g);
   s'
 
 let put_m_rassoc_comp_phead n =
@@ -196,6 +197,7 @@ count_get_m_h := 0;
   let s = make_smallest_nested_list (n + 1) in
   let v = Int 100 in
   let s' = put_m (rassoc_comp phead n) s v [] in
+  Printf.printf "%d\n" (Hashtbl.length table_g);
   s'
 
 (* test put_m comp of n phead2 *)
@@ -218,6 +220,19 @@ count_get_m_h := 0;
   let v = make_consecutive_list n in
   let s' = put_m breverse s v [] in
   s'
+
+(* test put_m comp of n breverse *)
+let put_m_lassoc_comp_breverse n =
+    let s = make_consecutive_list n in 
+    let v = make_consecutive_list n in 
+    let s' = put_m (lassoc_comp breverse n) s v [] in 
+    s'
+
+let put_m_rassoc_comp_breverse n =
+    let s = make_consecutive_list n in 
+    let v = make_consecutive_list n in 
+    let s' = put_m (rassoc_comp breverse n) s v [] in 
+    s'
 
 (* test put_m bmapreplace *)
 let put_m_bmapreplace n =

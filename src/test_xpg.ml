@@ -125,6 +125,20 @@ let xpg_breverse n =
   let (s, v) = xpg breverse s v [] in 
   (s, v)
 
+(* test xpg lassoc_comp of breverse *)
+let xpg_lassoc_comp_breverse n =
+    let s = make_consecutive_list n in 
+    let v = make_consecutive_list n in 
+    let s' = xpg (lassoc_comp breverse n) s v [] in 
+    s'
+
+(* test xpg rassoc_comp of breverse *)
+let xpg_rassoc_comp_breverse n =
+    let s = make_consecutive_list n in 
+    let v = make_consecutive_list n in 
+    let s' = xpg (rassoc_comp breverse n) s v [] in 
+    s'
+
 (* test xpg bmapreplace *)
 let xpg_bmapreplace n =
   let s = make_consecutive_list n in

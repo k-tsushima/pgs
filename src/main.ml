@@ -25,6 +25,8 @@ let _ =
                     | "put", "lassoc_comp_phead2" -> let _ = put_lassoc_comp_phead2 n_comp in ()
 					| "put", "rassoc_comp_phead2" -> let _ = put_rassoc_comp_phead2 n_comp in ()
 					| "put", "breverse" -> let _ = put_breverse n_comp in ()
+                    | "put", "lassoc_comp_breverse" -> let _ = put_lassoc_comp_breverse n_comp in ()
+                    | "put", "rassoc_comp_breverse" -> let _ = put_rassoc_comp_breverse n_comp in ()
                     | "put", "bmapreplace" -> let _ = put_bmapreplace n_comp in ()
 
                     | "put_m", "lassoc_comp_replace" -> let _ = put_m_lassoc_comp_replace n_comp in ()
@@ -34,6 +36,8 @@ let _ =
                     | "put_m", "lassoc_comp_phead2" -> let _ = put_m_lassoc_comp_phead2 n_comp in ()
 					| "put_m", "rassoc_comp_phead2" -> let _ = put_m_rassoc_comp_phead2 n_comp in ()
 					| "put_m", "breverse" -> let _ = put_m_breverse n_comp in ()
+                    | "put_m", "lassoc_comp_breverse" -> let _ = put_m_lassoc_comp_breverse n_comp in ()
+                    | "put_m", "rassoc_comp_breverse" -> let _ = put_m_rassoc_comp_breverse n_comp in ()
                     | "put_m", "bmapreplace" -> let _ = put_m_bmapreplace n_comp in ()
 
                     | "pg", "lassoc_comp_replace" -> let _ = pg_lassoc_comp_replace n_comp in ()
@@ -43,6 +47,8 @@ let _ =
                     | "pg", "lassoc_comp_phead2" -> let _ = pg_lassoc_comp_phead2 n_comp in ()
 					| "pg", "rassoc_comp_phead2" -> let _ = pg_rassoc_comp_phead2 n_comp in ()
 					| "pg", "breverse" -> let _ = pg_breverse n_comp in ()
+                    | "pg", "lassoc_comp_breverse" -> let _ = pg_lassoc_comp_breverse n_comp in ()
+                    | "pg", "rassoc_comp_breverse" -> let _ = pg_rassoc_comp_breverse n_comp in ()
                     | "pg", "bmapreplace" -> let _ = pg_bmapreplace n_comp in ()
 
                     | "cpg", "lassoc_comp_replace" -> let _ = cpg_lassoc_comp_replace n_comp in ()
@@ -52,6 +58,8 @@ let _ =
                     | "cpg", "lassoc_comp_phead2" -> let _ = cpg_lassoc_comp_phead2 n_comp in ()
                     | "cpg", "rassoc_comp_phead2" -> let _ = cpg_rassoc_comp_phead2 n_comp in ()
                     | "cpg", "breverse" -> let _ = cpg_breverse n_comp in ()
+                    | "cpg", "lassoc_comp_breverse" -> let _ = cpg_lassoc_comp_breverse n_comp in ()
+                    | "cpg", "rassoc_comp_breverse" -> let _ = cpg_rassoc_comp_breverse n_comp in ()
                     | "cpg", "bmapreplace" -> let _ = cpg_bmapreplace n_comp in ()
                     
                     | "kpg", "lassoc_comp_replace" -> let _ = kpg_lassoc_comp_replace n_comp in ()
@@ -61,6 +69,8 @@ let _ =
                     | "kpg", "lassoc_comp_phead2" -> let _ = kpg_lassoc_comp_phead2 n_comp in ()
 					| "kpg", "rassoc_comp_phead2" -> let _ = kpg_rassoc_comp_phead2 n_comp in ()
 					| "kpg", "breverse" -> let _ = kpg_breverse n_comp in ()
+                    | "kpg", "lassoc_comp_breverse" -> let _ = kpg_lassoc_comp_breverse n_comp in ()
+                    | "kpg", "rassoc_comp_breverse" -> let _ = kpg_rassoc_comp_breverse n_comp in ()
                     | "kpg", "bmapreplace" -> let _ = kpg_bmapreplace n_comp in ()
 
                     | "xpg", "lassoc_comp_replace" -> let _ = xpg_lassoc_comp_replace n_comp in ()
@@ -70,6 +80,8 @@ let _ =
                     | "xpg", "lassoc_comp_phead2" -> let _ = xpg_lassoc_comp_phead2 n_comp in ()
 					| "xpg", "rassoc_comp_phead2" -> let _ = xpg_rassoc_comp_phead2 n_comp in ()
 					| "xpg", "breverse" -> let _ = xpg_breverse n_comp in ()
+                    | "xpg", "lassoc_comp_breverse" -> let _ = xpg_lassoc_comp_breverse n_comp in ()
+                    | "xpg", "rassoc_comp_breverse" -> let _ = xpg_rassoc_comp_breverse n_comp in ()
                     | "xpg", "bmapreplace" -> let _ = xpg_bmapreplace n_comp in ()
                     
 					| _ -> raise Unsupported_Parameter

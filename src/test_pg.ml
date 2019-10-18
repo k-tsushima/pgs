@@ -106,22 +106,23 @@ let pg_rassoc_comp_phead2 n =
   (s, v)
 
 (* test pg breverse *)
-let pg_breverse_1 =
-  let s = (Con(Int 1, Unit)) in
-  let v = (Con(Int 3, Unit)) in
-  let (s, v) = pg breverse s v [] in
-  (s, v)
-
-let pg_breverse_2 =
-  let s = (Con(Int 1, Con(Int 2, Unit))) in
-  let v = (Con(Int 3, Con(Int 4, Unit))) in
-  let (s, v) = pg breverse s v [] in
-  (s, v)
-
 let pg_breverse n =
   let s = make_consecutive_list n in
   let v = make_consecutive_list n in 
   let (s, v) = pg breverse s v [] in 
+  (s, v)
+
+(* test pg comp of n breverse *)
+let pg_lassoc_comp_breverse n =
+  let s = make_consecutive_list n in
+  let v = make_consecutive_list n in 
+  let (s, v) = pg (lassoc_comp breverse n) s v [] in 
+  (s, v)
+
+let pg_rassoc_comp_breverse n =
+  let s = make_consecutive_list n in
+  let v = make_consecutive_list n in 
+  let (s, v) = pg (rassoc_comp breverse n) s v [] in 
   (s, v)
 
 (* test pg bmapreplace *)

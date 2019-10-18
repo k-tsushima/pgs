@@ -205,6 +205,25 @@ let get_breverse n =
   let v = get breverse s [] in 
   v
 
+(* test put lassoc_comp of n breverse *)
+let put_lassoc_comp_breverse n =
+    let s = make_consecutive_list n in 
+    let v = make_consecutive_list n in 
+    let s' = put (lassoc_comp breverse n) s v [] in 
+    s'
+
+(* test put rassoc_comp of n breverse *)
+let put_rassoc_comp_breverse n =
+    let s = make_consecutive_list n in 
+    let v = make_consecutive_list n in 
+    let s' = put (rassoc_comp breverse n) s v [] in 
+    s'
+
+let get_breverse n =
+  let s = make_consecutive_list n in
+  let v = get breverse s [] in 
+  v
+
 (* test put bmapreplace *)
 let put_bmapreplace n =
   let s = make_consecutive_list n in
