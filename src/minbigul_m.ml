@@ -3,8 +3,6 @@ open Utils
 
 let (table_g : (data * bigul, data) Hashtbl.t) = Hashtbl.create 0
 
-let count_get_m_h = ref 0
-
 let rec get_m (bx:bigul) s env =
   match bx with
   | Def(name, bx1, bx2) ->
@@ -49,17 +47,17 @@ let rec get_m (bx:bigul) s env =
     with Not_found ->
         let v1 = get_m_h bx1 s env in
         let v2 = get_m_h bx2 v1 env in
-            Hashtbl.add table_g (s, bx) v2;
-            v2
+                Hashtbl.add table_g (s, bx) v2;
+                v2
 and
   get_m_h bx s env = 
-    count_get_m_h := !count_get_m_h + 1;
     try (Hashtbl.find table_g (s, bx)) 
     with Not_found ->
-        let v = get_m bx s env in  
-            (* count_get_m_h := !count_get_m_h + 1; *)
-            Hashtbl.add table_g (s, bx) v;
-            v
+        let v = get_m bx s env in
+            try (Hashtbl.find table_g (s, bx)) 
+            with Not_found ->
+                Hashtbl.add table_g (s, bx) v;
+                v
 
 let rec put_m (bx:bigul) s v env =
   match bx with

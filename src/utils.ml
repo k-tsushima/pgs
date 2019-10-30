@@ -19,19 +19,21 @@ let second x = match x with
     | Con(a, b) -> b
     | _ -> assert false
 
-(* make_smallest_nested_list 3 = [[[1]]] *)
-let rec make_smallest_nested_list n = match n with
-	| 1 -> Con(Int 1, Unit)
-	| n when n > 0 -> Con(make_smallest_nested_list (n - 1), Unit)
-	| _ -> assert false
-
-(* make_same_elements_list 2 3 = [2,2,2] *)
-let rec make_same_elements_list x n = match n with
-	| 1 -> Con(Int x, Unit)
-	| n when n > 0 -> Con(Int x, make_same_elements_list x (n - 1))
-	| _ -> assert false
-
 (* make_consecutive_list 5 = [5,4,3,2,1] *)
 let rec make_consecutive_list n = match n with
 	| 0 -> Unit
 	| n -> Con(Int n, make_consecutive_list (n - 1))
+
+let rec make_consecutive_list_2 n = match n with
+	| 0 -> Unit
+	| n -> Con(Int (n + 10000), make_consecutive_list_2 (n - 1))
+
+(* make_smallest_nested_list 3 = [[[1]]] *)
+let rec make_smallest_nested_list n = match n with
+	| 1 -> Con(Int 1, Unit)
+	| n -> Con(make_smallest_nested_list (n - 1), Unit)
+
+(* make_consecutive_nested_list 5 = [[5],[4],[3],[2],[1]] *)
+let rec make_consecutive_nested_list n = match n with
+    | 0 -> Unit
+    | n -> Con(Con(Int n, Unit), make_consecutive_nested_list (n - 1))

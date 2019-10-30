@@ -1,11 +1,11 @@
 open Syntax
 open Utils
 
-let count_get = ref 0
-let count_put = ref 0
+(* let count_get = ref 0
+let count_put = ref 0 *)
 
 let rec get (bx:bigul) s env =
-  count_get := !count_get + 1;
+  (* count_get := !count_get + 1; *)
   match bx with
   | Def(name, bx1, bx2) ->
     get bx2 s ((name, bx1)::env)
@@ -50,7 +50,7 @@ let rec get (bx:bigul) s env =
     v2
 
 let rec put (bx:bigul) s v env =
-  count_put := !count_put + 1;
+  (* count_put := !count_put + 1; *)
   match bx with
   | Def(name, bx1, bx2) ->
     put bx2 s v ((name, bx1)::env)

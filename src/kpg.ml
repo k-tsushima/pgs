@@ -68,6 +68,7 @@ let rec kpg bx ks kv ks' kv' s v env =
         else
             assert false
   | Compose(bx1, bx2) ->
-    let (ks1, kv1, ks1', kv1', s1, v1) = kpg bx1 ks id ks' id s (construct_dummy s) env in
+    (* let (ks1, kv1, ks1', kv1', s1, v1) = kpg bx1 ks id ks' id s (construct_dummy s) env in *)
+    let (ks1, kv1, ks1', kv1', s1, v1) = kpg bx1 ks id ks' id s v env in
     let (ks2, kv2, ks2', kv2', s2, v2) = kpg bx2 kv1 kv kv1' kv' v1 v env in
     ((fun x -> ks1 (ks2 x)), kv2, (fun m -> ks1 (ks2' m)), kv2', s2, v2)

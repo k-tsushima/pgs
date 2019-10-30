@@ -23,7 +23,7 @@ let rec print_data data = match data with
 	| Int n -> string_of_int n
 	| Dummy -> "dummy"
 
-let print bx = match bx with
+let rec print bx = match bx with
 	| Def(_) -> "def"
 	| Var(_) -> "var"
 	| Skip(_) -> "skip"
@@ -31,5 +31,5 @@ let print bx = match bx with
 	| Prod(_) -> "prod"
 	| RearrS(_) -> "rearrS"
 	| RearrV(_) -> "rearrV"
-	| Compose(_) -> "compose"
+	| Compose(bx1, bx2) -> "compose(" ^ (print bx1) ^ "," ^ (print bx2) ^ ")"
 	| Case(_) -> "case"

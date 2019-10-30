@@ -1,9 +1,10 @@
 open Test_minbigul
 open Test_minbigul_m
-open Test_kpg
-open Test_cpg
 open Test_pg
-open Test_xpg
+open Test_cpg
+open Test_kpg
+open Test_cpg2
+open Test_kpg2
 open Gc
 
 exception Missing_Parameter
@@ -28,6 +29,14 @@ let _ =
                     | "put", "lassoc_comp_breverse" -> let _ = put_lassoc_comp_breverse n_comp in ()
                     | "put", "rassoc_comp_breverse" -> let _ = put_rassoc_comp_breverse n_comp in ()
                     | "put", "bmapreplace" -> let _ = put_bmapreplace n_comp in ()
+                    | "put", "lassoc_comp_bsnoc" -> let _ = put_lassoc_comp_bsnoc n_comp in ()
+                    | "put", "rassoc_comp_bsnoc" -> let _ = put_rassoc_comp_bsnoc n_comp in ()
+                    | "put", "lassoc_comp_bsnoc_nested_list" -> let _ = put_lassoc_comp_bsnoc_nested_list n_comp in ()
+                    | "put", "rassoc_comp_bsnoc_nested_list" -> let _ = put_rassoc_comp_bsnoc_nested_list n_comp in ()
+                    | "put", "lassoc_comp_replace_nested_list" -> let _ = put_lassoc_comp_replace_nested_list n_comp in ()
+                    | "put", "rassoc_comp_replace_nested_list" -> let _ = put_rassoc_comp_replace_nested_list n_comp in ()
+                    | "put", "breverse_nested_list" -> let _ = put_breverse_nested_list n_comp in ()
+                    | "put", "bmapreplace_nested_list" -> let _ = put_bmapreplace_nested_list n_comp in ()
 
                     | "put_m", "lassoc_comp_replace" -> let _ = put_m_lassoc_comp_replace n_comp in ()
 					| "put_m", "rassoc_comp_replace" -> let _ = put_m_rassoc_comp_replace n_comp in ()
@@ -39,6 +48,14 @@ let _ =
                     | "put_m", "lassoc_comp_breverse" -> let _ = put_m_lassoc_comp_breverse n_comp in ()
                     | "put_m", "rassoc_comp_breverse" -> let _ = put_m_rassoc_comp_breverse n_comp in ()
                     | "put_m", "bmapreplace" -> let _ = put_m_bmapreplace n_comp in ()
+                    | "put_m", "lassoc_comp_bsnoc" -> let _ = put_m_lassoc_comp_bsnoc n_comp in ()
+                    | "put_m", "rassoc_comp_bsnoc" -> let _ = put_m_rassoc_comp_bsnoc n_comp in ()
+                    | "put_m", "lassoc_comp_bsnoc_nested_list" -> let _ = put_m_lassoc_comp_bsnoc_nested_list n_comp in ()
+                    | "put_m", "rassoc_comp_bsnoc_nested_list" -> let _ = put_m_rassoc_comp_bsnoc_nested_list n_comp in ()
+                    | "put_m", "lassoc_comp_replace_nested_list" -> let _ = put_m_lassoc_comp_replace_nested_list n_comp in ()
+                    | "put_m", "rassoc_comp_replace_nested_list" -> let _ = put_m_rassoc_comp_replace_nested_list n_comp in ()
+                    | "put_m", "breverse_nested_list" -> let _ = put_m_breverse_nested_list n_comp in ()
+                    | "put_m", "bmapreplace_nested_list" -> let _ = put_m_bmapreplace_nested_list n_comp in ()
 
                     | "pg", "lassoc_comp_replace" -> let _ = pg_lassoc_comp_replace n_comp in ()
 					| "pg", "rassoc_comp_replace" -> let _ = pg_rassoc_comp_replace n_comp in ()
@@ -50,6 +67,14 @@ let _ =
                     | "pg", "lassoc_comp_breverse" -> let _ = pg_lassoc_comp_breverse n_comp in ()
                     | "pg", "rassoc_comp_breverse" -> let _ = pg_rassoc_comp_breverse n_comp in ()
                     | "pg", "bmapreplace" -> let _ = pg_bmapreplace n_comp in ()
+                    | "pg", "lassoc_comp_bsnoc" -> let _ = pg_lassoc_comp_bsnoc n_comp in ()
+                    | "pg", "rassoc_comp_bsnoc" -> let _ = pg_rassoc_comp_bsnoc n_comp in ()
+                    | "pg", "lassoc_comp_bsnoc_nested_list" -> let _ = pg_lassoc_comp_bsnoc_nested_list n_comp in ()
+                    | "pg", "rassoc_comp_bsnoc_nested_list" -> let _ = pg_rassoc_comp_bsnoc_nested_list n_comp in ()
+                    | "pg", "lassoc_comp_replace_nested_list" -> let _ = pg_lassoc_comp_replace_nested_list n_comp in ()
+                    | "pg", "rassoc_comp_replace_nested_list" -> let _ = pg_rassoc_comp_replace_nested_list n_comp in ()
+                    | "pg", "breverse_nested_list" -> let _ = pg_breverse_nested_list n_comp in ()
+                    | "pg", "bmapreplace_nested_list" -> let _ = pg_bmapreplace_nested_list n_comp in ()
 
                     | "cpg", "lassoc_comp_replace" -> let _ = cpg_lassoc_comp_replace n_comp in ()
                     | "cpg", "rassoc_comp_replace" -> let _ = cpg_rassoc_comp_replace n_comp in ()
@@ -61,6 +86,33 @@ let _ =
                     | "cpg", "lassoc_comp_breverse" -> let _ = cpg_lassoc_comp_breverse n_comp in ()
                     | "cpg", "rassoc_comp_breverse" -> let _ = cpg_rassoc_comp_breverse n_comp in ()
                     | "cpg", "bmapreplace" -> let _ = cpg_bmapreplace n_comp in ()
+                    | "cpg", "lassoc_comp_bsnoc" -> let _ = cpg_lassoc_comp_bsnoc n_comp in ()
+                    | "cpg", "rassoc_comp_bsnoc" -> let _ = cpg_rassoc_comp_bsnoc n_comp in ()
+                    | "cpg", "lassoc_comp_bsnoc_nested_list" -> let _ = cpg_lassoc_comp_bsnoc_nested_list n_comp in ()
+                    | "cpg", "rassoc_comp_bsnoc_nested_list" -> let _ = cpg_rassoc_comp_bsnoc_nested_list n_comp in ()
+                    | "cpg", "lassoc_comp_replace_nested_list" -> let _ = cpg_lassoc_comp_replace_nested_list n_comp in ()
+                    | "cpg", "rassoc_comp_replace_nested_list" -> let _ = cpg_rassoc_comp_replace_nested_list n_comp in ()
+                    | "cpg", "breverse_nested_list" -> let _ = cpg_breverse_nested_list n_comp in ()
+                    | "cpg", "bmapreplace_nested_list" -> let _ = cpg_bmapreplace_nested_list n_comp in ()
+
+                    | "cpg2", "lassoc_comp_replace" -> let _ = cpg2_lassoc_comp_replace n_comp in ()
+                    | "cpg2", "rassoc_comp_replace" -> let _ = cpg2_rassoc_comp_replace n_comp in ()
+                    | "cpg2", "lassoc_comp_phead" -> let _ = cpg2_lassoc_comp_phead n_comp in ()
+                    | "cpg2", "rassoc_comp_phead" -> let _ = cpg2_rassoc_comp_phead n_comp in ()
+                    | "cpg2", "lassoc_comp_phead2" -> let _ = cpg2_lassoc_comp_phead2 n_comp in ()
+                    | "cpg2", "rassoc_comp_phead2" -> let _ = cpg2_rassoc_comp_phead2 n_comp in ()
+                    | "cpg2", "breverse" -> let _ = cpg2_breverse n_comp in ()
+                    | "cpg2", "lassoc_comp_breverse" -> let _ = cpg2_lassoc_comp_breverse n_comp in ()
+                    | "cpg2", "rassoc_comp_breverse" -> let _ = cpg2_rassoc_comp_breverse n_comp in ()
+                    | "cpg2", "bmapreplace" -> let _ = cpg2_bmapreplace n_comp in ()
+                    | "cpg2", "lassoc_comp_bsnoc" -> let _ = cpg2_lassoc_comp_bsnoc n_comp in ()
+                    | "cpg2", "rassoc_comp_bsnoc" -> let _ = cpg2_rassoc_comp_bsnoc n_comp in ()
+                    | "cpg2", "lassoc_comp_bsnoc_nested_list" -> let _ = cpg2_lassoc_comp_bsnoc_nested_list n_comp in ()
+                    | "cpg2", "rassoc_comp_bsnoc_nested_list" -> let _ = cpg2_rassoc_comp_bsnoc_nested_list n_comp in ()
+                    | "cpg2", "lassoc_comp_replace_nested_list" -> let _ = cpg2_lassoc_comp_replace_nested_list n_comp in ()
+                    | "cpg2", "rassoc_comp_replace_nested_list" -> let _ = cpg2_rassoc_comp_replace_nested_list n_comp in ()
+                    | "cpg2", "breverse_nested_list" -> let _ = cpg2_breverse_nested_list n_comp in ()
+                    | "cpg2", "bmapreplace_nested_list" -> let _ = cpg2_bmapreplace_nested_list n_comp in ()
                     
                     | "kpg", "lassoc_comp_replace" -> let _ = kpg_lassoc_comp_replace n_comp in ()
 					| "kpg", "rassoc_comp_replace" -> let _ = kpg_rassoc_comp_replace n_comp in ()
@@ -72,17 +124,33 @@ let _ =
                     | "kpg", "lassoc_comp_breverse" -> let _ = kpg_lassoc_comp_breverse n_comp in ()
                     | "kpg", "rassoc_comp_breverse" -> let _ = kpg_rassoc_comp_breverse n_comp in ()
                     | "kpg", "bmapreplace" -> let _ = kpg_bmapreplace n_comp in ()
+                    | "kpg", "lassoc_comp_bsnoc" -> let _ = kpg_lassoc_comp_bsnoc n_comp in ()
+                    | "kpg", "rassoc_comp_bsnoc" -> let _ = kpg_rassoc_comp_bsnoc n_comp in ()
+                    | "kpg", "lassoc_comp_bsnoc_nested_list" -> let _ = kpg_lassoc_comp_bsnoc_nested_list n_comp in ()
+                    | "kpg", "rassoc_comp_bsnoc_nested_list" -> let _ = kpg_rassoc_comp_bsnoc_nested_list n_comp in ()
+                    | "kpg", "lassoc_comp_replace_nested_list" -> let _ = kpg_lassoc_comp_replace_nested_list n_comp in ()
+                    | "kpg", "rassoc_comp_replace_nested_list" -> let _ = kpg_rassoc_comp_replace_nested_list n_comp in ()
+                    | "kpg", "breverse_nested_list" -> let _ = kpg_breverse_nested_list n_comp in ()
+                    | "kpg", "bmapreplace_nested_list" -> let _ = kpg_bmapreplace_nested_list n_comp in ()
 
-                    | "xpg", "lassoc_comp_replace" -> let _ = xpg_lassoc_comp_replace n_comp in ()
-					| "xpg", "rassoc_comp_replace" -> let _ = xpg_rassoc_comp_replace n_comp in ()
-					| "xpg", "lassoc_comp_phead" -> let _ = xpg_lassoc_comp_phead n_comp in ()
-					| "xpg", "rassoc_comp_phead" -> let _ = xpg_rassoc_comp_phead n_comp in ()
-                    | "xpg", "lassoc_comp_phead2" -> let _ = xpg_lassoc_comp_phead2 n_comp in ()
-					| "xpg", "rassoc_comp_phead2" -> let _ = xpg_rassoc_comp_phead2 n_comp in ()
-					| "xpg", "breverse" -> let _ = xpg_breverse n_comp in ()
-                    | "xpg", "lassoc_comp_breverse" -> let _ = xpg_lassoc_comp_breverse n_comp in ()
-                    | "xpg", "rassoc_comp_breverse" -> let _ = xpg_rassoc_comp_breverse n_comp in ()
-                    | "xpg", "bmapreplace" -> let _ = xpg_bmapreplace n_comp in ()
+                    | "kpg2", "lassoc_comp_replace" -> let _ = kpg2_lassoc_comp_replace n_comp in ()
+					| "kpg2", "rassoc_comp_replace" -> let _ = kpg2_rassoc_comp_replace n_comp in ()
+					| "kpg2", "lassoc_comp_phead" -> let _ = kpg2_lassoc_comp_phead n_comp in ()
+					| "kpg2", "rassoc_comp_phead" -> let _ = kpg2_rassoc_comp_phead n_comp in ()
+                    | "kpg2", "lassoc_comp_phead2" -> let _ = kpg2_lassoc_comp_phead2 n_comp in ()
+					| "kpg2", "rassoc_comp_phead2" -> let _ = kpg2_rassoc_comp_phead2 n_comp in ()
+					| "kpg2", "breverse" -> let _ = kpg2_breverse n_comp in ()
+                    | "kpg2", "lassoc_comp_breverse" -> let _ = kpg2_lassoc_comp_breverse n_comp in ()
+                    | "kpg2", "rassoc_comp_breverse" -> let _ = kpg2_rassoc_comp_breverse n_comp in ()
+                    | "kpg2", "bmapreplace" -> let _ = kpg2_bmapreplace n_comp in ()
+                    | "kpg2", "lassoc_comp_bsnoc" -> let _ = kpg2_lassoc_comp_bsnoc n_comp in ()
+                    | "kpg2", "rassoc_comp_bsnoc" -> let _ = kpg2_rassoc_comp_bsnoc n_comp in ()
+                    | "kpg2", "lassoc_comp_bsnoc_nested_list" -> let _ = kpg2_lassoc_comp_bsnoc_nested_list n_comp in ()
+                    | "kpg2", "rassoc_comp_bsnoc_nested_list" -> let _ = kpg2_rassoc_comp_bsnoc_nested_list n_comp in ()
+                    | "kpg2", "lassoc_comp_replace_nested_list" -> let _ = kpg2_lassoc_comp_replace_nested_list n_comp in ()
+                    | "kpg2", "rassoc_comp_replace_nested_list" -> let _ = kpg2_rassoc_comp_replace_nested_list n_comp in ()
+                    | "kpg2", "breverse_nested_list" -> let _ = kpg2_breverse_nested_list n_comp in ()
+                    | "kpg2", "bmapreplace_nested_list" -> let _ = kpg2_bmapreplace_nested_list n_comp in ()
                     
 					| _ -> raise Unsupported_Parameter
 				)
@@ -92,16 +160,3 @@ let _ =
 			raise Too_Many_Parameters
         ); 
         Printf.printf "Elapsed Time: %f \nAllocated Bytes: %.0f \n" (Sys.time() -. start_time) (Gc.allocated_bytes ());
-
-(* let _ = 
-    let (p, g) = put_breverse_count (int_of_string((Sys.argv.(1)))) in 
-        Printf.printf "%d|%d" p g
-
-let _ = 
-    let start_time = Sys.time () in
-    let gtime = put_rassoc_comp_replace_get_time (int_of_string((Sys.argv.(1)))) in 
-        Printf.printf "%f|%f" gtime (Sys.time() -. start_time)
-
-let _ = 
-    let pg = pg_breverse_count (int_of_string((Sys.argv.(1)))) in 
-        Printf.printf "%d" pg *)

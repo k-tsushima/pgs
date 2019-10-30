@@ -19,14 +19,16 @@ src
 +--> cpg.ml	
 +--> test_cpg.ml
 |
++--> cpg2.ml (combine pg & cpg)	
++--> test_cpg2.ml
+|
 +--> kpg.ml	
 +--> test_kpg.ml
 |
-+--> xpg.ml	
-+--> test_xpg.ml
++--> kpg2.ml (combine pg & kpg)	
++--> test_kpg2.ml
 |
-+--> main.ml (use when evalutating time, memory & counter)
-
++--> main.ml (use for evaluation)
 ```
 
 
@@ -51,9 +53,12 @@ src
 #load "cpg.cmo";;
 #use "test_cpg.ml";;
 
+#load "cpg2.cmo";;
+#use "test_cpg2.ml";;
+
 #load "kpg.cmo";;
 #use "test_kpg.ml";;
 
-#load "xpg.cmo";;
-#use "test_xpg.ml";;
+#load "kpg2.cmo";;
+#use "test_kpg2.ml";;
 ```
