@@ -22,7 +22,7 @@ let rec kpg bx ks kv ks' kv' s v env =
     let ks' = id in 
     let kv' = id in 
     if h s = v then
-      (ks, kv, kv', ks', s, v)
+      (ks, kv, ks', kv', s, v)
     else
       assert false
   | Replace ->
@@ -56,17 +56,19 @@ let rec kpg bx ks kv ks' kv' s v env =
     let ks' = id in 
     let kv' = id in 
     if (condsv s v) && (conds s) then
-      let (ks, kv, ks', kv', s', v') = kpg bx1 ks kv ks' kv' s v env in 
+        kpg bx1 ks kv ks' kv' s v env 
+      (* let (ks, kv, ks', kv', s', v') = kpg bx1 ks kv ks' kv' s v env in 
         if (conds (ks' s')) && (condsv s (kv' v')) then
             (ks, kv, ks', kv', s', v')
         else
-            assert false
+            assert false *)
     else
-      let (ks, kv, ks', kv', s', v') = kpg bx2 ks kv ks' kv' s v env in 
+        kpg bx2 ks kv ks' kv' s v env
+      (* let (ks, kv, ks', kv', s', v') = kpg bx2 ks kv ks' kv' s v env in 
         if not ((conds (ks' s')) || (condsv s (kv' v'))) then
             (ks, kv, ks', kv', s', v')
         else
-            assert false
+            assert false *)
   | Compose(bx1, bx2) ->
     (* let (ks1, kv1, ks1', kv1', s1, v1) = kpg bx1 ks id ks' id s (construct_dummy s) env in *)
     let (ks1, kv1, ks1', kv1', s1, v1) = kpg bx1 ks id ks' id s v env in
