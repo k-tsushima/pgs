@@ -28,6 +28,11 @@ pHead =  $(rearrS [| \(s:ss) -> (s, ss) |])$
            $(rearrV [| \v -> (v, ()) |])$
              Replace `Prod` skip1
 
+pTail :: Show s => BiGUL [s] [s]
+pTail = $(rearrS [| \(s:ss) -> (s, ss) |])$
+            $(rearrV [| \v -> ((), v) |])$
+                skip1 `Prod` Replace
+
 pNth   :: Show s => Int -> BiGUL [s] s
 pNth i =  if i == 0 then pHead
                     else $(rearrS [| \(x:xs) -> (x,xs) |]) $
