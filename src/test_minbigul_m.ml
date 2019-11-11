@@ -168,6 +168,30 @@ let put_m_rassoc_comp_phead n =
   let s' = put_m (rassoc_comp phead n) s v [] in
   s'
 
+let put_m_lassoc_comp_phead_2 n =
+  let s = make_list_for_phead (n + 1) (1000) in
+  let v = Int 100 in
+  let s' = put_m (lassoc_comp phead n) s v [] in
+  s'
+
+let put_m_rassoc_comp_phead_2 n =
+  let s = make_list_for_phead (n + 1) (100000) in
+  let v = Int 100 in
+  let s' = put_m (rassoc_comp phead n) s v [] in
+  s'
+
+let put_m_lassoc_comp_ptail n = 
+  let s = make_consecutive_list (n + 3) in 
+  let v = make_consecutive_list (10000) in 
+  let s' = put_m (lassoc_comp ptail n) s v [] in 
+  s' 
+
+let put_m_rassoc_comp_ptail n = 
+  let s = make_consecutive_list (n + 3) in 
+  let v = make_consecutive_list (10000) in 
+  let s' = put_m (rassoc_comp ptail n) s v [] in 
+  s' 
+
 let put_m_lassoc_comp_phead2 n =
   let s = make_consecutive_list n in
   let v = Con(Int 100, Unit) in
@@ -187,69 +211,87 @@ let put_m_breverse n =
   s'
 
 let put_m_lassoc_comp_breverse n =
-    let s = make_consecutive_list n in 
-    let v = make_consecutive_list n in 
-    let s' = put_m (lassoc_comp breverse n) s v [] in 
-    s'
+  let s = make_consecutive_list 100 in 
+  let v = make_consecutive_list 100 in 
+  let s' = put_m (lassoc_comp breverse n) s v [] in 
+  s'
 
 let put_m_rassoc_comp_breverse n =
-    let s = make_consecutive_list n in 
-    let v = make_consecutive_list n in 
-    let s' = put_m (rassoc_comp breverse n) s v [] in 
-    s'
+  let s = make_consecutive_list 100 in 
+  let v = make_consecutive_list 100 in 
+  let s' = put_m (rassoc_comp breverse n) s v [] in 
+  s'
 
 let put_m_bmapreplace n =
   let s = make_consecutive_list n in
-  let v = make_consecutive_list n in
+  let v = make_consecutive_list_2 n in
   let s' = put_m bmapreplace s v [] in 
   s'
 
 let put_m_lassoc_comp_bsnoc n =
-    let s = make_consecutive_list (n + 1) in 
-    let v = make_consecutive_list_2 (n + 1) in 
-    let s' = put_m (lassoc_comp bsnoc_def n) s v [] in 
-        s'
+  let s = make_consecutive_list (n + 1) in 
+  let v = make_consecutive_list_2 (n + 1) in 
+  let s' = put_m (lassoc_comp bsnoc_def n) s v [] in 
+  s'
 
 let put_m_rassoc_comp_bsnoc n =
-    let s = make_consecutive_list (n + 1) in 
-    let v = make_consecutive_list_2 (n + 1) in 
-    let s' = put_m (rassoc_comp bsnoc_def n) s v [] in 
-        s'
+  let s = make_consecutive_list (n + 1) in 
+  let v = make_consecutive_list_2 (n + 1) in 
+  let s' = put_m (rassoc_comp bsnoc_def n) s v [] in 
+  s'
 
 (* ========================= put_m (complex data )========================= *)
 
 let put_m_lassoc_comp_bsnoc_nested_list n =
-    let s = make_smallest_nested_list n in 
-    let v = make_smallest_nested_list n in 
-    let s' = put_m (lassoc_comp bsnoc_def n) s v [] in 
-        s'
+  let s = make_list_of_binary_list (n + 1) in 
+  let v = s in 
+  let s' = put_m (lassoc_comp bsnoc_def n) s v [] in 
+  s'
 
 let put_m_rassoc_comp_bsnoc_nested_list n =
-    let s = make_smallest_nested_list n in 
-    let v = make_smallest_nested_list n in 
-    let s' = put_m (rassoc_comp bsnoc_def n) s v [] in 
-        s'
+  let s = make_list_of_binary_list (n + 1) in 
+  let v = s in 
+  let s' = put_m (rassoc_comp bsnoc_def n) s v [] in 
+  s'
+
+let put_m_lassoc_comp_ptail_nested_list n =
+  let s = make_list_of_binary_list (n + 1) in 
+  let v = s in 
+  let s' = put_m (lassoc_comp ptail n) s v [] in 
+  s'
+
+let put_m_rassoc_comp_ptail_nested_list n =
+  let s = make_list_of_binary_list (n + 1) in 
+  let v = s in 
+  let s' = put_m (rassoc_comp ptail n) s v [] in 
+  s'
 
 let put_m_lassoc_comp_replace_nested_list n =
-    let s = make_smallest_nested_list n in 
-    let v = make_smallest_nested_list n in 
-    let s' = put_m (lassoc_comp Replace n) s v [] in 
-        s'
+  let s = make_binary_list 10000 in 
+  let v = make_binary_list 10000 in 
+  let s' = put_m (lassoc_comp Replace n) s v [] in 
+  s'
 
 let put_m_rassoc_comp_replace_nested_list n =
-    let s = make_smallest_nested_list n in 
-    let v = make_smallest_nested_list n in 
-    let s' = put_m (rassoc_comp Replace n) s v [] in 
-        s'
+  let s = make_binary_list 10000 in 
+  let v = make_binary_list 10000 in 
+  let s' = put_m (rassoc_comp Replace n) s v [] in 
+  s'
 
 let put_m_breverse_nested_list n =
-    let s = make_consecutive_nested_list n in
-    let v = make_consecutive_nested_list n in 
-    let s' = put_m breverse s v [] in 
-    s'
+  let s = make_list_of_binary_list n in
+  let v = make_list_of_binary_list n in 
+  let s' = put_m breverse s v [] in 
+  s'
 
 let put_m_bmapreplace_nested_list n =
-    let s = make_consecutive_nested_list n in
-    let v = make_consecutive_nested_list n in 
-    let s' = put_m bmapreplace s v [] in 
-    s'
+  let s = make_list_of_binary_list n in
+  let v = make_list_of_binary_list n in 
+  let s' = put_m bmapreplace s v [] in 
+  s'
+
+let put_m_rassoc_comp_breverse_nested_list n = 
+  let s = make_list_of_binary_list n in 
+  let v = make_list_of_binary_list n in 
+  let s' = put_m (rassoc_comp breverse n) s v [] in 
+  s'

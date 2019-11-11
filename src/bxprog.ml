@@ -16,10 +16,24 @@ let rearrV_d = RearrV(
 
 let prod_rs = Prod(Replace, skip1)
 
-let phead = RearrV(
-    (fun v -> Con(v, Unit)), 
-    (fun x -> match x with Con(v, Unit) -> v | _ -> assert false), 
-    Prod(Replace, skip1)
+let phead = RearrS(
+    (fun x -> match x with Con(s, ss) -> Con(s, ss) | _ -> assert false),
+    (fun x -> match x with Con(s, ss) -> Con(s, ss) | _ -> assert false),
+    RearrV(
+      (fun v -> Con(v, Unit)), 
+      (fun x -> match x with Con(v, Unit) -> v | _ -> assert false), 
+      Prod(Replace, skip1)
+    ) 
+  ) 
+
+let ptail = RearrS(
+    (fun x -> match x with Con(s, ss) -> Con(s, ss) | _ -> assert false),
+    (fun x -> match x with Con(s, ss) -> Con(s, ss) | _ -> assert false),
+    RearrV(
+      (fun v -> Con(Unit, v)), 
+      (fun x -> match x with Con(Unit, v) -> v | _ -> assert false), 
+      Prod(skip1, Replace)
+    ) 
   ) 
 
 let phead2 = RearrS(

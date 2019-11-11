@@ -3,6 +3,18 @@ open Utils
 
 let (table_g : (data * bigul, data) Hashtbl.t) = Hashtbl.create 0
 
+let rec naming_for_comp bx = match bx with 
+  | Compose(a, b) -> (naming_for_comp a) + 1
+  | RearrS(_,_,_) | RearrV(_,_,_) | Replace -> 1
+  | _ -> assert false
+
+let name_for_comp bx =
+  try (
+    let i = naming_for_comp bx in 
+    Var(string_of_int i)
+  )
+  with _ -> bx
+
 let rec get_m (bx:bigul) s env =
   match bx with
   | Def(name, bx1, bx2) ->
@@ -43,21 +55,34 @@ let rec get_m (bx:bigul) s env =
       else
         assert false
   | Compose(bx1, bx2) ->
-    try (Hashtbl.find table_g (s, bx)) 
+    try (Hashtbl.find table_g (s, name_for_comp bx)) 
     with Not_found ->
-        let v1 = get_m_h bx1 s env in
-        let v2 = get_m_h bx2 v1 env in
-                Hashtbl.add table_g (s, bx) v2;
-                v2
+      let v1 = get_m_h bx1 s env in
+      let v2 = get_m_h bx2 v1 env in
+      Hashtbl.add table_g (s, name_for_comp bx) v2;
+      v2
+(* try (Hashtbl.find table_g (s, bx)) 
+   with Not_found ->
+   let v1 = get_m_h bx1 s env in
+   let v2 = get_m_h bx2 v1 env in
+   Hashtbl.add table_g (s, bx) v2;
+   v2 *)
 and
   get_m_h bx s env = 
-    try (Hashtbl.find table_g (s, bx)) 
+  try (Hashtbl.find table_g (s, name_for_comp bx)) 
+  with Not_found ->
+    let v = get_m bx s env in
+    try (Hashtbl.find table_g (s, name_for_comp bx)) 
     with Not_found ->
-        let v = get_m bx s env in
-            try (Hashtbl.find table_g (s, bx)) 
-            with Not_found ->
-                Hashtbl.add table_g (s, bx) v;
-                v
+      Hashtbl.add table_g (s, name_for_comp bx) v;
+      v
+(* try (Hashtbl.find table_g (s, bx)) 
+   with Not_found ->
+   let v = get_m bx s env in
+   try (Hashtbl.find table_g (s, bx)) 
+   with Not_found ->
+    Hashtbl.add table_g (s, bx) v;
+    v *)
 
 let rec put_m (bx:bigul) s v env =
   match bx with

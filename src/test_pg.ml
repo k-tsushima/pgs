@@ -81,6 +81,42 @@ let pg_rassoc_comp_phead n =
   let (s, v) = pg (rassoc_comp phead n) s v [] in
   (s, v)
 
+let pg_lassoc_comp_phead_2 n =
+  let s = make_list_for_phead (n + 1) (100000) in
+  let v = Int 100 in
+  let (s, v) = pg (lassoc_comp phead n) s v [] in
+  (s, v)
+
+let pg_rassoc_comp_phead_2 n =
+  let s = make_list_for_phead (n + 1) (100000) in
+  let v = Int 100 in
+  let (s, v) = pg (rassoc_comp phead n) s v [] in
+  (s, v)
+
+let pg_lassoc_comp_ptail n = 
+  let s = make_consecutive_nested_list (n + 3) in 
+  let v = make_consecutive_nested_list (2) in 
+  let (s, v) = pg (lassoc_comp ptail n) s v [] in 
+  (s, v)
+
+let pg_rassoc_comp_ptail n = 
+  let s = make_consecutive_nested_list (n + 3) in 
+  let v = make_consecutive_nested_list (2) in 
+  let (s, v) = pg (rassoc_comp ptail n) s v [] in 
+  (s, v)
+
+let pg_lassoc_comp_ptail_2 n = 
+  let s = make_consecutive_nested_list (n + 3) in 
+  let v = make_consecutive_nested_list (1000) in 
+  let (s, v) = pg (lassoc_comp ptail n) s v [] in 
+  (s, v)
+
+let pg_rassoc_comp_ptail_2 n = 
+  let s = make_consecutive_nested_list (n + 3) in 
+  let v = make_consecutive_nested_list (1000) in 
+  let (s, v) = pg (rassoc_comp ptail n) s v [] in 
+  (s, v)
+
 let pg_lassoc_comp_phead2 n =
   let s = make_consecutive_list n in
   let v = Con(Int 100, Unit) in
