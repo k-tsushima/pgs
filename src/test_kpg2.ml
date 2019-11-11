@@ -155,14 +155,14 @@ let kpg2_rassoc_comp_bsnoc n =
 
 (* ========================= kpg2 (complex data )========================= *)
 let kpg2_lassoc_comp_bsnoc_nested_list n =
-  let s = make_list_of_binary_list (n + 1) in 
-  let v = s in 
+  let s = make_list_of_binary_tree 4001 in 
+  let v = make_list_of_binary_tree_2 4001 in 
   let (s, v) = kpg2 (lassoc_comp bsnoc_def n) s v [] in 
   (s, v)
 
 let kpg2_rassoc_comp_bsnoc_nested_list n =
-  let s = make_list_of_binary_list (n + 1) in 
-  let v = s in 
+  let s = make_list_of_binary_tree n in 
+  let v = make_list_of_binary_tree_2 n in 
   let (s, v) = kpg2 (rassoc_comp bsnoc_def n) s v [] in 
   (s, v)
 

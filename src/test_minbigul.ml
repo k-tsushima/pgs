@@ -241,14 +241,14 @@ let put_rassoc_comp_bsnoc n =
 (* ========================= put (complex data )========================= *)
 
 let put_lassoc_comp_bsnoc_nested_list n =
-  let s = make_list_of_binary_list (n + 1) in 
-  let v = s in 
+  let s = make_list_of_binary_tree n in 
+  let v = make_list_of_binary_tree_2 n in 
   let s' = put (lassoc_comp bsnoc_def n) s v [] in 
   s'
 
 let put_rassoc_comp_bsnoc_nested_list n =
-  let s = make_list_of_binary_list (n + 1) in 
-  let v = s in 
+  let s = make_list_of_binary_tree n in 
+  let v = make_list_of_binary_tree_2 n in 
   let s' = put (rassoc_comp bsnoc_def n) s v [] in 
   s'
 

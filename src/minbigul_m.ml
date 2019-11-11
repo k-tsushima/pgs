@@ -3,9 +3,11 @@ open Utils
 
 let (table_g : (data * bigul, data) Hashtbl.t) = Hashtbl.create 0
 
+let count_not_found = ref 0
+
 let rec naming_for_comp bx = match bx with 
   | Compose(a, b) -> (naming_for_comp a) + 1
-  | RearrS(_,_,_) | RearrV(_,_,_) | Replace -> 1
+  | RearrS(_,_,_) | RearrV(_,_,_) | Replace | Case(_,_,_,_) | Def(_,_,_) -> 1
   | _ -> assert false
 
 let name_for_comp bx =
@@ -57,6 +59,7 @@ let rec get_m (bx:bigul) s env =
   | Compose(bx1, bx2) ->
     try (Hashtbl.find table_g (s, name_for_comp bx)) 
     with Not_found ->
+      count_not_found := !count_not_found + 1;
       let v1 = get_m_h bx1 s env in
       let v2 = get_m_h bx2 v1 env in
       Hashtbl.add table_g (s, name_for_comp bx) v2;
@@ -71,9 +74,11 @@ and
   get_m_h bx s env = 
   try (Hashtbl.find table_g (s, name_for_comp bx)) 
   with Not_found ->
+    count_not_found := !count_not_found + 1;
     let v = get_m bx s env in
     try (Hashtbl.find table_g (s, name_for_comp bx)) 
     with Not_found ->
+      count_not_found := !count_not_found + 1;
       Hashtbl.add table_g (s, name_for_comp bx) v;
       v
 (* try (Hashtbl.find table_g (s, bx)) 

@@ -63,3 +63,19 @@ let rec make_list_of_binary_list n =
   match n with 
   | 0 -> Unit
   | n -> Con(make_binary_list n, make_list_of_binary_list (n - 1))
+
+let rec make_binary_tree n i =
+  match n with 
+  | 1 -> make_list 1 10
+  | n -> let t = make_binary_tree (n - 1) i in 
+    Con(t, Con (t, Unit))
+
+let rec make_list_of_binary_tree n = 
+  match n with 
+  | 0 -> Unit
+  | n -> Con(make_binary_tree n n, make_list_of_binary_tree (n - 1))
+
+  let rec make_list_of_binary_tree_2 n = 
+  match n with 
+  | 0 -> Unit
+  | n -> Con(make_binary_tree n (2 * n), make_list_of_binary_tree (n - 1))
