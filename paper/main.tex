@@ -69,12 +69,15 @@
 
 \begin{document}
 %
-\title{An efficient composition of bidirectional programs
-  by tupling and lazy updates 
-%  tupling
-%  accumulating updates = lazy updates
-%  based on the idea of reversible computing  
-  % \thanks{Supported by organization x.}
+\title{
+  % Strategies for efficient composition of bidirectional programs
+  % by memoization and lazy updates
+  %  tupling
+  %  accumulating updates = lazy updates
+  %  based on the idea of reversible computing  
+  % \thanks{Supported by organization x.}  
+  An efficient composition of bidirectional programs
+  by memoization
 }
 %
 %\titlerunning{Abbreviated paper title}
@@ -84,7 +87,11 @@
 \author{First Author\inst{1}\orcidID{0000-1111-2222-3333} \and
 Second Author\inst{2,3}\orcidID{1111-2222-3333-4444} \and
 Third Author\inst{3}\orcidID{2222--3333-4444-5555}}
-%
+
+%{Zhenjiang Hu\inst{1}\orcidID{0000-0002-9034-205X}}
+%{Robert Gl\"{u}ck\inst{2}\orcideID{0000-0001-6990-3935}}
+%{Kanae Tsushima\inst{3}\orcidID{}}
+%{Bach-Trong Nguyen\inst{3}\orcidID{}}
 \authorrunning{F. Author et al.}
 % First names are abbreviated in the running head.
 % If there are more than two authors, 'et al.' is used.
@@ -101,11 +108,21 @@ ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
 \begin{abstract}
 %The abstract should briefly summarize the contents of the paper in
 %15--250 words.
-  Bidirectional transformation (BX) is a solution of view update problems and widely used for synchronizing data. Its semantics and correctness are researched well, but the efficiency and optimization are not considered well. In this work we focus on the evaluation of composition, because it includes some problems of evaluation time efficiency and memory allocation. To solve these problems we make $put$ and $get$ more tight, based on the idea of tupling. %42
-  Because simple tupled result includes some redundancies for left associative compositions, we apply two optimization techniques: lazy update and lazy evaluation. We show some experimental results that our optimized approach is faster than the original approach that is used in an actual BX language.
+  Bidirectional transformation (BX) is a solution of view update problems and widely used for synchronizing data. Its semantics and correctness are researched well, but the evaluation efficiency is not considered well. As a first attempt we consider efficiency of evaluation in this work. To improve evaluation efficiency, we focus on the evaluation of BX compositions, because its evaluation often causes redundant evaluations. 
+  For evaluating BX compositions efficiently, we introduce two memoization strategies. The first strategy, minBigul\_m, uses so simple memoization, but it works well for many BX programs. This keeps the evaluated results in a table and reuse them.  A disadvantage of this is cost for saving to a table and searching. When the inputs are large, the evaluation time becomes slow. To treat large inputs, we introduce the second approach, xpg, that uses tupling and some optimization techniques. In this approach we shrink the size of the evaluated results and keep them in a closure. The experiments of these strategies show the following results: the original strategy is faster for right assoc compositions, minBiGUL\_m is faster for not-large inputs and kpg is faster for large inputs.
 
-  
-\keywords{Bidirectional transformation  \and Tupling \and Optimization \and ??.}
+ % We show experimental results for several BX programs with simple inputs and large inputs. 
+
+
+  %To achieve fast evaluation for complicated data, we introduced a novel approach. First, we make $put$ and $get$ more tight, based on the idea of tupling. Because simple tupled result includes redundancies for left associative compositions, we apply two optimization techniques: lazy update and lazy evaluation. We compare the approaches including the strategy used in the actual BX language, and show that our optimized approach is faster than the other approaches (?).
+
+\keywords{Bidirectional transformation \and
+  Implementation technique \and
+  %Evaluation? \and
+  Efficiency \and 
+  Optimization \and Tupling.
+  %\and Lazy update?
+}
 \end{abstract}
 %
 %
@@ -114,25 +131,66 @@ ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
 % plan to pages
 % abstraction & title & Introduction: 3pages
 % miniBiGUL: 1.5page
-% pg: 3pages
-% cpg: 2page
-% kpg: 1page
-% xpg:0.5page
+% miniBiGUL_m : 1 page
+% xpg:5.5page
 % evaluation:2pages
 % related work:1page
 % conclusion:1page (including reference)
 % page limit : 15
 
+
+%\begin{itemize}
+%\item FLOPS 2020, 15 November 2019 (AoE): Abstract submission
+%\item 22 November 2019 (AoE): Submission deadline
+%\item Today's agenda: introduction.
+% result of 2nd approach, memory alloc result. introduction, contribution
+%\end{itemize}
+
 %Schedule
-\begin{itemize}
+%\begin{itemize}
 %\item Introduction (story), Contribution, positions, examples, beginning of September?
 %\item zero draft : mid of September  
 %\item deadline of PEPM2020 (October 18th)
 %\item ESOP (October 24th)
-\item FLOPS 2020, 15 November 2019 (AoE): Abstract submission
-\item 22 November 2019 (AoE): Submission deadline
-\item keywords, ORCID id, introduction, contribution, future work, related work 
-\end{itemize}
+%\end{itemize}
+
+%Recent result/findings:
+%\begin{itemize}
+%\item miniBigul\_m becomes worse when the number of compositions is increased (in the case of Replace, pHead). Using some optimization to avoid comparison between BXs, it becomes faster, but it is still slower than original miniBiGUL.
+%\item bmapreplace is a special case of miniBiGUL\_m. Why??
+%\item miniBigul\_m is better for bmapreplace and breverse than other approaches.
+%\item Compose(breverse, breverse): miniBiGUL can evaluate, but kpg can not. 
+%\end{itemize}
+
+%\begin{tabular}{c|c|c|c}
+%  & 1st(miniBiGUL) & 2nd(memo\_miniBiGUL) & 3rd(kpg) \\ \hline
+%  num of $get$s & linear to quadratic & linear & linear \\ \hline 
+%  (storage) & (linear) & (linear to N(num of composition)) * (size(S)) & (max(size(S), size(S'))) \\ \hline
+%  overhead & low & saving (BX, s) to table \& searching & keeping as functions
+% \end{tabular}
+
+%Time:
+%\begin{itemize}
+%\item Lassoc (comp\_replace \& comp\_phead): xpg $<$ miniBiGUL << miniBiGUL\_m (100x)
+%\item Rassoc (comp\_replace \& comp\_phead): miniBiGUL $<$ xpg $<$ miniBiGUL\_m (1000x)
+%\item breverse: miniBiGUL\_m << xpg (10x) << miniBiGUL(100x)
+%\item bmapreplace: (miniBiGUL\_m <<) xpg << miniBiGUL (100x)
+%\end{itemize}
+
+%Memory allocation:
+%\begin{itemize}
+%\item Lassoc comp\_replace : miniBiGUL $<$ xpg $<$ miniBiGUL\_m
+%\item Lassoc\& Rassoc comp\_phead: miniBiGUL\_m << miniBiGUL < xpg
+%\item Rassoc comp\_replace: miniBiGUL < xpg < miniBiGUL\_m
+%\item breverse: miniBiGUL\_m < xpg << miniBiGUL
+%\item bmapreplace xpg << miniBiGUL 
+%\end{itemize}
+
+%\begin{itemize}
+%\item Rassoc $\to$ miniBiGUL
+%\item 
+%\end{itemize}
+
 
 %\begin{itemize}
 %\item BiGUL 
