@@ -13,5 +13,6 @@ paper/*.aux
 paper/*.fdb*
 paper/*.fls
 paper/*.log
-paper/*.pdf
 paper/*.gz
+
+**/*.pdf
