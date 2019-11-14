@@ -1,0 +1,141 @@
+\newcommand{\qaddplot}[1]{
+    \pgfplotstableread[col sep=comma]{csv2/#1.csv}\data
+    \addplot table[x=nComp,y=minbigul]{\data};
+    \addplot table[x=nComp,y=minbigul_m]{\data};
+    \addplot table[x=nComp,y=xpg]{\data};
+}
+
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \pgfplotsset{footnotesize,samples=9}
+        \begin{groupplot}[
+                group style = {
+                    group size = 2 by 5,
+                    horizontal sep = 2.5cm,
+                    vertical sep = 1cm,
+                }, 
+                width = 5cm, 
+                height = 4cm,
+                % xmin = 0, xmax = 110000,
+                % ymin = 0,
+                scaled x ticks = false,
+                x tick label style = {
+                    /pgf/number format/fixed
+                },
+                scaled y ticks = false,
+                y tick label style = {
+                    /pgf/number format/fixed,
+                    /pgf/number format/precision=2,
+                },
+                every x tick scale label/.style={at={(rel axis cs:1,0)},anchor=south west,inner sep=1pt},
+                every y tick scale label/.style={at={(rel axis cs:-0.1,1.05)},anchor=south east,inner sep=1pt},
+                max space between ticks=1000pt,
+                try min ticks = 5,
+                label style={font=\small},
+                tick label style={font=\small} 
+            ]
+
+            \nextgroupplot[ 
+                title = {\textit{lassoc-comp-phead}}, 
+                legend style = {legend to name = legendgroup,},
+                scaled x ticks = {base 10:-5},
+                scaled y ticks = {base 10:-2},
+            ]
+                \pgfplotstableread[col sep=comma]{csv2/lassoc-comp-phead.csv}\data
+                \addplot table[x=nComp,y=minbigul]{\data}; \label{plots:put};
+                \addplot table[x=nComp,y=minbigul_m]{\data}; \label{plots:put$_m$};
+                \addplot table[x=nComp,y=xpg]{\data}; \label{plots:xpg};
+                \coordinate (topl) at (rel axis cs:0,1);
+
+            \nextgroupplot[ 
+                title = {\textit{rassoc-comp-phead}}, 
+                legend style = {legend to name = grouplegend,},
+                scaled x ticks = {base 10:-5},
+                scaled y ticks = {base 10:-1},
+            ]
+                \qaddplot{rassoc-comp-phead};
+
+            \nextgroupplot[
+                title = {\textit{lassoc-comp-ptail}},
+                scaled x ticks = {base 10:-5},
+                scaled y ticks = {base 10:-2},
+            ]
+                \qaddplot{lassoc-comp-ptail};
+
+            \nextgroupplot[
+                title = {\textit{rassoc-comp-ptail}},
+                scaled x ticks = {base 10:-5},
+                scaled y ticks = {base 10:0},
+            ]
+                \qaddplot{rassoc-comp-ptail};
+
+            \nextgroupplot[
+                title = {\textit{lassoc-comp-ptail-nested-list}},
+                scaled x ticks = {base 10:-5},
+                scaled y ticks = {base 10:-2},
+            ] 
+                \qaddplot{lassoc-comp-ptail-nested-list};
+
+            \nextgroupplot[
+                title = {\textit{rassoc-comp-ptail-nested-list}},
+                scaled x ticks = {base 10:-5},
+                scaled y ticks = {base 10:-2},
+            ] 
+                \qaddplot{rassoc-comp-ptail-nested-list};
+
+            \nextgroupplot[
+                title = {\textit{bmapreplace}},
+                scaled x ticks = {base 10:-4},
+                scaled y ticks = {base 10:-1},
+            ] 
+                \qaddplot{bmapreplace};
+
+            \nextgroupplot[
+                title = {\textit{bmapreplace-nested-list}},
+                scaled x ticks = {base 10:-4},
+                scaled y ticks = {base 10:-2},
+            ] 
+                \qaddplot{bmapreplace-nested-list};
+
+            \nextgroupplot[
+                title = {\textit{breverse}},
+                % xmax = 10000,
+                scaled x ticks = {base 10:-5},
+                scaled y ticks = {base 10:-3},
+            ] 
+                \qaddplot{breverse};
+                % \coordinate (botl) at (rel axis cs:0,0);
+
+            \nextgroupplot[
+                title = {\textit{breverse-nested-list}},
+                % xmax = 10000,
+                scaled x ticks = {base 10:-5},
+                scaled y ticks = {base 10:-2},
+                % xlabel = {number of compositions},
+            ] 
+                \qaddplot{breverse-nested-list};
+                \coordinate (botr) at (rel axis cs:1,0);
+        \end{groupplot}
+
+        \path (topl|-current bounding box.north)--
+            coordinate(legendpos)
+            (botr|-current bounding box.north);
+        \matrix[
+            matrix of nodes,
+            anchor = south,
+            draw,
+            inner sep = 0.2em,
+            draw
+        ]at([yshift=1ex]legendpos) {
+            \ref{plots:put} & $put$ & [2pt]
+            \ref{plots:put$_m$} & $put_m$ & [2pt]
+            \ref{plots:xpg} & $xpg$\\
+        };
+
+    \end{tikzpicture}
+
+    \caption{Experimental results}
+    \label{fig:result}
+
+\end{figure}
