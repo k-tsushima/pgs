@@ -1,7 +1,7 @@
 calc*
 
 ._*
-
+.DS_Store
 src/*.cm*
 src/*.o
 src/*.asm
@@ -16,3 +16,5 @@ paper/*.log
 paper/*.gz
 
 **/*.pdf
+
+result/~*
