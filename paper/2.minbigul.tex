@@ -31,10 +31,9 @@ A minBiGUL program may be either a skip of a function or a replacement or a prod
 
 For source/view rearrangement, BiGUL use just one lambda expression to express how to deconstruct as well as reconstruct data. It is a kind of bijection. However, to be able to implement it in OCaml, the environment used for developing minBiGUL and solutions in the paper, we need give two functions which one is the inverse of the other. In the above syntax, $f_2 = f_1^{-1}$ and $g_2 = g_1^{-1}$.
 
-To help make demonstration more direct, we provide the following alternatives representation:
-
-    $\tab Prod \ bx_1 \ bx_2 \equiv bx_1 \times bx_2,
-    \tab Compose \ bx_1 \ bx_2 \equiv bx_1 \circ bx_2$
+To help make demonstration more direct, we provide the following alternatives representation: 
+    $\quad Prod \ bx_1 \ bx_2 \equiv bx_1 \times bx_2,
+    \quad Compose \ bx_1 \ bx_2 \equiv bx_1 \circ bx_2$
 
 In general, $\circ$ has a higher priority than $\times$. Since only consider a product of two minBiGUL programs is considered, it is unnecessary to define the associativity precedence of $\times$. The one of $\circ$ may be left or right, however we do not declare the default.
 
