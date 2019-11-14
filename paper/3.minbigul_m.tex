@@ -1,0 +1,39 @@
+\section{Memorizing: minBiGUL$_m$}
+
+For minBiGUL or even BiGUL, when evaluating a composition of many programs, $get$s are reevaluated so many times since no intermediate state is stored during the evaluation. To avoid reevaluating $get$s, we can save intermediate states in a key-value table where the key is a pair of the program $bx$ and the source $s$, and the value is the result of $\getbx{bx}{s}$. Then, searching an evaluated $get$s on the table is used instead of recomputing it. We define a memory version, minBiGUL$_m$, including $get_m$ and $put_m$ as in definition 3 and 4 respectively. Another function introduced in definition 5, $get_{mh}$, is used to retrieve the value of an evaluated $get$ from the table or compute an unevaluated $get$ by using $get_m$ and store the key-value tuple to the table.
+
+\begin{definition} $\putm{bx}{s}{v}$
+
+    $\putm{bx}{s}{v} = \text{same with } put \text{ if } bx \neq bx_1 \circ bx_2$
+
+    $\putm{bx_1 \circ bx_2}{s}{v} = \putm{bx_1}{s}{(\putm{bx_2}{(\getmh{bx_1}{s})}{v})}$
+\end{definition}
+
+\begin{multicols}{2}
+    \begin{definition} $\getm{bx}{s}{v}$
+
+        $\getm{bx}{s} = \\
+            \tab \text{same with } get \text{ if } bx \neq bx_1 \circ bx_2$
+
+        $\getm{bx_1 \circ bx_2}{s} =\\
+            \tab \text{try } (\text{Hashtbl.find} \ table_g \ (bx, s))\\
+            \tab \text{with Not\_found } \to\\
+                \qtab v \Leftarrow \getmh{bx_2}{(\getmh{bx_1}{s})}\\
+                \qtab \text{Hashtbl.add } \ table_g \ (bx, s) \ v\\
+                \qtab v$
+    \end{definition}
+\columnbreak
+    \begin{definition} $\getmh{bx}{s}{v}$
+
+        $\getmh{bx}{s} =\\
+            \tab \text{try } (\text{Hashtbl.find} \ table_g \ (bx, s))\\
+            \tab \text{with Not\_found } \to\\
+                \qtab v \Leftarrow \getm{bx}{s}\\
+                \qtab \text{try } (\text{Hashtbl.find} \ table_g \ (bx, s))\\
+                \qtab \text{with Not\_found } \to\\
+                    \qtabs{2} \text{Hashtbl.add } \ table_g \ (bx, s) \ v\\
+                    \qtabs{2} v$
+    \end{definition}
+\end{multicols}
+
+The special point is that not all states are saved when evaluating a program, only composition evaluations are treated. When evaluating $\putm{bx_1 \circ bx_2}{s}{v}$, an application of $get_{mh}$, not $get$ or $get_m$, appears to indicate the saving. When evaluating $\getm{bx_1 \circ bx_2}{s}$, we try to search key ($bx,s$), $bx \equiv bx_1 \circ bx_2$, on the table. The matched value can be used for next steps in the evaluation. If there is no such key, the value $v$ will be calculated by using $get_{mh}$. The further key-value insertion is needed because the later computation could require to reevaluate $\getm{bx_1 \circ bx_2}{s}$ one more time.

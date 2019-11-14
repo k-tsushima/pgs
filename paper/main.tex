@@ -17,6 +17,7 @@
 \usepackage{pgfplotstable}
 \usepackage{lmodern}
 \usepackage{pgffor}
+\usepackage{schemata}
 
 % Used for displaying a sample figure. If possible, figure files should
 % be included in EPS format.
@@ -47,6 +48,14 @@
 \newcommand{\putbxinline}[1]{put \, [\![#1]\!]}
 \newcommand{\getbx}[2]{get \, [\![#1]\!] \ #2}
 \newcommand{\getbxinline}[1]{get \, [\![#1]\!]}
+
+\newcommand{\putm}[3]{put_m \, [\![#1]\!] \ #2 \ #3}
+\newcommand{\putminline}[1]{put_m \, [\![#1]\!]}
+\newcommand{\getm}[2]{get_m \, [\![#1]\!] \ #2}
+\newcommand{\getminline}[1]{get_m \, [\![#1]\!]}
+
+\newcommand{\getmh}[2]{get_{mh} \, [\![#1]\!] \ #2}
+\newcommand{\getmhinline}[1]{get_{mh} \, [\![#1]\!]}
 
 \newcommand{\putrev}[3]{put_{REV} \, [\![#1]\!] \ {#2} \ {#3}}
 \newcommand{\getrev}[2]{get_{REV} \, [\![#1]\!] \ {#2}}
@@ -209,19 +218,15 @@ ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
 
 \input{2.minbigul.tex}
 
-\input{3.pg.tex}
+\input{3.minbigul_m.tex}
 
-\input{4.cpg.tex}
-
-\input{5.kpg.tex}
-
-\input{6.xpg.tex}
+\input{4.xpg.tex}
 
 \input{7.experiments.tex}
 
 \input{8.related-work.tex}
 
-\input{9.conclusion}
+\input{9.conclusion.tex}
 
 
 \textcolor{red}{TODO: FIX reference, order, contents ..}
