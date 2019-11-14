@@ -118,7 +118,7 @@ ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
 %The abstract should briefly summarize the contents of the paper in
 %15--250 words.
   Bidirectional transformation (BX) is a solution of view update problems and widely used for synchronizing data. Its semantics and correctness are researched well, but the evaluation efficiency is not considered well. As a first attempt we consider efficiency of evaluation in this work. To improve evaluation efficiency, we focus on the evaluation of BX compositions, because its evaluation often causes redundant evaluations. 
-  For evaluating BX compositions efficiently, we introduce two memoization strategies. The first strategy, minBigul\_m, uses so simple memoization, but it works well for many BX programs. This keeps the evaluated results in a table and reuse them.  A disadvantage of this is cost for saving to a table and searching. When the inputs are large, the evaluation time becomes slow. To treat large inputs, we introduce the second approach, xpg, that uses tupling and some optimization techniques. In this approach we shrink the size of the evaluated results and keep them in a closure. The experiments of these strategies show the following results: the original strategy is faster for right assoc compositions, minBiGUL\_m is faster for not-large inputs and kpg is faster for large inputs.
+  For evaluating BX compositions efficiently, we introduce two memoization strategies. The first strategy, minBigul\_m, uses so simple memoization, but it works well for many BX programs. This keeps the evaluated results in a table and reuse them.  A disadvantage of this is cost for saving to a table and searching. When the inputs are large, the evaluation time becomes slow. To treat large inputs, we introduce the second approach, xpg, that uses tupling and some optimization techniques. In this approach we shrink the size of the evaluated results and keep them in a closure. The experiments of these strategies show the following results: the original strategy is faster for right assoc compositions, minBiGUL\_m is faster for not-large inputs and xpg is faster for large inputs.
 
  % We show experimental results for several BX programs with simple inputs and large inputs. 
 
@@ -138,13 +138,13 @@ ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
 %
 
 % plan to pages
-% abstraction & title & Introduction: 3pages
-% miniBiGUL: 1.5page
-% miniBiGUL_m : 1 page
-% xpg:5.5page
-% evaluation:2pages
-% related work:1page
-% conclusion:1page (including reference)
+% 1.abstraction & title & Introduction: 3pages
+% 2.miniBiGUL: 1.5page
+% 3.miniBiGUL_m : 1 page
+% 4.xpg:5.5page
+% 5.evaluation:2pages
+% 6.related work:1page
+% 7.conclusion:1page (including reference)
 % page limit : 15
 
 
