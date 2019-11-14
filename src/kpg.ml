@@ -66,13 +66,19 @@ let rec kpg bx ks kv ks' kv' s v env =
         assert false
     else
       (* kpg bx2 ks kv ks' kv' s v env *)
-      let (ks, kv, ks', kv', s', v') = kpg bx2 ks kv ks' kv' s v env in 
-      let s' = ks' s' in 
-      let v' = kv' v' in 
-      if not ((conds s') || (condsv s v')) then
-        (ks, kv, id, id, s', v')
-      else
-        assert false
+      (* let (ks, kv, ks', kv', s', v') = kpg bx2 ks kv ks' kv' s v env in 
+         let s' = ks' s' in 
+         let v' = kv' v' in 
+         if not ((conds s') || (condsv s v')) then
+         (ks, kv, id, id, s', v')
+         else
+         assert false *)
+      let (ks, kv, ks', kv', s', v') = kpg bx2 ks kv ks' kv' s v env in
+      let v' = kv' v' in
+      if not (condsv s v') then
+        (ks, kv, (fun s' -> let s' = (ks' s') in if not (conds s') then s' else assert false),
+         id, s', v')
+      else assert false
   | Compose(bx1, bx2) ->
     (* let (ks1, kv1, ks1', kv1', s1, v1) = kpg bx1 ks id ks' id s (construct_dummy s) env in *)
     let (ks1, kv1, ks1', kv1', s1, v1) = kpg bx1 ks id ks' id s v env in

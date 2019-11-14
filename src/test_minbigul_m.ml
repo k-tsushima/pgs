@@ -243,16 +243,16 @@ let put_m_rassoc_comp_bsnoc n =
 (* ========================= put_m (complex data )========================= *)
 
 let put_m_lassoc_comp_bsnoc_nested_list n =
-  count_not_found := 0;
+  (* count_not_found := 0; *)
   let s = make_list_of_binary_tree n in 
-  let v = make_list_of_binary_tree_2 n in 
+  let v = s in 
   let s' = put_m (lassoc_comp bsnoc_def n) s v [] in 
-  Printf.printf "%d\n" !count_not_found;
+  (* Printf.printf "%d\n" !count_not_found; *)
   s'
 
 let put_m_rassoc_comp_bsnoc_nested_list n =
   let s = make_list_of_binary_tree n in 
-  let v = make_list_of_binary_tree_2 n in 
+  let v = s in 
   let s' = put_m (rassoc_comp bsnoc_def n) s v [] in 
   s'
 

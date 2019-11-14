@@ -73,9 +73,9 @@ let rec make_binary_tree n i =
 let rec make_list_of_binary_tree n = 
   match n with 
   | 0 -> Unit
-  | n -> Con(make_binary_tree n n, make_list_of_binary_tree (n - 1))
+  | n -> Con(make_binary_tree (n/2 + 10) n, make_list_of_binary_tree (n - 1))
 
-  let rec make_list_of_binary_tree_2 n = 
+let rec make_list_of_binary_tree_2 n = 
   match n with 
   | 0 -> Unit
   | n -> Con(make_binary_tree n (2 * n), make_list_of_binary_tree (n - 1))
