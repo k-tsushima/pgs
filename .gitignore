@@ -1,0 +1,17 @@
+calc*
+
+._*
+
+src/*.cm*
+src/*.o
+src/*.asm
+src/*.annot
+src/*.s
+src/*.so
+
+paper/*.aux
+paper/*.fdb*
+paper/*.fls
+paper/*.log
+paper/*.pdf
+paper/*.gz
