@@ -93,24 +93,22 @@
 % If the paper title is too long for the running head, you can set
 % an abbreviated paper title here
 %
-\author{First Author\inst{1}\orcidID{0000-1111-2222-3333} \and
-Second Author\inst{2,3}\orcidID{1111-2222-3333-4444} \and
-Third Author\inst{3}\orcidID{2222--3333-4444-5555}}
+\author{{Kanae Tsushima\inst{1}\orcidID{0000-0002-3383-3389}} \and
+  {Bach-Trong Nguyen\inst{1}\orcidID{0000-0002-6342-6020}} \and
+  {Robert Gl\"{u}ck\inst{2}\orcidID{0000-0001-6990-3935}} \and
+  {Zhenjiang Hu\inst{3}\orcidID{0000-0002-9034-205X}}}
 
-%{Zhenjiang Hu\inst{1}\orcidID{0000-0002-9034-205X}}
-%{Robert Gl\"{u}ck\inst{2}\orcideID{0000-0001-6990-3935}}
-%{Kanae Tsushima\inst{3}\orcidID{}}
-%{Bach-Trong Nguyen\inst{3}\orcidID{0000-0002-6342-6020}}
-\authorrunning{F. Author et al.}
+\authorrunning{K. Tsushima et al.}
 % First names are abbreviated in the running head.
 % If there are more than two authors, 'et al.' is used.
 %
-\institute{Princeton University, Princeton NJ 08544, USA \and
-Springer Heidelberg, Tiergartenstr. 17, 69121 Heidelberg, Germany
-\email{lncs@springer.com}\\
-\url{http://www.springer.com/gp/computer-science/lncs} \and
-ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
-\email{\{abc,lncs\}@uni-heidelberg.de}}
+\institute{National Institute of Informatics, Japan
+  \email{\{k\_tsushima,bach\}@nii.ac.jp} \and
+  University of Copenhagen, Denmark
+  \email{glueck@di.ku.dk } \and
+  Peking University, China
+  \email{huzj@pku.edu.cn}}
+
 %
 \maketitle              % typeset the header of the contribution
 %
@@ -212,8 +210,6 @@ ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
 
 \input{1.introduction.tex}
 
-\newpage
-
 \input{2.minbigul.tex}
 
 \input{3.minbigul_m.tex}
@@ -222,9 +218,9 @@ ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
 
 \input{5.experiments.tex}
 
-\input{8.related-work.tex}
+\input{6.related-work.tex}
 
-\input{9.conclusion.tex}
+\input{7.conclusion.tex}
 
 
 \textcolor{red}{TODO: FIX reference, order, contents ..}
@@ -239,6 +235,9 @@ ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
 % \bibliographystyle{splncs04}
 % \bibliography{mybibliography}
 %
+
+\tiny
+
 \begin{thebibliography}{8}
 \bibitem{viewupdate}
 F. Bancilhon and N. Spyratos. ``Update semantics of relational views''. ACM Transactions on Database Systems, 6(4):557--575, 1981.
