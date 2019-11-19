@@ -17,4 +17,4 @@ paper/*.gz
 
 **/*.pdf
 
-result/~*
+**/~*
