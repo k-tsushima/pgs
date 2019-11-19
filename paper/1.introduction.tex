@@ -26,35 +26,36 @@
 
 In software, there are strong demands for synchronizing data. In database community this is known as ``view update problem'' and researched for a long time \cite{viewupdate}.
 % A Survey to View Update Problem 
-As a solution for this problem, bidirectional transformation (BX) is introduced \cite{}. As an example, let us consider a small BX program of $pHead$\footnote{The actual program is shown in the next section.}. BX provides two functions: $get$ and $put$. The following is one example of $pHead$'s evaluation.
+As a solution for this problem, bidirectional transformation (BX) is introduced \cite{}. As an example, let us consider a small BX program of $pHead$\footnote{The actual program is shown in the next section.}. BX provides two functions: $get$ and $put$. Figure \ref{fig:eval-phead} denotes the behaviors of these functions when evaluating $phead$.
 
-\begin{center}
-  \includegraphics[width=5cm]{./temp_fig/bxexample1.eps}
-\end{center}
-%\end{picture}
+\begin{figure}[!htb]
+  \begin{minipage}{0.3\textwidth}
+    \centering
+    \includegraphics[height=3.5cm]{./fig/fig1.png}
+    \caption{Evaluating $phead$}
+    \label{fig:eval-phead}
+  \end{minipage}\hfill
+  \begin{minipage}{0.7\textwidth}
+    \centering
+    \includegraphics[height=3.5cm]{./fig/fig2.png}
+    \caption{Evaluating $phead \circ phead \circ phead$}
+    \label{fig:eval-comp-phead}
+  \end{minipage}
+\end{figure}
 
 Here, the original source \texttt{s}, \texttt{[1,2]}, is given by a user. $get$ is a projection: $get$ of $pHead$ picks the first element of the given original source as a view.
 %\texttt{get pHead [1,2] = 1}.
 After the view \texttt{v} is obtained, the user can modify the view.
-In this case, he or she modified the view to \texttt{8} from \texttt{1}.
+In this case, he or she modified the view to \texttt{100} from \texttt{1}.
 From this updated view, how can we obtain new updated source? This is ``view update problem.'' For this, BX provides $put$, update on the original source.
-In this example, $put$ of $pHead$ constructs a new list \texttt{[8,2]} from the updated view ($v'$) and the original source ($s$).
+In this example, $put$ of $pHead$ constructs a new list \texttt{[100,2]} from the updated view ($v'$) and the original source ($s$).
 %\texttt{put pHead [1,2] 8 = [8,2]}
 
-For more various evaluations, we can use composition of programs.
-Let us consider another BX example program, three composition of $pHead$: $pHead \circ pHead \circ pHead$.
-The following is one example of its evaluation.
-
-
-\begin{center}
-  \includegraphics[width=10cm]{./temp_fig/bxexample2.eps}
-\end{center}
-
-In this example, the original source \texttt{s} is \texttt{[[[1,2],[3]],[4]]}.
+For more various evaluations, we can use the composition of programs. Let us consider another example, a composition of 3 $pHead$s: $pHead \circ pHead \circ pHead$. Figure \ref{fig:eval-comp-phead} illustrates the evaluation of this program where the original source \texttt{s} is \texttt{[[[1,2],[3]],[4]]} and the updated view is \textit{100}.
 By repetitious evaluation of $get$s of $pHead$, we can obtain the view $v$, \texttt{1}. To obtain the final updated source \texttt{s'}, we need to evaluate $put$ three times. The first put evaluation is from \texttt{i2} and \texttt{v'} and we can obtain \texttt{i2'}.
 
 For evaluating put-direction, there are two strategies. One is ``not keeping any intermediate states and obtaining them by evaluation when they are needed.'' In this example, ``intermediate states'' are \texttt{i1} and \texttt{i2}.
-If we choose this strategy, the number of $get$s will be quadratic. This is a problem, because the evaluation will be slow if the BX programs include many compositions. In this example, two $get$s are required for obtaining \texttt{i2} and one $get$ is required for obtaining \texttt{i1}. In total, three $get$s are required.
+If we choose this strategy, the number of $get$s will be linear in the number of compositions. This is a problem, because the evaluation will be slow if the BX programs include many compositions. In this example, two $get$s are required for obtaining \texttt{i2} and one $get$ is required for obtaining \texttt{i1}. In total, three $get$s are required.
 
 The other strategy is ``keeping all intermediate states and using them when they are needed.'' This strategy causes a storage problem. If views includes most information, for evaluating $put$ the needed parts of the original source will be small. It is redundant to keep all intermediate states.
 
@@ -69,15 +70,16 @@ $put$ can be a complement function for $get$, $get$ can be a complement function
 For using complement, we combine $put$ and $get$, and produce new function $pg$ in Section 3.
 This is a kind of tupling. Because parts of $put$ and $get$ are doing the same computation, we can make efficient by tupling them.
 
-As an example, let us consider the previous example again: $pHead \circ pHead \circ pHead$.
+As an example, let's see the evaluation of $pHead \circ pHead \circ pHead$ in another way as shown in figure \ref{fig:eval-comp-phead-2}
 
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[height=5cm]{./fig/fig3.png}
+  \caption{Evaluating $phead \circ phead \circ phead$ by keeping intermediate states}
+  \label{fig:eval-comp-phead-2}
+\end{figure}
 
-\begin{center}
-  \includegraphics[width=9cm]{./temp_fig/bxexample3.eps}
-\end{center}
-
-
-In the figure, \texttt{c1} and \texttt{c2} are complements. The points in this figure are two. After evaluation of the first $pg$, we do not need to keep the original source \texttt{s}, because all its information is in \texttt{c1} and \texttt{i1}. 
+In figure \ref{fig:eval-comp-phead-2}, \texttt{c1} and \texttt{c2} are complements. The points in this figure are two. After evaluation of the first $pg$, we do not need to keep the original source \texttt{s}, because all its information is in \texttt{c1} and \texttt{i1}. 
 This evaluation looks better than previous two strategies: this does not require repeated evaluation and require smaller storage than the original sources. 
 Actually, the simple combined $pg$ is not effective for left associative compositions. To achieve efficient evaluation, we introduce $cpg$, lazy update version of $pg$, in Section 4 and $kpg$, lazy evaluation version of $cpg$, in Section 5. In Section 6 we combine $pg$ and $kpg$ to achieve efficiency for both associative compositions. In Section 7 we compare all approaches including the original BX approach by the evaluation time and memory allocation. 
 

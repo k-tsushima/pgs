@@ -101,14 +101,14 @@ $\tab \text{if } E_1 \text{ then } X_1 \text{ else } X_2 \text{ fi } E_2; S\\
 \tab \equiv \text{if }E_1 = true \text{ then } \{ X_1; \text{ if } E_2 = true \text{ then } S \text{ else assert } false; \}\\
     \qtab \text{else } \{ X_2; \text{ if } E_2 = false \text{ then } S \text{ else assert } false; \}$
 
-Next, let's take a look at some examples to better understand about minBiGUL. We start with quite obivious things as follows:
+% Next, let's take a look at some examples to better understand about minBiGUL. We start with quite obivious things as follows:
 
-$\tab \putbx{Skip \ (\lambda x.(x*x))}{10}{100} = 10 \qtab \ \getbx{Skip \ (\lambda x.(x*x))}{10} = 100\\
-    \tab \putbx{Skip \ (\lambda \_.())}{1}{()} = 1 \qtabs{3} \getbx{Skip \ (\lambda \_.())}{1} = ()\\
-    \tab \putbx{Replace}{1}{100} = 100 \qtabs{3} \getbx{Replace}{1} = 1
-$
+% $\tab \putbx{Skip \ (\lambda x.(x*x))}{10}{100} = 10 \qtab \ \getbx{Skip \ (\lambda x.(x*x))}{10} = 100\\
+%     \tab \putbx{Skip \ (\lambda \_.())}{1}{()} = 1 \qtabs{3} \getbx{Skip \ (\lambda \_.())}{1} = ()\\
+%     \tab \putbx{Replace}{1}{100} = 100 \qtabs{3} \getbx{Replace}{1} = 1
+% $
 
-Now, let's consider the definition of $phead$ in minBiGUL:
+We now consider the definition of $phead$ in minBiGUL:
 
 $\tab phead = RearrS \ f_1 \ f_2 \ bx_s \ \text{where: } f_1 = \lambda (s::ss).(s,ss), \, f_2 = \lambda (s,ss).(s::ss),\\
     \qtab bx_s = RearrV \ g_1 \ g_2 \ bx_v \ \text{where: } g_1 = \lambda v.(v,()), \, g_2 = \lambda (v,()).v,\\
