@@ -167,14 +167,14 @@ let kpg2_rassoc_comp_bsnoc_nested_list n =
   (s, v)
 
 let kpg2_lassoc_comp_ptail_nested_list n =
-  let s = make_list_of_binary_list (n + 1) in 
-  let v = s in 
+  let s = make_list_of_binary_tree (n + 1) in 
+  let v = make_list 1 10 in 
   let (s, v) = kpg2 (lassoc_comp ptail n) s v [] in 
   (s, v)
 
 let kpg2_rassoc_comp_ptail_nested_list n =
-  let s = make_list_of_binary_list (n + 1) in 
-  let v = s in 
+  let s = make_list_of_binary_tree (n + 1) in 
+  let v = make_list 1 10 in 
   let (s, v) = kpg2 (rassoc_comp ptail n) s v [] in 
   (s, v)
 
@@ -191,19 +191,19 @@ let kpg2_rassoc_comp_replace_nested_list n =
   (s, v)
 
 let kpg2_breverse_nested_list n =
-  let s = make_list_of_binary_list n in
-  let v = make_list_of_binary_list n in
+  let s = make_list_of_binary_tree n in
+  let v = s in
   let (s, v) = kpg2 breverse s v [] in
   (s, v)
 
 let kpg2_bmapreplace_nested_list n =
-  let s = make_list_of_binary_list n in
-  let v = make_list_of_binary_list n in
+  let s = make_list_of_binary_tree n in
+  let v = s in
   let (s, v) = kpg2 bmapreplace s v [] in
   (s, v)
 
 let kpg2_rassoc_comp_breverse_nested_list n = 
-  let s = make_list_of_binary_list n in 
-  let v = make_list_of_binary_list n in 
+  let s = make_list_of_binary_tree n in 
+  let v = s in 
   let (s, v) = kpg2 (rassoc_comp breverse n) s v [] in 
   (s, v)

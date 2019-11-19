@@ -242,25 +242,25 @@ let put_rassoc_comp_bsnoc n =
 
 let put_lassoc_comp_bsnoc_nested_list n =
   let s = make_list_of_binary_tree n in 
-  let v = make_list_of_binary_tree_2 n in 
+  let v = s in 
   let s' = put (lassoc_comp bsnoc_def n) s v [] in 
   s'
 
 let put_rassoc_comp_bsnoc_nested_list n =
   let s = make_list_of_binary_tree n in 
-  let v = make_list_of_binary_tree_2 n in 
+  let v = s in 
   let s' = put (rassoc_comp bsnoc_def n) s v [] in 
   s'
 
 let put_lassoc_comp_ptail_nested_list n =
-  let s = make_list_of_binary_list (n + 1) in 
-  let v = s in 
+  let s = make_list_of_binary_tree (n + 1) in 
+  let v = make_list 1 10 in 
   let s' = put (lassoc_comp ptail n) s v [] in 
   s'
 
 let put_rassoc_comp_ptail_nested_list n =
-  let s = make_list_of_binary_list (n + 1) in 
-  let v = s in 
+  let s = make_list_of_binary_tree (n + 1) in 
+  let v = make_list 1 10 in 
   let s' = put (rassoc_comp ptail n) s v [] in 
   s'
 
@@ -277,19 +277,19 @@ let put_rassoc_comp_replace_nested_list n =
   s'
 
 let put_breverse_nested_list n =
-  let s = make_list_of_binary_list n in
-  let v = make_list_of_binary_list n in 
+  let s = make_list_of_binary_tree n in
+  let v = s in 
   let s' = put breverse s v [] in 
   s'
 
 let put_bmapreplace_nested_list n =
-  let s = make_list_of_binary_list n in
-  let v = make_list_of_binary_list n in 
+  let s = make_list_of_binary_tree n in
+  let v = s in 
   let s' = put bmapreplace s v [] in 
   s'
 
 let put_rassoc_comp_breverse_nested_list n = 
-  let s = make_list_of_binary_list n in 
-  let v = make_list_of_binary_list n in 
+  let s = make_list_of_binary_tree n in 
+  let v = s in 
   let s' = put (rassoc_comp breverse n) s v [] in 
   s'
