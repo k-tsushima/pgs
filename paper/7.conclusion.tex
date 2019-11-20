@@ -1,17 +1,37 @@
 \section{Conclusion and Future Work}
 
-In this paper we focus on efficiency of composition of BX programs.
-The essential finding comes from the idea of tupling: in very-well behaved BX programs we can use $put$ as a compliment function for $get$, and vice versa.
-Based on the idea, we introduced $pg$, and improved it by several optimization techniques. From experimental results, our fastest approach $xpg$ is faster than other approaches for non purely right associative compositions. For right associative compositions, the original approach (miniBiGUL) is faster than $xpg$ because $xpg$ has some overhead cost. However this is not a problem, because usually programs are mix of left and right associative. If programmers know that their programs are purely right associative, they can choose miniBiGUL.
+In this paper, we focus on efficiency of composition of BX programs.
+To achieve fast evaluation, we introduce two different methods using memoization.
+From the experimental results, we know that there is no best approach for all BX programs. However, if programmer can choose one method based on the BX programs and inputs, we can use better evaluation methods.
 
-We will continue our work on the following points. First, our target language is limited to very-well behaved, because our main idea requires the put-put property. However, for practical programs, we need to extend our work to overcome the current limitations.
+We will continue our work on the following points. First is extention of our language. Currently, because $pg$ requires very-well-behaved property
+
+
 
 \begin{itemize}
-\item Extend our approach -- overcome our limitations
+\item overcome our limitations
   \begin{itemize}
-  \item treat well-behaved programs -- How to treat adaptive cases
-  \item In case expressions, the programs that use the different paths (put and get)
+  \item very-well-behaved $\to$ only xpg?
+  \item In case expressions, path's problem $\to$ only xpg?
+  \item How to obtain $\to$ only xpg?
   \end{itemize}
-\item How to obtain dummy?
+  \item tests for big BX programs
 \item Type system \& Typing -- for safety
 \end{itemize}
+
+
+
+%The essential finding comes from the idea of tupling: in very-well behaved BX programs we can use $put$ as a compliment function for $get$, and vice versa.
+%Based on the idea, we introduced $pg$, and improved it by several optimization techniques. From experimental results, our fastest approach $xpg$ is faster than other approaches for non purely right associative compositions. For right associative compositions, the original approach (miniBiGUL) is faster than $xpg$ because $xpg$ has some overhead cost. However this is not a problem, because usually programs are mix of left and right associative. If programmers know that their programs are purely right associative, they can choose miniBiGUL.
+
+%We will continue our work on the following points. First, our target language is limited to very-well behaved, because our main idea requires the put-put property. However, for practical programs, we need to extend our work to overcome the current limitations.
+
+%\begin{itemize}
+%\item Extend our approach -- overcome our limitations
+%  \begin{itemize}
+%  \item treat well-behaved programs -- How to treat adaptive cases
+%  \item In case expressions, the programs that use the different paths (put and get)
+%  \end{itemize}
+%\item How to obtain dummy?
+%\item Type system \& Typing -- for safety
+%\end{itemize}
