@@ -23,13 +23,15 @@ We have conducted 12 test cases shown in Table \ref{tab:test-cases}. $s_r$ and $
         7 & lcomp-bsnoc & manual & [1,$\ldots$,n-1] & [1,$\ldots$,n-1] & [1,$\ldots$,n-1] & [1,$\ldots$,n-1] \\ \hline
         8 & rcomp-bsnoc & manual & [1,$\ldots$,n-1] & [1,$\ldots$,n-1] & [1,$\ldots$,n-1] & [1,$\ldots$,n-1] \\ \hline
         9 & lcomp-bsnoc-ldata & manual & $\underbrace{[L,\ldots,L]}_{\text{n-1 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n-1 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n-1 times}}$ & $\underbrace{[L,\ldots,L]]}_{\text{n-1 times}}$ \\ \hline
-        10 & rcomp-bsnoc-ldata & maunal & $\underbrace{[L,\ldots,L]}_{\text{n-1 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n-1 times}}$ & $\underbrace{[L,\ldots,L]]}_{\text{n-1 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n-1 times}}$ \\ \hline
+        10 & rcomp-bsnoc-ldata & manual & $\underbrace{[L,\ldots,L]}_{\text{n-1 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n-1 times}}$ & $\underbrace{[L,\ldots,L]]}_{\text{n-1 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n-1 times}}$ \\ \hline
         11 & breverse & self & [1,$\ldots$,n] & [1,$\ldots$,n] & [n,$\ldots$,1] & [n,$\ldots$,1] \\ \hline
         12 & breverse-ldata & self & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ \\ \hline
     \end{tabular*}
 \end{table}
 
-The first 10 cases maunally use $n$ compose operators to make a composition of $n + 1$ similar pure programs. We use the term \textit{pure} here to refer to programs that are not self-compose. The prefix \textit{lcomp} and \textit{rcomp} denote the associate precedences of a manual composition. The suffix \textit{ldata} indicates that the input size is large. The symbol $L$ used in \textit{ldata} test cases can be expressed as a complex list as follows: $L = \underbrace{[T,\ldots,T]}_{\text{n times}}$,\ $T = \underbrace{[A,\ldots,A]}_{\text{10 times}}$,\ $A = [1,\ldots,5]$
+The first 10 cases maunally use $n$ compose operators to make a composition of $n + 1$ similar pure programs.
+The aim of this manually produced program is to know which method is better for specific composition types and inputs.
+We use the term \textit{pure} here to refer to programs that are not self-compose. The prefix \textit{lcomp} and \textit{rcomp} denote the associate precedences of a manual composition. The suffix \textit{ldata} indicates that the input size is large. The symbol $L$ used in \textit{ldata} test cases can be expressed as a complex list as follows: $L = \underbrace{[T,\ldots,T]}_{\text{n times}}$,\ $T = \underbrace{[A,\ldots,A]}_{\text{10 times}}$,\ $A = [1,\ldots,5]$
 
 If the associative type and input size are omitted, the table, in general, will comprise 4 programs: composition of many \textit{phead}s, composition of many \textit{ptail}s, composition of many \textit{bsnoc}s and \textit{breverse}.
 
