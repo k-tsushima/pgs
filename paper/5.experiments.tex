@@ -1,0 +1,47 @@
+\section{Experiments}
+
+We have implemented all methods described above in the same environment as follows: macOS 10.14.6, processor Intel Core i7 (2.6 GHz), RAM 16 GB 2400 MHz DDR4, Ocaml 4.07.1. The OCaml runtime system options and garbage collection parameters are set as default.
+
+\subsection{Test cases}
+
+We have conducted 11 test cases shown in Table \ref{tab:test-cases}. $s_r$ and $v_r$ are respectively updated source and view which are produced by applying $put$ and $get$ on original source $s_0$ and view $v_0$. This means: $s_r = \putbx{bx}{s_0}{v_0}$ and $v_r = \getbx{bx}{s_0}$, where $bx$ is one of the 11 functions mentioned in the table. Note that the results $s_r$ and $v_r$ do not depend on the associative style of the composition.
+
+\begin{table}[hbt!]
+    \centering
+    \caption{Test cases}
+    \label{tab:test-cases}
+    \begin{tabular*}{\textwidth}{|l @{\extracolsep{\fill}}|l|l|c|c|c|c|}
+        \hline
+        \multirow{2}{*}{No} & \multicolumn{1}{c|}{\multirow{2}{*}{Name}} & \multicolumn{1}{c|}{\multirow{2}{*}{Type}} & \multicolumn{2}{c|}{Input} & \multicolumn{2}{c|}{Output} \\ \cline{4-7} 
+        & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{$s_0$} & \multicolumn{1}{c|}{$v_0$} & \multicolumn{1}{c|}{$s_r$} & \multicolumn{1}{c|}{$v_r$} \\ \hline
+        1 & lcomp-replace & straightline & 1 & 100 & 100 & 1 \\ \hline
+        2 & lcomp-replace-ldata & straightline & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ \\ \hline
+        3 & lcomp-phead-ldata & straightline & $\underbrace{[[\ldots[1]\ldots]]}_{\text{n+1 times}}$ & 100 & $\underbrace{[[\ldots[100]\ldots]]}_{\text{n+1 times}}$ & 1 \\ \hline
+        4 & lcomp-ptail & straightline & [1,$\ldots$,n+1] & [1,$\ldots$,10] & $s_0 \ @ \ v_0$ & [\ ] \\ \hline
+        5 & lcomp-ptail-ldata & straightline & $\underbrace{[L,\ldots,L]}_{\text{n+1 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{10 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n+11 times}}$ & [\ ] \\ \hline
+        6 & lcomp-bsnoc & straightline & [1,$\ldots$,n-1] & [1,$\ldots$,n-1] & [1,$\ldots$,n-1] & [1,$\ldots$,n-1] \\ \hline
+        7 & lcomp-bsnoc-ldata & straightline & $\underbrace{[L,\ldots,L]}_{\text{n-1 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n-1 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n-1 times}}$ & $\underbrace{[L,\ldots,L]]}_{\text{n-1 times}}$ \\ \hline
+        8 & bmapreplace & recursion & [1,$\ldots$,n] & [1,$\ldots$,n] & [1,$\ldots$,n] & [1,$\ldots$,n] \\ \hline
+        9 & bmapreplace-ldata & recursion & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ \\ \hline
+        10 & breverse & recursion & [1,$\ldots$,n] & [1,$\ldots$,n] & [n,$\ldots$,1] & [n,$\ldots$,1] \\ \hline
+        11 & breverse-ldata & recursion & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ \\ \hline
+    \end{tabular*}
+\end{table}
+
+The first 7 cases maunally use $n$ compose operators to make straightline compositions from $n + 1$ similar pure programs. We use the term \textit{pure} here to refer to programs that are not self-compose. The prefix \textit{lcomp} and \textit{rcomp} denote the associate precedences of a manual composition. The suffix \textit{ldata} indicates that the input size is large. The symbol $L$ used in \textit{ldata} test cases can be expressed as a complex list as follows: $L = \underbrace{[T,\ldots,T]}_{\text{n times}}$,\ $T = \underbrace{[A,\ldots,A]}_{\text{10 times}}$,\ $A = [1,\ldots,5]$
+
+If the associative type and input size are omitted, the table, in general, will comprise 4 programs: composition of many \textit{phead}s, composition of many \textit{ptail}s, composition of many \textit{bsnoc}s and \textit{breverse}.
+
+We introduced the composition $phead \circ phead$ earlier. The compositions of many \textit{phead} do things similarly, the head of a head element inside a super nested list which expresses the source should be changed by the view. We now review the behavior of the remaining 3 programs.
+
+\tab $\putbx{ptail}{s}{v}$ accepts a source list $s$ and a view list $v$ to produce a new list by replacing the tail of $s$ with $v$. $\getbx{ptail}{s}$ return the tail of the source list $s$. The compositions of many $ptail$, in the \textit{put} direction, replace a part of the tail of the source list by the view list, in the \textit{get} direction, returns the such tail from the the source.
+
+\tab $\putbx{bsnoc}{s}{v}$ accepts a source $s$ and a view $v$ as two same length lists, to produce a new list by moving the last element of $v$ to its first position. $\getbx{ptail}{s}$ return another list by moving the first element of the list $s$ to its end position. The compositions of many \textit{ptail}, in the \textit{put} direction, create a permutation of the view list if the source list has a same length with the view, in the \textit{get} direction, produce a permutation of the source list.
+
+\tab \textit{breverse}, is defined in terms of \textit{bFoldr}, a putback function for \textit{foldr} which is an important higher-order function on lists. This case is more natural than the other since \text{bFoldr} is a Case analysis whose a branch contains a composition $bx_1 \circ bx_2$ where $bx_1$ is a product of a simple function and \textit{bFoldr}. It will look like a composition of more BX programs at some point if we slow down the evaluation. Note that $\circ$ has a higher priority than $\times$. This leads to seemingly impossible to transform \textit{bReverse} as well as \textit{bFoldr} from the left associative style to the right one.
+
+\subsection{Results and discussions}
+
+\input{result.tex}
+
+Fig \ref{fig:result} illustrates the evaluation times of $put$ in minBiGUL, $put_m$ in minBiGUL$_m$ and $xpg$ for 11 test cases. $put$ works more efficiently in the cases of right associative compositions, rather than the left ones. This makes sense because the number of \textit{get} when evaluating a right associative composition is linear in the number of compositions, while the respective number when computing a left associative composition is significantly larger. For self-composed program, \textit{breverse}, it could be impossible to change the associate precedence from left to right. Then, $put$ works less efficiently than both $put_m$ and $xpg$. In general, for left associative compositions, if the input size is not too large, $put_m$ is the fastest method. However, if the input size is large enough, $put_m$ will be slower quickly due to times for manipulating data in the table. At that time, $xpg$ proved to be the most effective method.
