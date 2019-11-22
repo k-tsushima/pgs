@@ -267,14 +267,14 @@ let put_m_rassoc_comp_ptail_nested_list n =
   s'
 
 let put_m_lassoc_comp_replace_nested_list n =
-  let s = make_binary_list 10000 in 
-  let v = make_binary_list 10000 in 
+  let s = make_list_of_binary_tree n in 
+  let v = make_list_of_binary_tree n in 
   let s' = put_m (lassoc_comp Replace n) s v [] in 
   s'
 
 let put_m_rassoc_comp_replace_nested_list n =
-  let s = make_binary_list 10000 in 
-  let v = make_binary_list 10000 in 
+  let s = make_list_of_binary_tree n in 
+  let v = make_list_of_binary_tree n in 
   let s' = put_m (rassoc_comp Replace n) s v [] in 
   s'
 

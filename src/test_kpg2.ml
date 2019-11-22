@@ -179,14 +179,14 @@ let kpg2_rassoc_comp_ptail_nested_list n =
   (s, v)
 
 let kpg2_lassoc_comp_replace_nested_list n =
-  let s = make_binary_list 10000 in 
-  let v = make_binary_list 10000 in 
+  let s = make_list_of_binary_tree n in 
+  let v = make_list_of_binary_tree n in 
   let (s, v) = kpg2 (lassoc_comp Replace n) s v [] in 
   (s, v)
 
 let kpg2_rassoc_comp_replace_nested_list n =
-  let s = make_binary_list 10000 in 
-  let v = make_binary_list 10000 in 
+  let s = make_list_of_binary_tree n in 
+  let v = make_list_of_binary_tree n in 
   let (s, v) = kpg2 (rassoc_comp Replace n) s v [] in 
   (s, v)
 
