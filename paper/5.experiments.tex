@@ -4,7 +4,7 @@ We have implemented all methods described above in the same environment as follo
 
 \subsection{Test cases}
 
-We have conducted 12 test cases shown in Table \ref{tab:test-cases}. $s_r$ and $v_r$ are respectively updated source and view which are produced by applying $put$ and $get$ on original source $s_0$ and view $v_0$. This means: $s_r = \putbx{bx}{s_0}{v_0}$ and $v_r = \getbx{bx}{s_0}$, where $bx$ is one of the 12 functions mentioned in the table. Note that the results $s_r$ and $v_r$ do not depend on the associative style of the composition.
+We have conducted 11 test cases shown in Table \ref{tab:test-cases}. $s_r$ and $v_r$ are respectively updated source and view which are produced by applying $put$ and $get$ on original source $s_0$ and view $v_0$. This means: $s_r = \putbx{bx}{s_0}{v_0}$ and $v_r = \getbx{bx}{s_0}$, where $bx$ is one of the 11 functions mentioned in the table. Note that the results $s_r$ and $v_r$ do not depend on the associative style of the composition.
 
 \begin{table}[hbt!]
     \centering
@@ -14,22 +14,21 @@ We have conducted 12 test cases shown in Table \ref{tab:test-cases}. $s_r$ and $
         \hline
         \multirow{2}{*}{No} & \multicolumn{1}{c|}{\multirow{2}{*}{Name}} & \multicolumn{1}{c|}{\multirow{2}{*}{Type}} & \multicolumn{2}{c|}{Input} & \multicolumn{2}{c|}{Output} \\ \cline{4-7} 
         & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{$s_0$} & \multicolumn{1}{c|}{$v_0$} & \multicolumn{1}{c|}{$s_r$} & \multicolumn{1}{c|}{$v_r$} \\ \hline
-        1 & lcomp-phead & manual & $\underbrace{[[\ldots[1]\ldots]]}_{\text{n+1 times}}$ & 100 & $\underbrace{[[\ldots[100]\ldots]]}_{\text{n+1 times}}$ & 1 \\ \hline
-        2 & rcomp-phead & manual & $\underbrace{[[\ldots[1]\ldots]]}_{\text{n+1 times}}$ & 100 & $\underbrace{[[\ldots[100]\ldots]]}_{\text{n+1 times}}$ & 1 \\ \hline
-        3 & lcomp-ptail & manual & [1,$\ldots$,n+1] & [1,$\ldots$,10] & [1,$\ldots$,n+1,1,$\ldots$,10] & [\ ] \\ \hline
-        4 & rcomp-ptail & manual & [1,$\ldots$,n+1] & [1,$\ldots$,10] & [1,$\ldots$,n+1,1,$\ldots$,10] & [\ ] \\ \hline
-        5 & lcomp-ptail-ldata & manual & $\underbrace{[L,\ldots,L]}_{\text{n+1 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{10 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n+11 times}}$ & [\ ] \\ \hline
-        6 & rcomp-ptail-ldata & manual & $\underbrace{[L,\ldots,L]}_{\text{n+1 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{10 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n+11 times}}$ & [\ ] \\ \hline
-        7 & lcomp-bsnoc & manual & [1,$\ldots$,n-1] & [1,$\ldots$,n-1] & [1,$\ldots$,n-1] & [1,$\ldots$,n-1] \\ \hline
-        8 & rcomp-bsnoc & manual & [1,$\ldots$,n-1] & [1,$\ldots$,n-1] & [1,$\ldots$,n-1] & [1,$\ldots$,n-1] \\ \hline
-        9 & lcomp-bsnoc-ldata & manual & $\underbrace{[L,\ldots,L]}_{\text{n-1 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n-1 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n-1 times}}$ & $\underbrace{[L,\ldots,L]]}_{\text{n-1 times}}$ \\ \hline
-        10 & rcomp-bsnoc-ldata & maunal & $\underbrace{[L,\ldots,L]}_{\text{n-1 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n-1 times}}$ & $\underbrace{[L,\ldots,L]]}_{\text{n-1 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n-1 times}}$ \\ \hline
-        11 & breverse & self & [1,$\ldots$,n] & [1,$\ldots$,n] & [n,$\ldots$,1] & [n,$\ldots$,1] \\ \hline
-        12 & breverse-ldata & self & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ \\ \hline
+        1 & lcomp-replace & straightline & 1 & 100 & 100 & 1 \\ \hline
+        2 & lcomp-replace-ldata & straightline & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ \\ \hline
+        3 & lcomp-phead-ldata & straightline & $\underbrace{[[\ldots[1]\ldots]]}_{\text{n+1 times}}$ & 100 & $\underbrace{[[\ldots[100]\ldots]]}_{\text{n+1 times}}$ & 1 \\ \hline
+        4 & lcomp-ptail & straightline & [1,$\ldots$,n+1] & [1,$\ldots$,10] & $s_0 \ @ \ v_0$ & [\ ] \\ \hline
+        5 & lcomp-ptail-ldata & straightline & $\underbrace{[L,\ldots,L]}_{\text{n+1 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{10 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n+11 times}}$ & [\ ] \\ \hline
+        6 & lcomp-bsnoc & straightline & [1,$\ldots$,n-1] & [1,$\ldots$,n-1] & [1,$\ldots$,n-1] & [1,$\ldots$,n-1] \\ \hline
+        7 & lcomp-bsnoc-ldata & straightline & $\underbrace{[L,\ldots,L]}_{\text{n-1 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n-1 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n-1 times}}$ & $\underbrace{[L,\ldots,L]]}_{\text{n-1 times}}$ \\ \hline
+        8 & bmapreplace & recursion & [1,$\ldots$,n] & [1,$\ldots$,n] & [1,$\ldots$,n] & [1,$\ldots$,n] \\ \hline
+        9 & bmapreplace-ldata & recursion & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ \\ \hline
+        10 & breverse & recursion & [1,$\ldots$,n] & [1,$\ldots$,n] & [n,$\ldots$,1] & [n,$\ldots$,1] \\ \hline
+        11 & breverse-ldata & recursion & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n times}}$ \\ \hline
     \end{tabular*}
 \end{table}
 
-The first 10 cases maunally use $n$ compose operators to make a composition of $n + 1$ similar pure programs. We use the term \textit{pure} here to refer to programs that are not self-compose. The prefix \textit{lcomp} and \textit{rcomp} denote the associate precedences of a manual composition. The suffix \textit{ldata} indicates that the input size is large. The symbol $L$ used in \textit{ldata} test cases can be expressed as a complex list as follows: $L = \underbrace{[T,\ldots,T]}_{\text{n times}}$,\ $T = \underbrace{[A,\ldots,A]}_{\text{10 times}}$,\ $A = [1,\ldots,5]$
+The first 7 cases maunally use $n$ compose operators to make straightline compositions from $n + 1$ similar pure programs. We use the term \textit{pure} here to refer to programs that are not self-compose. The prefix \textit{lcomp} and \textit{rcomp} denote the associate precedences of a manual composition. The suffix \textit{ldata} indicates that the input size is large. The symbol $L$ used in \textit{ldata} test cases can be expressed as a complex list as follows: $L = \underbrace{[T,\ldots,T]}_{\text{n times}}$,\ $T = \underbrace{[A,\ldots,A]}_{\text{10 times}}$,\ $A = [1,\ldots,5]$
 
 If the associative type and input size are omitted, the table, in general, will comprise 4 programs: composition of many \textit{phead}s, composition of many \textit{ptail}s, composition of many \textit{bsnoc}s and \textit{breverse}.
 

@@ -37,24 +37,35 @@
             ]
 
             \nextgroupplot[ 
-                title = {\textit{lcomp-phead}}, 
+                title = {\textit{lcomp-replace}}, 
                 legend style = {legend to name = legendgroup,},
                 scaled x ticks = {base 10:-5},
-                scaled y ticks = {base 10:-2},
+                scaled y ticks = {base 10:-1},
             ]
-                \pgfplotstableread[col sep=comma]{csv/lcomp-phead.csv}\data
+                \pgfplotstableread[col sep=comma]{csv/lcomp-replace.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data}; \label{plots:put};
                 \addplot table[x=nComp,y=minbigul_m]{\data}; \label{plots:put$_m$};
                 \addplot table[x=nComp,y=xpg]{\data}; \label{plots:xpg};
                 \coordinate (topl) at (rel axis cs:0,1);
-
+            
             \nextgroupplot[ 
-                title = {\textit{rcomp-phead}}, 
+                title = {\textit{lcomp-replace-ldata}}, 
                 legend style = {legend to name = grouplegend,},
                 scaled x ticks = {base 10:-5},
                 scaled y ticks = {base 10:-1},
             ]
-                \qaddplot{rcomp-phead};
+                \qaddplot{lcomp-replace-ldata};
+            
+            \nextgroupplot [
+                hide axis, xtick=\empty, ytick=\empty
+            ]
+
+            \nextgroupplot[ 
+                title = {\textit{lcomp-phead-ldata}}, 
+                scaled x ticks = {base 10:-5},
+                scaled y ticks = {base 10:-2},
+            ]
+                \qaddplot{lcomp-phead-ldata};
 
             \nextgroupplot[
                 title = {\textit{lcomp-ptail}},
@@ -64,25 +75,11 @@
                 \qaddplot{lcomp-ptail};
 
             \nextgroupplot[
-                title = {\textit{rcomp-ptail}},
-                scaled x ticks = {base 10:-5},
-                scaled y ticks = {base 10:0},
-            ]
-                \qaddplot{rcomp-ptail};
-
-            \nextgroupplot[
                 title = {\textit{lcomp-ptail-ldata}},
                 scaled x ticks = {base 10:-5},
                 scaled y ticks = {base 10:-2},
             ] 
                 \qaddplot{lcomp-ptail-ldata};
-
-            \nextgroupplot[
-                title = {\textit{rcomp-ptail-ldata}},
-                scaled x ticks = {base 10:-5},
-                scaled y ticks = {base 10:-1},
-            ] 
-                \qaddplot{rcomp-ptail-ldata};
 
             \nextgroupplot[
                 title = {\textit{lcomp-bsnoc}},
@@ -92,13 +89,6 @@
                 \qaddplot{lcomp-bsnoc};
 
             \nextgroupplot[
-                title = {\textit{rcomp-bsnoc}},
-                scaled x ticks = {base 10:-4},
-                scaled y ticks = {base 10:-2},
-            ]
-                \qaddplot{rcomp-bsnoc};
-
-            \nextgroupplot[
                 title = {\textit{lcomp-bsnoc-ldata}},
                 scaled x ticks = {base 10:-4},
                 scaled y ticks = {base 10:-2},
@@ -106,11 +96,18 @@
                 \qaddplot{lcomp-bsnoc-ldata};
 
             \nextgroupplot[
-                title = {\textit{rcomp-bsnoc-ldata}},
+                title = {\textit{bmapreplace}},
                 scaled x ticks = {base 10:-4},
-                scaled y ticks = {base 10:-2},
+                scaled y ticks = {base 10:-1},
+            ]
+                \qaddplot{bmapreplace};
+
+            \nextgroupplot[
+                title = {\textit{bmapreplace-ldata}},
+                scaled x ticks = {base 10:-4},
+                scaled y ticks = {base 10:-1},
             ] 
-                \qaddplot{rcomp-bsnoc-ldata};
+                \qaddplot{bmapreplace-ldata};
 
             \nextgroupplot[
                 title = {\textit{breverse}},
