@@ -29,7 +29,7 @@ $\tab bx := Skip \ h \
 
 A minBiGUL program may be either a skip of a function or a replacement or a product of two minBiGUL programs or a source/view rearrangement or a case combinator without adaptive cases or a composition of some minBiGUL programs.
 
-For source/view rearrangement, BiGUL use just one lambda expression to express how to deconstruct as well as reconstruct data. It is a kind of bijection. However, to be able to implement it in OCaml, the environment used for developing minBiGUL and solutions in the paper, we need give two functions which one is the inverse of the other. In the above syntax, $f_2 = f_1^{-1}$ and $g_2 = g_1^{-1}$.
+For source/view rearrangement, BiGUL uses just one lambda expression to express how to deconstruct as well as reconstruct data. It is a kind of bijection. However, to be able to implement it in OCaml, the environment used for developing minBiGUL and solutions in the paper, we need give two functions which one is the inverse of the other. In the above syntax, $f_2 = f_1^{-1}$ and $g_2 = g_1^{-1}$.
 
 To help make demonstration more direct, we provide the following alternatives representation: $Prod \ bx_1 \ bx_2 \equiv bx_1 \times bx_2, \ Compose \ bx_1 \ bx_2 \equiv bx_1 \circ bx_2$. In general, $\circ$ has a higher priority than $\times$. Their associativity precedence can be either left or right or mixture, but are not set by default. We need to explicitly write programs that use these operators.
 
