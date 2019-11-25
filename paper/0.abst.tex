@@ -2,4 +2,3 @@
  For evaluating BX compositions efficiently, we investigate two memoization methods. The first method, minBiGUL$_m$, uses memoization, which improves the runtime of many BX programs by keeping intermediate results for later reuse. A disadvantage is the familiar tradeoff for keeping and searching values in a table.
   When inputs become large, the overhead increases and the effectiveness decreases. To deal with large inputs, we introduce the second method, $xpg$, that uses tupling, lazy update and lazy evaluation as optimizations. Lazy updates delay updates in closures and enables to use them later.
   Both evaluation methods were fully implemented for minBiGUL. The experimental results show that our methods are faster than the original method of BiGUL for the non-right associative compositions.
-%minBiGUL$_m$ is faster for not-large inputs and $xpg$ is faster for large inputs.
