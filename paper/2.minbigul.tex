@@ -1,6 +1,6 @@
 \section{Bidirectional Programming Language: minBiGUL}
 
-MinBiGUL, our target language in this paper, is a subset of BiGUL which is a simple yet powerful putback-based bidirectional language. BiGUL supports two transformations: a forward transformation $get$ producing a view from a source and a backward transformation $put$ taking a source and a modified view to produce an updated source. Intuitively, if we have a BiGUL program $bx$, these two transformations are following functions:\\
+minBiGUL, our target language in this paper, is a subset of BiGUL which is a simple yet powerful putback-based bidirectional language. BiGUL supports two transformations: a forward transformation $get$ producing a view from a source and a backward transformation $put$ taking a source and a modified view to produce an updated source. Intuitively, if we have a BiGUL program $bx$, these two transformations are following functions:\\
     $\tab \getbxinline{bx} : s \to v,
     \tab \putbxinline{bx} : s * v \to v$
 
@@ -10,7 +10,7 @@ BiGUL is well-behaved [?] since two functions $\putbxinline{bx}$ and $\getbxinli
 
 The \textsc{GetPut} [?] law means that if there is no change to the view, there should be no change to the source. The \textsc{PutGet} [?] law means that we can recover the modified view by applying the forward transformation to the updated source.
 
-MinBiGUL inherited from BiGUL also supports transformations $put$ and $get$ which are satisfy two above laws. In addition, we restrict adaptive cases of BiGUL on minBiGUL. Then $put$ and $get$ satisfy one more law, \textsc{PutPut} [?], like the following:\\
+minBiGUL inherited from BiGUL also supports transformations $put$ and $get$ which are satisfy two above laws. In addition, we restrict adaptive cases of BiGUL on minBiGUL. Then $put$ and $get$ satisfy one more law, \textsc{PutPut} [?], like the following:\\
     $\tab \putbx{bx}{(\putbx{bx}{s}{v'})}{v} = \putbx{bx}{s}{v} \qquad [\textsc{PutPut}]$
 
 The \textsc{PutPut} law means that a source update should overwrite the effect of previous source updates. Due to the satisfaction of three laws, \textsc{GetPut}, \textsc{PutGet} and \textsc{PutPut}, minBiGUL is very well-behaved [?].
@@ -27,7 +27,7 @@ $\tab bx := Skip \ h \
     \qtab | \ Case \ cond_{sv} \ cond_{s} \ bx_1 \ bx_2 \
         | \ Compose \ bx_1 \ bx_2$
 
-A minBiGUL program may be either a skip of a function or a replacement or a product of two minBiGUL programs or a source/view rearrangement or a case combinator without adaptive cases or a composition of some minBiGUL programs.
+A minBiGUL program may be either a skip of a function or a replacement or a product of two minBiGUL programs or a source/view rearrangement or a case combinator without adaptive cases or a composition of some minBiGUL programs. We use numbers, pairs and lists to construct the program input including the source and/or the view.
 
 For source/view rearrangement, BiGUL uses just one lambda expression to express how to deconstruct as well as reconstruct data. It is a kind of bijection. However, to be able to implement it in OCaml, the environment used for developing minBiGUL and solutions in the paper, we need give two functions which one is the inverse of the other. In the above syntax, $f_2 = f_1^{-1}$ and $g_2 = g_1^{-1}$.
 
