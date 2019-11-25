@@ -1,38 +1,37 @@
 \section{Memorizing: minBiGUL$_m$}
 
-For minBiGUL or even BiGUL, when evaluating a composition of many programs, $get$s are reevaluated so many times since no intermediate state is stored during the evaluation. To avoid reevaluating $get$s, we can save intermediate states in a key-value table where the key is a pair of the program $bx$ and the source $s$, and the value is the result of $\getbx{bx}{s}$. Then, searching an evaluated $get$s on the table is used instead of recomputing it. We define a memory version, minBiGUL$_m$, including $get_m$ and $put_m$ as in definition 3 and 4 respectively. Another function introduced in definition 5, $get_{mh}$, is used to retrieve the value of an evaluated $get$ from the table or compute an unevaluated $get$ by using $get_m$ and store the key-value tuple to the table.
+For minBiGUL or even BiGUL, when evaluating a composition of many programs, $get$s are reevaluated so many times since no intermediate state is stored during the evaluation. To avoid reevaluating $get$s, we can save intermediate states in a key-value table where the key is a pair of the program $bx$ and the source $s$, and the value is the result of $\getbx{bx}{s}$. Then, searching an evaluated $get$s on the table is used instead of recomputing it. We define a memory version, minBiGUL$_m$, including $get_m$ and $put_m$ as in definition 3 and 4 respectively. Another function introduced in definition 5, $get_{mh}$, is used to retrieve the value of an evaluated $get$ from the table or compute an unevaluated $get$ by using $get_m$ then store the key-value tuple to the table if necessary.
 
-\begin{definition} $\putm{bx}{s}{v}$
+\begin{definition} $\text{Memo version of } put$
 
-    $\putm{bx}{s}{v} = \text{same with } put \text{ if } bx \neq bx_1 \circ bx_2$
-
-    $\putm{bx_1 \circ bx_2}{s}{v} = \putm{bx_1}{s}{(\putm{bx_2}{(\getmh{bx_1}{s})}{v})}$
+    $\putm{bx}{s}{v} = \text{match } bx \text{ with }\\
+        \tab \vert \ bx_1 \circ bx_2 \to \putm{bx_1}{s}{(\putm{bx_2}{(\getmh{bx_1}{s})}{v})} \\
+        \tab \vert \ \_ \to \text{similar to } put$
 \end{definition}
 
 \begin{multicols}{2}
-    \begin{definition} $\getm{bx}{s}{v}$
+    \begin{definition} $\text{Memo version of } get$
 
-        $\getm{bx}{s} = \\
-            \tab \text{same with } get \text{ if } bx \neq bx_1 \circ bx_2$
-
-        $\getm{bx_1 \circ bx_2}{s} =\\
-            \tab \text{try } (\text{Hashtbl.find} \ table_g \ (bx, s))\\
-            \tab \text{with Not\_found } \to\\
-                \qtab v \Leftarrow \getmh{bx_2}{(\getmh{bx_1}{s})}\\
-                \qtab \text{Hashtbl.add } \ table_g \ (bx, s) \ v\\
-                \qtab v$
+        $\getm{bx}{s} = \text{match } bx \text{ with }\\
+            \tab \ \vert \ bx_1 \circ bx_2 \to\\
+            \tabs{2} \text{try } (\text{Hashtbl.find} \ table_g \ (bx, s))\\
+            \tabs{2} \text{with Not\_found } \to\\
+                \tabs{3} v \Leftarrow \getmh{bx_2}{(\getmh{bx_1}{s})}\\
+                \tabs{3} \text{Hashtbl.add } \ table_g \ (bx, s) \ v\\
+                \tabs{3} v \\
+            \tab \ \vert \ \_ \to \text{similar to } get$
     \end{definition}
 \columnbreak
-    \begin{definition} $\getmh{bx}{s}{v}$
+    \begin{definition} $???$
 
         $\getmh{bx}{s} =\\
             \tab \text{try } (\text{Hashtbl.find} \ table_g \ (bx, s))\\
             \tab \text{with Not\_found } \to\\
-                \qtab v \Leftarrow \getm{bx}{s}\\
-                \qtab \text{try } (\text{Hashtbl.find} \ table_g \ (bx, s))\\
-                \qtab \text{with Not\_found } \to\\
-                    \qtabs{2} \text{Hashtbl.add } \ table_g \ (bx, s) \ v\\
-                    \qtabs{2} v$
+                \tabs{2} v \Leftarrow \getm{bx}{s}\\
+                \tabs{2} \text{match } bx \text{ with } \\
+                \tabs{2} \ \vert \ bx_1 \circ bx_2 \to v \\
+                \tabs{2} \ \vert \ \_ \to \text{Hashtbl.add } \ table_g \ (bx, s) \ v\\
+                \qtabs{2} \ v$
     \end{definition}
 \end{multicols}
 

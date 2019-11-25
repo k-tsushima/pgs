@@ -91,7 +91,9 @@ To help make demonstration more direct, we provide the following alternatives re
     \end{definition}
 \end{multicols}
 
-In definitions 1 and 2, we use if-then-else-fi statements to express semantics of $\putbxinline{Case}$ and $\getbxinline{Case}$. This statement is useful to describe many functions related to $Case$ in this paper. Statement (if $E_1$ then $X_1$ else $X_2$ fi $E_2$) means if the test $E_1$ is true, the statement $X_1$ is executed and the assertion $E_2$ must be true, otherwise, i.e. $E_2$ is false, the statement $X_2$ is executed and the assertion $E_2$ must be false. If the values of $E_1$ and $E_2$ are distinct, the if-then-else-fi structure is undefined. We can write the equivalent if-then-else statement as follows:
+We define the semantics of $put$ and $get$ as in definitions 1 and 2 respectively. Instead of using $v'$ in the $put$ direction like figures \ref{fig:eval-phead}, \ref{fig:eval-comp-phead} and \ref{fig:eval-comp-phead-2}, we just simply use notation $v$ as the updated view. The later definitions also use this convention.
+
+In the above definitions, we use if-then-else-fi statements to express semantics of $\putbxinline{Case}$ and $\getbxinline{Case}$. This statement is useful to describe many functions related to $Case$ in this paper. Statement (if $E_1$ then $X_1$ else $X_2$ fi $E_2$) means if the test $E_1$ is true, the statement $X_1$ is executed and the assertion $E_2$ must be true, otherwise, i.e. $E_2$ is false, the statement $X_2$ is executed and the assertion $E_2$ must be false. If the values of $E_1$ and $E_2$ are distinct, the if-then-else-fi structure is undefined. We can write the equivalent if-then-else statement as follows:
 
 $\tab \text{if } E_1 \text{ then } X_1 \text{ else } X_2 \text{ fi } E_2; S\\
 \tab \equiv \text{if }E_1 = true \text{ then } \{ X_1; \text{ if } E_2 = true \text{ then } S \text{ else assert } false; \}\\

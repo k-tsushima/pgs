@@ -5,20 +5,18 @@
     \addplot table[x=nComp,y=xpg]{\data};
 }
 
-\begin{figure}
+\begin{figure}[!hbt]
     \centering
     \begin{tikzpicture}
         \pgfplotsset{footnotesize,samples=9}
         \begin{groupplot}[
                 group style = {
-                    group size = 2 by 7,
+                    group size = 2 by 4,
                     horizontal sep = 2.5cm,
                     vertical sep = 1cm,
                 }, 
                 width = 4.5cm, 
                 height = 3.5cm,
-                % xmin = 0, xmax = 110000,
-                % ymin = 0,
                 scaled x ticks = false,
                 x tick label style = {
                     /pgf/number format/fixed
@@ -36,36 +34,19 @@
                 tick label style={font=\small} 
             ]
 
+            \nextgroupplot[hide axis]
+
             \nextgroupplot[ 
-                title = {\textit{lcomp-replace}}, 
-                legend style = {legend to name = legendgroup,},
-                scaled x ticks = {base 10:-5},
-                scaled y ticks = {base 10:-1},
-            ]
-                \pgfplotstableread[col sep=comma]{csv/lcomp-replace.csv}\data
-                \addplot table[x=nComp,y=minbigul]{\data}; \label{plots:put};
-                \addplot table[x=nComp,y=minbigul_m]{\data}; \label{plots:put$_m$};
-                \addplot table[x=nComp,y=xpg]{\data}; \label{plots:xpg};
-                \coordinate (topl) at (rel axis cs:0,1);
-            
-            \nextgroupplot[ 
-                title = {\textit{lcomp-replace-ldata}}, 
+                title = {\textit{lcomp-phead-ldata}}, 
                 legend style = {legend to name = grouplegend,},
                 scaled x ticks = {base 10:-5},
                 scaled y ticks = {base 10:-1},
             ]
-                \qaddplot{lcomp-replace-ldata};
-            
-            \nextgroupplot [
-                hide axis, xtick=\empty, ytick=\empty
-            ]
-
-            \nextgroupplot[ 
-                title = {\textit{lcomp-phead-ldata}}, 
-                scaled x ticks = {base 10:-5},
-                scaled y ticks = {base 10:-2},
-            ]
-                \qaddplot{lcomp-phead-ldata};
+                \pgfplotstableread[col sep=comma]{csv/lcomp-phead-ldata.csv}\data
+                \addplot table[x=nComp,y=minbigul]{\data}; \label{plots:put};
+                \addplot table[x=nComp,y=minbigul_m]{\data}; \label{plots:put$_m$};
+                \addplot table[x=nComp,y=xpg]{\data}; \label{plots:xpg};
+                \coordinate (topl) at (rel axis cs:-2,1);
 
             \nextgroupplot[
                 title = {\textit{lcomp-ptail}},
@@ -96,34 +77,20 @@
                 \qaddplot{lcomp-bsnoc-ldata};
 
             \nextgroupplot[
-                title = {\textit{bmapreplace}},
-                scaled x ticks = {base 10:-4},
-                scaled y ticks = {base 10:-1},
-            ]
-                \qaddplot{bmapreplace};
-
-            \nextgroupplot[
-                title = {\textit{bmapreplace-ldata}},
-                scaled x ticks = {base 10:-4},
-                scaled y ticks = {base 10:-1},
-            ] 
-                \qaddplot{bmapreplace-ldata};
-
-            \nextgroupplot[
                 title = {\textit{breverse}},
                 % xmax = 10000,
                 scaled x ticks = {base 10:-5},
                 scaled y ticks = {base 10:-3},
+                xlabel = {number of compositions},
             ] 
                 \qaddplot{breverse};
-                % \coordinate (botl) at (rel axis cs:0,0);
 
             \nextgroupplot[
                 title = {\textit{breverse-ldata}},
                 % xmax = 10000,
                 scaled x ticks = {base 10:-5},
                 scaled y ticks = {base 10:-2},
-                % xlabel = {number of compositions},
+                xlabel = {number of compositions},
             ] 
                 \qaddplot{breverse-ldata};
                 \coordinate (botr) at (rel axis cs:1,0);
@@ -146,7 +113,7 @@
 
     \end{tikzpicture}
 
-    \caption{Experimental results}
+    \caption{Evaluation times}
     \label{fig:result}
 
 \end{figure}
