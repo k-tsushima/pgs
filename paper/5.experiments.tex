@@ -1,6 +1,6 @@
 \section{Experiments}
 
-We have implemented all methods described above in the same environment as follows: macOS 10.14.6, processor Intel Core i7 (2.6 GHz), RAM 16 GB 2400 MHz DDR4, OCaml 4.07.1. The OCaml runtime system options and garbage collection parameters are set as default.
+We have implemented all methods described above in the same environment as follows: macOS 10.14.6, processor Intel Core i7 (2.6 GHz), RAM 16 GB 2400 MHz DDR4, OCaml 4.07.1. The OCaml runtime system options and garbage collection parameters are set as default. There is no type system in our implementation, so instead of constructing some dummies which are necessary for $pg$, $cpg$, $kpg$ and $xpg$, we replace them by the updated view that helps a program in the $put$ direction valid.
 
 \subsection{Test cases}
 
@@ -36,6 +36,6 @@ We introduced the composition $phead \circ phead$ earlier. The compositions of m
 
 \subsection{Results}
 
-Fig. \ref{fig:result} illustrates the evaluation times of $put$ in minBiGUL, $put_m$ in minBiGUL$_m$ and $xpg$ for 7 test cases. We simply ignore the experimental results of $pg$, $cpg$ and $kpg$ since they are shown the slowness compared to $xpg$. For left associative compositions, $put$ works poorly because of the number of reevaluated $get$s. The figure shows $put_m$ and $xpg$ are better than $put$ in some cases. The left of figure contains tests using not very big input, and the right includes of the others. We see that $put_m$ is the fastest method if the input size is not too large. However, if the input size is large enough, $put_m$ will be slower quickly due to times for manipulating data in the table. At that time, $xpg$ proved to be the most effective method. 
+Figure \ref{fig:result} illustrates the evaluation times of $put$ in minBiGUL, $put_m$ in minBiGUL$_m$ and $xpg$ for 7 test cases. We simply ignore the experimental results of $pg$, $cpg$ and $kpg$ since they are shown the slowness compared to $xpg$. For left associative compositions, $put$ works poorly because of the number of reevaluated $get$s. The figure shows $put_m$ and $xpg$ are better than $put$ in some cases. The left of figure contains tests using not very big input, and the right includes of the others. We see that $put_m$ is the fastest method if the input size is not too large. However, if the input size is large enough, $put_m$ will be slower quickly due to times for manipulating data in the table. At that time, $xpg$ proved to be the most effective method. 
 
 \input{result.tex}
