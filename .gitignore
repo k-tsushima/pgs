@@ -9,12 +9,18 @@ src/*.annot
 src/*.s
 src/*.so
 
-paper/*.aux
-paper/*.fdb*
-paper/*.fls
-paper/*.log
-paper/*.gz
+paper/main-blx.bib
+paper/main.aux
+paper/main.bbl
+paper/main.blg
+paper/main.fdb_latexmk
+paper/main.fls
+paper/main.log
+paper/main.out
+paper/main.run.xml
+paper/main.synctex.gz
 
 **/*.pdf
-
+**/*.json
 **/~*
+**/_*
