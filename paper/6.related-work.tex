@@ -4,18 +4,27 @@
 
 There are many BX languages \cite{josh_pepm} \cite{BXtend} \cite{eMoflon} \cite{EVL+Strace} \cite{JTL} \cite{NMF}
 %(memo: BXtend, eMoflon, EVL+Strace, JTL, NMF. SDMLib should be added?)
-based on several application scenarios and BX lenses works \cite{} (add papers for lenses). The semantics and correctness of bidirectional programs has been investigated intensively during the past years, but their efficiency and optimization are not yet fully understood. Anjorin et. al. introduces the first benchmark for BX languages and compared them \cite{BXcomp}. However, the improvement for practical implementation of BX languages is still missing. As a first step, we study different evaluation methods to optimized their evaluation. We can say this paper will be first attempt to improve efficiency of BX composition evaluation. In this paper we focus on a BX language BiGUL \cite{josh_pepm} \cite{josh_popl}, we compare BiGUL's method (in Section 1) and our methods (in Section 3 and 4). From experimental results, we find that there is no best approach for all BX programs. It is important to choose good method depending on the BX programs and their inputs. In this paper we focus on BiGUL, however our methods can be applicable to other BX languages which have similar problems.
+based on several application scenarios and BX lenses works \cite{} (add papers for lenses). The semantics and correctness of bidirectional programs has been investigated intensively during the past years, but their efficiency and optimization are not yet fully understood. Anjorin et. al. introduces the first benchmark for BX languages and compared them \cite{BXcomp}. However, the improvement for practical implementation of BX languages is still missing. As a first step, we study different evaluation methods to optimized their evaluation. We can say this paper will be first attempt to improve efficiency of BX composition evaluation. In this paper we focus on a BX language BiGUL \cite{josh_pepm} \cite{josh_popl}, we compare BiGUL's method (in Section 2) and our methods (in Section 3 and 4). From experimental results of left associative programs, we know that our memoization methods are faster than the original BiGUL's evaluation method.
+In this paper we focus on BiGUL, however our methods can be applicable to other BX languages which have similar problems.
+
+%find that there is no best approach for all BX programs. It is important to choose good method depending on the BX programs and their inputs. 
 % its implementation uses ``not keeping any intermediate states and obtaining them by evaluation when they are needed'' strategy. Other BX languages might have the same problem, and our approach can be applicable.
 
 \subsubsection*{Optimization techniques}
 
-In this paper, we use several optimization techniques: tupling, lazy update, and lazy computation (\textcolor{red}{also fusion?}).
+Memoization \cite{} is well-known technique to reduce extra evaluation. In our case, simple application of memoization $put_m$ works well for many BX programs.
+Another way to reduce extra evaluation is fusion \cite{}. However, fusion of BX programs are not considered well \textcolor{red}{(really?)}. Therefore we do not use this way.
+  Instead of that, we introduce another way: using tupling \cite{}, lazy update and lazy computation \cite{}. Tupling \cite{tupling} is often used for reducint common evaluations, but we use it for reducing the size of complements.
+  Lazy evaluation \cite{} is also a well-known and widly-used optimization technique to reduce the redundant evaluation. Because we use OCaml for implementation, we need to introduce this explicitly. If we use Haskell, a lazy evaluated language, we do not need to introduce them.
 
-Tupling \cite{tupling} is an optimization technique by combining several computations. Although tupling is usually used for reducing the evaluation cost\cite{}, we use it to reduce the size of the things need to keep.
 
-We introduce lazy update to remove repeated evaluation of put. This is different from lazy evaluation. In lazy evaluation we have everything that is needed to evaluate. In our lazy update, because view information is missing, we postpone the evaluation. (\textcolor{red}{Relation between delta lenses?})
+%In this paper, we use several well-known techniques: tupling, lazy update, and lazy computation (\textcolor{red}{also fusion?}).
 
-Lazy evaluation \cite{} is well-known and widly-used optimization technique to reduce the redundant evaluation. Because we use OCaml for implementation, we need to introduce this explicitly. If we use Haskell, a lazy evaluated language, we do not need to introduce them.
+%Tupling \cite{tupling} is an optimization technique by combining several computations. Although tupling is usually used for reducing the evaluation cost\cite{}, we use it to reduce the size of the things need to keep.
+
+%We introduce lazy update to remove repeated evaluation of put. This is different from lazy evaluation. In lazy evaluation we have everything that is needed to evaluate. In our lazy update, because view information is missing, we postpone the evaluation. (\textcolor{red}{Relation between delta lenses?})
+
+%Lazy evaluation \cite{} is well-known and widly-used optimization technique to reduce the redundant evaluation. Because we use OCaml for implementation, we need to introduce this explicitly. If we use Haskell, a lazy evaluated language, we do not need to introduce them.
 
 %\begin{itemize}
     %\item BiGUL papers (PEPM, POPL, tutorial?)
