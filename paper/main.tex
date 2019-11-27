@@ -18,19 +18,24 @@
 \usepackage{lmodern}
 \usepackage{pgffor}
 \usepackage{schemata}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref}
+
+\usepackage[backend=bibtex,doi=false,url=false,style=nature,sorting=none]{biblatex}
+\addbibresource{bibliography}
 
 % Used for displaying a sample figure. If possible, figure files should
 % be included in EPS format.
 %
 % If you use the hyperref package, please uncomment the following line
 % to display URLs in blue roman font according to Springer's eBook style:
-% \renewcommand\UrlFont{\color{blue}\rmfamily}
+\renewcommand\UrlFont{\color{blue}\rmfamily}
+
 \usetikzlibrary{matrix}
 \usepgfplotslibrary{groupplots}
 \pgfplotsset{compat=newest}
 
-\setlength{\parindent}{0pt}
-\renewcommand{\indent}{\hspace*{0pt}}
+% \setlength{\parindent}{0pt}
+% \renewcommand{\indent}{\hspace*{0pt}}
 
 \newcommand{\tab}{\hspace*{3mm}}
 \newcommand{\tabs}[1]{\foreach \n in {1,...,#1}{\tab}}
@@ -240,61 +245,62 @@
 % BibTeX users should specify bibliography style 'splncs04'.
 % References will then be sorted and formatted in the correct style.
 %
+% \bibliography{bibliography}
 % \bibliographystyle{splncs04}
-% \bibliography{mybibliography}
-%
 
-\tiny
+\printbibliography
 
-\begin{thebibliography}{8}
-\bibitem{viewupdate}
-F. Bancilhon and N. Spyratos. ``Update semantics of relational views''. ACM Transactions on Database Systems, 6(4):557--575, 1981.
+% \tiny
 
-\bibitem{BXcomp}
-Anthony Anjorin, Thomas Buchmann, Bernhard Westfechtel, Zinovy Diskin, Hsiang-Shang Ko, Romina Eramo, Georg Hinkel, Leila Samimi-Dehkordi, and Albert Zündorf
-``Benchmarking bidirectional transformations: Theory, implementation, application, and assessment'', Software and Systems Modeling, ??, 2019
+% \begin{thebibliography}{8}
+% \bibitem{viewupdate}
+% F. Bancilhon and N. Spyratos. ``Update semantics of relational views''. ACM Transactions on Database Systems, 6(4):557--575, 1981.
 
-\bibitem{tupling}
-  M. Fokkinga. ``Tupling and mutumorphisms''. Squiggolist, 1(4), 1989.
+% \bibitem{BXcomp}
+% Anthony Anjorin, Thomas Buchmann, Bernhard Westfechtel, Zinovy Diskin, Hsiang-Shang Ko, Romina Eramo, Georg Hinkel, Leila Samimi-Dehkordi, and Albert Zündorf
+% ``Benchmarking bidirectional transformations: Theory, implementation, application, and assessment'', Software and Systems Modeling, ??, 2019
 
-\bibitem{josh_pepm}
-  Hsiang-Shang Ko, Tao Zan, Zhenjiang Hu, BiGUL: A Formally Verified Core Language for Putback-Based Bidirectional Programming, ACM SIGPLAN 2016 Workshop on Partial Evaluation and Program Manipulation (PEPM 2016), pp.61--72, 2016.
+% \bibitem{tupling}
+%   M. Fokkinga. ``Tupling and mutumorphisms''. Squiggolist, 1(4), 1989.
 
-\bibitem{josh_popl}
-  Hsiang-Shang Ko, Zhenjiang Hu, An Axiomatic Basis for Bidirectional Programming , 45th ACM SIGPLAN Symposium on Principles of Programming Languages (POPL 2018), 2018.
+% \bibitem{josh_pepm}
+%   Hsiang-Shang Ko, Tao Zan, Zhenjiang Hu, BiGUL: A Formally Verified Core Language for Putback-Based Bidirectional Programming, ACM SIGPLAN 2016 Workshop on Partial Evaluation and Program Manipulation (PEPM 2016), pp.61--72, 2016.
 
-\bibitem{BXtend}
-  Thomas Buchmann. BXtend -- a framework for (bidirectional) model transformations. In Slimane Hamoudi,Luis Ferreira Pires, and Bran Selic, editors, Proceedings
-of the 6th International Conference on Model-Driven Engineering and Software Development - Volume 1: MODELSWARD (MODELSWARD 2018), pages 336--345, 2018.
+% \bibitem{josh_popl}
+%   Hsiang-Shang Ko, Zhenjiang Hu, An Axiomatic Basis for Bidirectional Programming , 45th ACM SIGPLAN Symposium on Principles of Programming Languages (POPL 2018), 2018.
 
-\bibitem{eMoflon}
-  Erhan Leblebici, Anthony Anjorin, and Andy Sch"{u}rr. Developing eMoflon with eMoflon. In Davide Di Ruscio and Daniel Varro, editors, Theory and Practice of Model Transformations - 7th International Conference, ICMT 2014, Held as Part of STAF 2014, York, UK, 2014. Proceedings, volume 8568 of Lecture Notes in
-Computer Science, pages 138–145. Springer, 2014.
+% \bibitem{BXtend}
+%   Thomas Buchmann. BXtend -- a framework for (bidirectional) model transformations. In Slimane Hamoudi,Luis Ferreira Pires, and Bran Selic, editors, Proceedings
+% of the 6th International Conference on Model-Driven Engineering and Software Development - Volume 1: MODELSWARD (MODELSWARD 2018), pages 336--345, 2018.
 
-\bibitem{EVL+Strace}
-Leila Samimi-Dehkordi, Bahman Zamani, and Shekoufeh Kolahdouz-Rahimi. EVL+Strace: A novel bidirectional transformation approach. Information and Software
-Technology, 100:47--72, 2018.
+% \bibitem{eMoflon}
+%   Erhan Leblebici, Anthony Anjorin, and Andy Sch"{u}rr. Developing eMoflon with eMoflon. In Davide Di Ruscio and Daniel Varro, editors, Theory and Practice of Model Transformations - 7th International Conference, ICMT 2014, Held as Part of STAF 2014, York, UK, 2014. Proceedings, volume 8568 of Lecture Notes in
+% Computer Science, pages 138–145. Springer, 2014.
 
-\bibitem{JTL}
-Antonio Cicchetti, Davide Di Ruscio, Romina Eramo, and Alfonso Pierantonio. JTL: A bidirectional and change propagating transformation language. In Brian Malloy, Steffen Staab, and Mark van den Brand, editors, Proceedings of the Third International Conference on Software Language Engineering (SLE 2010), volume 6563 of Lecture Notes of Computer Science, pages 183--202, Springer-Verlag.
+% \bibitem{EVL+Strace}
+% Leila Samimi-Dehkordi, Bahman Zamani, and Shekoufeh Kolahdouz-Rahimi. EVL+Strace: A novel bidirectional transformation approach. Information and Software
+% Technology, 100:47--72, 2018.
+
+% \bibitem{JTL}
+% Antonio Cicchetti, Davide Di Ruscio, Romina Eramo, and Alfonso Pierantonio. JTL: A bidirectional and change propagating transformation language. In Brian Malloy, Steffen Staab, and Mark van den Brand, editors, Proceedings of the Third International Conference on Software Language Engineering (SLE 2010), volume 6563 of Lecture Notes of Computer Science, pages 183--202, Springer-Verlag.
   
-\bibitem{NMF}
-Georg Hinkel and Erik Burger. Change propagation and bidirectionality in internal transformation DSLs. Soft-ware and Systems Modeling, 18(1):249--278, 2019.
+% \bibitem{NMF}
+% Georg Hinkel and Erik Burger. Change propagation and bidirectionality in internal transformation DSLs. Soft-ware and Systems Modeling, 18(1):249--278, 2019.
 
   
-\bibitem{SDMLib}
-  SDMLib paper?
+% \bibitem{SDMLib}
+%   SDMLib paper?
 
-\bibitem{lenses}
-  Lense papers?
+% \bibitem{lenses}
+%   Lense papers?
 
-\bibitem{tutorial}
-  Tutorial paper of BiGUL
+% \bibitem{tutorial}
+%   Tutorial paper of BiGUL
 
-\bibitem{putget}
-  H. Pacheco, Z. Hu, and S. Fischer. Monadic combinators for “putback” style bidirectional programming. In Partial Evaluation and Program Manipulation, pages 39–50. ACM, 2014.
+% \bibitem{putget}
+%   H. Pacheco, Z. Hu, and S. Fischer. Monadic combinators for “putback” style bidirectional programming. In Partial Evaluation and Program Manipulation, pages 39–50. ACM, 2014.
 
-\bibitem{putput}
+% \bibitem{putput}
   
   
 %\bibitem{ref_article1}
@@ -316,7 +322,7 @@ Georg Hinkel and Erik Burger. Change propagation and bidirectionality in interna
 %\bibitem{ref_url1}
 %LNCS Homepage, \url{http://www.springer.com/lncs}. Last accessed 4
 %Oct 2017
-\end{thebibliography}
+% \end{thebibliography}
 
 % \input{appendix.tex}
 
