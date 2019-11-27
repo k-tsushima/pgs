@@ -2,20 +2,20 @@
 
 In this paper, we focus on efficiency of composition of BX programs.
 To achieve fast evaluation, we introduce two different methods using memoization.
-From the experimental results of left associative composition of BX programs, we know that $put_m$ is fastest method if input size is not very big and $xpg$ is fastest for other left associative programs.
+From the experimental results of left associative BX composition programs, we know that $put_m$ is fastest method if input size is not very big and $xpg$ is fastest for other left associative programs.
 This shows that if programmer choose one method based on the their BX programs and inputs, they can use efficient evaluation. 
 
 %there is no best approach for all BX programs. However, if programmer can choose one method based on the BX programs and inputs, we can use better evaluation methods.
 
-We will continue our work on the following points.
-First is overcomming our limitation in $xpg$. In $xpg$, there are several limitations: only very-well-behaved programs, path problem (shown in Section ..). To be a practical evlauation method, extention is needed. After extention of the language, we can evaluate more interesting programs for experimental results.
+We will continue our work on the following two points.
+First is overcomming our limitation in $xpg$. In $xpg$, there are two limitations: only for very-well-behaved programs, restriction for $\pginline{Case}$ (shown in Sect. 4.1). To be a practical evlauation method, extention of the target language is needed. After extention of the language, we can evaluate more interesting programs for experimental results.
 
-Second is analysis about BX programs and inputs to choose the best evaluation method automatically.
+Second is introducing analysis about BX programs and inputs to choose the best evaluation method automatically.
 Currently, programmers have to choose the evaluation method by themselves based on their BX programs and inputs. If automatic choice is possible, we can reduce programmer's burden.
 
 
 \begin{itemize}
-\item construct\_dummy?
+\item $construct\_dummy$??
 \end{itemize}
 
 %First is extention of our language. Currently, because $pg$ requires very-well-behaved property
