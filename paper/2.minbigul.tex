@@ -8,12 +8,12 @@ BiGUL is well-behaved [?] since two functions $\putbxinline{bx}$ and $\getbxinli
     $\tab \putbx{bx}{s}{(\getbx{bx}{s})} = s \qquad [\textsc{GetPut}]\\
     \tab \getbx{bx}{(\putbx{bx}{s}{v})} = v \qquad [\textsc{PutGet}]$
 
-The \textsc{GetPut} [?] law means that if there is no change to the view, there should be no change to the source. The \textsc{PutGet} [?] law means that we can recover the modified view by applying the forward transformation to the updated source.
+The \textsc{GetPut} \cite{putget} law means that if there is no change to the view, there should be no change to the source. The \textsc{PutGet} \cite{putget} law means that we can recover the modified view by applying the forward transformation to the updated source.
 
-minBiGUL inherited from BiGUL also supports transformations $put$ and $get$ which are satisfy two above laws. In addition, we restrict adaptive cases of BiGUL on minBiGUL. Then $put$ and $get$ satisfy one more law, \textsc{PutPut} [?], like the following:\\
+minBiGUL inherited from BiGUL also supports transformations $put$ and $get$ which are satisfy two above laws. In addition, we restrict adaptive cases of BiGUL on minBiGUL. Then $put$ and $get$ satisfy one more law, \textsc{PutPut} \cite{putput}, like the following:\\
     $\tab \putbx{bx}{(\putbx{bx}{s}{v'})}{v} = \putbx{bx}{s}{v} \qquad [\textsc{PutPut}]$
 
-The \textsc{PutPut} law means that a source update should overwrite the effect of previous source updates. Due to the satisfaction of three laws, \textsc{GetPut}, \textsc{PutGet} and \textsc{PutPut}, minBiGUL is very well-behaved [?].
+The \textsc{PutPut} law means that a source update should overwrite the effect of previous source updates. Due to the satisfaction of three laws, \textsc{GetPut}, \textsc{PutGet} and \textsc{PutPut}, minBiGUL is very well-behaved.
 
 \subsection{Syntax}
 

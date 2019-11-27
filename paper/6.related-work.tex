@@ -13,9 +13,9 @@ In this paper we focus on BiGUL, however our methods can be applicable to other 
 \subsubsection*{Optimization techniques}
 
 Memoization \cite{} is well-known technique to reduce extra evaluation. In our case, simple application of memoization $put_m$ works well for many BX programs.
-Another way to reduce extra evaluation is fusion \cite{}. However, fusion of BX programs are not considered well \textcolor{red}{(really?)}. Therefore we do not use this way.
-  Instead of that, we introduce another way: using tupling \cite{}, lazy update and lazy computation \cite{}. Tupling \cite{tupling} is often used for reducing common evaluations, but we use it for reducing the size of complements.
-  Lazy evaluation \cite{} is also a well-known and widely-used optimization technique to reduce the redundant evaluation. Because we use OCaml for implementation, we need to introduce this explicitly. If we use Haskell, a lazy evaluated language, we do not need to introduce them.
+Another way to reduce extra evaluation is fusion \cite{}. However, fusion of BX programs are not considered well \textcolor{red}{(really?)}. Therefore we did not use this way.
+  Instead of that, we introduce another way that uses tupling \cite{tupling}, lazy update and lazy computation \cite{}. Tupling is often used for reducing common evaluations, but we use it for reducing the size of complements.
+  Lazy evaluation is also a well-known and widly-used optimization technique to reduce the redundant evaluation. Because we use OCaml for implementation, we need to introduce this explicitly. If we use Haskell, a lazy evaluated language, we do not need to introduce them.
 
 
 %In this paper, we use several well-known techniques: tupling, lazy update, and lazy computation (\textcolor{red}{also fusion?}).

@@ -24,9 +24,11 @@
 %\item 
 %\end{itemize}
 
-In software, there are strong demands for synchronizing data. In database community this is known as ``the view update problem'' and researched for a long time \cite{viewupdate}.
+%In software, there are strong demands for synchronizing data. In database community this is known as ``the view update problem'' and researched for a long time \cite{viewupdate}.
 % A Survey to View Update Problem 
-As a solution for this problem, bidirectional transformation (BX) is introduced. As an example, let us consider a small BX program of $phead$\footnote{The actual program is shown in the next section.}. BX provides two functions: $get$ and $put$. Figure \ref{fig:eval-phead} denotes the behaviors of these functions when evaluating $phead$.
+%As a solution for this problem, bidirectional transformation (BX) is introduced.
+The synchronization of data is a common problem. In the database community this problem is known as “the view update problem” and has been investigated for a long time~\cite{viewupdate}. Bidirectional transformation (BX) is an approach to solve this problem.
+As an example, let us consider a small BX program of $phead$\footnote{The actual program is shown in the next section.}. BX provides two functions: $get$ and $put$. Figure \ref{fig:eval-phead} denotes the behaviors of these functions when evaluating $phead$.
 
 \begin{figure}[!t]
   \begin{minipage}{0.3\textwidth}
@@ -43,17 +45,25 @@ As a solution for this problem, bidirectional transformation (BX) is introduced.
   \end{minipage}
 \end{figure}
 
-Here, the original source \texttt{s}, \texttt{[1,2]}, is given by a user. $get$ is a projection: $get$ of $phead$ picks the first element of the given original source as a view.
+Here, let \texttt{[1,2]} be the original source \texttt{s}.
+$get$ is a projection: $get$ of $phead$ picks the first element of the given original source as a view.
 %\texttt{get pHead [1,2] = 1}.
 After the view \texttt{v} is obtained, the user can modify the view.
-In this case, he or she modified the view to \texttt{100} from \texttt{1}.
-From this updated view, how can we obtain new updated source? This is ``the view update problem.'' For doing this, BX provides $put$, an update function on the original source.
+In this case, the user
+modified the view
+from \texttt{1} to \texttt{100}.
+From this updated view, how can the source be updated?
+This is ``the view update problem.''
+To solve this problem, BX provides $put$, an update function on the original source.
 In this example, $put$ of $phead$ constructs a new list \texttt{[100,2]} from the updated view (\texttt{v'}) and the original source (\texttt{s}).
+Note that the update to s' uses s and v' as input.
 %\texttt{put pHead [1,2] 8 = [8,2]}
 
-In BX programs, composition of programs is essential for writing various interesting evaluations. Because recursions are achieved by compositions, large number of programs include compositions.
+The composition of BX programs is a fundamental construct to build more complex BX programs. 
+%In BX programs, composition of programs is essential for writing various interesting evaluations.
+Because recursions are achieved by compositions, large number of programs include compositions.
 In the BX lens papers \cite{} compositions are also known as central part of BX programs.
-In this section we use a tiny BX program that contains compositions as a running example, because the programs including recursions can be complicated easily. The running examples are two versions of three composition of $phead$: ($phead \circ phead) \circ phead$ (we call lp3) and $phead \circ (phead \circ phead$) (we call rp3).
+In this section we use a small BX program that contains compositions as a running example, because the programs including recursions can be complicated easily. The running examples are two versions of three composition of $phead$: ($phead \circ phead) \circ phead$ (we call lp3) and $phead \circ (phead \circ phead$) (we call rp3).
 
 
 %For more various evaluations, we can use the composition of programs. Let us consider another example, a composition of 3 $pHead$s: $pHead \circ pHead \circ pHead$. Figure \ref{fig:eval-comp-phead} illustrates the evaluation of this program where the original source \texttt{s} is \texttt{[[[1,2],[3]],[4]]} and the updated view is \texttt{100}.
@@ -62,7 +72,7 @@ In this section we use a tiny BX program that contains compositions as a running
 Figure \ref{fig:eval-comp-phead} illustrates the evaluation of these programs where the original source \texttt{s} is \texttt{[[[1,2],[3]],[4]]} and the updated view is \texttt{100}.
 By repetitious evaluation of $get$s of $phead$, we can obtain the view $v$, \texttt{1}. To obtain the final updated source \texttt{s'}, we need to evaluate $put$ three times. The first put evaluation is from \texttt{i$_2$} and \texttt{v'} and we can obtain \texttt{i$_2$'}.
 
-First, let us see the standard evaluation method of compositions: ``not keeping any intermediate states and obtaining them by evaluation when they are needed.'' In this example, ``intermediate states'' are \texttt{i$_1$} and \texttt{i$_2$}. This method is used in a BX language, BiGUL \cite{}. The merit of this method is clear semantics and easy to implement. The disadvantage is the number of $get$s will be quadratic when the BX programs' compositions are left associative. In the evaluation of lp3, two $get$s are required for obtaining \texttt{i$_2$} and one $get$ is required for obtaining \texttt{i$_1$}. In total, three $get$s are evaluated. We explain this method in Section 2.
+First, let us see the standard evaluation method of compositions: ``not keeping any intermediate states and obtaining them by evaluation when they are needed.'' In this example, ``intermediate states'' are \texttt{i$_1$} and \texttt{i$_2$}. This method is used in a BX language, BiGUL \cite{josh_pepm} \cite{josh_popl}. The merit of this method is clear semantics and easy to implement. The disadvantage is the number of $get$s will be quadratic when the BX programs' compositions are left associative. In the evaluation of lp3, two $get$s are required for obtaining \texttt{i$_2$} and one $get$ is required for obtaining \texttt{i$_1$}. In total, three $get$s are evaluated. We explain this method in Section 2.
 
 If the programs are simple like these running examples, we can transform left associative compositions to right associative. However, this is not always possible. Therefore it is important to have a fast evaluation method for left associative compositions.
 For achieving this, we introduce two methods that use memoization.
@@ -73,7 +83,7 @@ To treat large inputs, we introduce the second method that uses memoization: ``k
 Readers might already know that it is a hard problem to obtain complements in general. In our work, thanks to the following finding, it is not hard:
 
 \vspace{2mm}
-In very-well behaved BX programs, 
+In very-well behaved \cite{} BX programs, 
 $put$ is a complement function for $get$.
 %, $get$ can be a complement function for $put$.
 \vspace{2mm}
@@ -81,7 +91,7 @@ $put$ is a complement function for $get$.
 \begin{figure}[!t]
   \centering
   \includegraphics[height=5cm]{./fig/fig3.eps}
-  \caption{Evaluating $phead \circ phead \circ phead$ by keeping intermediate states}
+  \caption{Evaluating $phead \ \circ \ phead \ \circ \ phead$ by keeping intermediate states}
   \label{fig:eval-comp-phead-2}
 \end{figure}
 
