@@ -1,17 +1,20 @@
 \section{Bidirectional Programming Language: minBiGUL}
 
-minBiGUL, our target language in this paper, is a subset of BiGUL which is a simple yet powerful putback-based bidirectional language. BiGUL supports two transformations: a forward transformation $get$ producing a view from a source and a backward transformation $put$ taking a source and a modified view to produce an updated source. Intuitively, if we have a BiGUL program $bx$, these two transformations are following functions:\\
-    $\tab \getbxinline{bx} : s \to v,
-    \tab \putbxinline{bx} : s * v \to v$
+minBiGUL, our target language in this paper, is a subset of BiGUL which is a simple yet powerful putback-based bidirectional language. BiGUL supports two transformations: a forward transformation $get$ producing a view from a source and a backward transformation $put$ taking a source and a modified view to produce an updated source. Intuitively, if we have a BiGUL program $bx$, these two transformations are following functions:
 
-BiGUL is well-behaved [?] since two functions $\putbxinline{bx}$ and $\getbxinline{bx}$ satisfy the round-trip laws as follows:\\
-    $\tab \putbx{bx}{s}{(\getbx{bx}{s})} = s \qquad [\textsc{GetPut}]\\
-    \tab \getbx{bx}{(\putbx{bx}{s}{v})} = v \qquad [\textsc{PutGet}]$
+    $\qtab \getbxinline{bx} : s \to v, \quad \putbxinline{bx} : s * v \to v$
 
-The \textsc{GetPut} \cite{putget} law means that if there is no change to the view, there should be no change to the source. The \textsc{PutGet} \cite{putget} law means that we can recover the modified view by applying the forward transformation to the updated source.
+BiGUL is well-behaved [?] since two functions $\putbxinline{bx}$ and $\getbxinline{bx}$ satisfy the round-trip laws as follows:
+    
+    $\qtab \putbx{bx}{s}{(\getbx{bx}{s})} = s \qquad [\textsc{GetPut}]$
+    
+    $\qtab \getbx{bx}{(\putbx{bx}{s}{v})} = v \qquad [\textsc{PutGet}]$
 
-minBiGUL inherited from BiGUL also supports transformations $put$ and $get$ which are satisfy two above laws. In addition, we restrict adaptive cases of BiGUL on minBiGUL. Then $put$ and $get$ satisfy one more law, \textsc{PutPut} \cite{putput}, like the following:\\
-    $\tab \putbx{bx}{(\putbx{bx}{s}{v'})}{v} = \putbx{bx}{s}{v} \qquad [\textsc{PutPut}]$
+The \textsc{GetPut} \cite{Pacheco:2014:MCP:2543728.2543737} law means that if there is no change to the view, there should be no change to the source. The \textsc{PutGet} \cite{Pacheco:2014:MCP:2543728.2543737} law means that we can recover the modified view by applying the forward transformation to the updated source.
+
+minBiGUL inherited from BiGUL also supports transformations $put$ and $get$ which satisfy two above laws. In addition, we restrict adaptive cases of BiGUL on minBiGUL. Then $put$ and $get$ satisfy one more law, \textsc{PutPut} \cite{putput}, like the following:
+
+    $\qtab \putbx{bx}{(\putbx{bx}{s}{v'})}{v} = \putbx{bx}{s}{v} \qquad [\textsc{PutPut}]$
 
 The \textsc{PutPut} law means that a source update should overwrite the effect of previous source updates. Due to the satisfaction of three laws, \textsc{GetPut}, \textsc{PutGet} and \textsc{PutPut}, minBiGUL is very well-behaved.
 
@@ -19,12 +22,12 @@ The \textsc{PutPut} law means that a source update should overwrite the effect o
 
 The syntax of minBiGUL is briefly written as follows:
 
-$\tab bx := Skip \ h \
+    $bx := Skip \ h \
         | \ Replace \
         | \ Prod \ bx_1 \ bx_2 \
         | \ RearrS \ f_1 \ f_2 \ bx \
         | \ RearrV \ g_1 \ g_2 \ bx \\
-    \qtab | \ Case \ cond_{sv} \ cond_{s} \ bx_1 \ bx_2 \
+    \qtabs{2} | \ Case \ cond_{sv} \ cond_{s} \ bx_1 \ bx_2 \
         | \ Compose \ bx_1 \ bx_2$
 
 A minBiGUL program may be either a skip of a function or a replacement or a product of two minBiGUL programs or a source/view rearrangement or a case combinator without adaptive cases or a composition of some minBiGUL programs. We use numbers, pairs and lists to construct the program input including the source and/or the view.
@@ -39,79 +42,73 @@ To help make demonstration more direct, we provide the following alternatives re
     \begin{definition}
         $\putbx{bx}{s}{v}$
 
-        $\putbx{Skip \ h}{s}{v} = \\
+        \noindent $\putbx{Skip \ h}{s}{v} = \\
             \tab \sif{h \ s = v}{s}{\text{fail}}$
     
-        $\putbx{Replace}{s}{v} = v$
+        \noindent $\putbx{Replace}{s}{v} = v$
     
-        $\putbx{\product{bx_1}{bx_2}}{(s_1, s_2)}{(v_1, v_2)} = \\
+        \noindent $\putbx{\product{bx_1}{bx_2}}{(s_1, s_2)}{(v_1, v_2)} = \\
             \tab ((\putbx{bx_1}{s_1}{v_1}),(\putbx{bx_2}{s_2}{v_2}))$
     
-        $\putbx{\rearrs{f_1}{f_2}{bx}}{s}{v} = \\
+        \noindent $\putbx{\rearrs{f_1}{f_2}{bx}}{s}{v} = \\
             \tab f_2 \ (\putbx{bx}{(f_1 \ s)}{v})$
     
-        $\putbx{\rearrv{g_1}{g_2}{bx}}{s}{v} = \\
+        \noindent $\putbx{\rearrv{g_1}{g_2}{bx}}{s}{v} = \\
             \tab \putbx{bx}{s}{(g_1 \ v)}$
     
-        $\putbx{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s}{v} = \\
+        \noindent $\putbx{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s}{v} =\\
             \tab \text{if} \ {cond_{sv} \ s \ v} \\
             \tab \text{then} \ s' \Leftarrow \putbx{bx_1}{s}{v} \\
             \tab \text{else} \ s' \Leftarrow \putbx{bx_2}{s}{v} \\
             \tab \text{fi} \ cond_{s} \ s'; \ \text{return} \ s'$
     
-        $\putbx{bx_1 \circ bx_2}{s}{v} = \\
+        \noindent $\putbx{bx_1 \circ bx_2}{s}{v} = \\
             \tab \putbx{bx_1}{s}{(\putbx{bx_2}{(\getbx{bx_1}{s})}{v})}$
     \end{definition}
 \columnbreak
     \begin{definition}
         $\getbx{bx}{s}$
 
-        $\getbx{Skip \ h}{s} = \\ 
+        \noindent $\getbx{Skip \ h}{s} = \\ 
             \tab h \ s$
 
-        $\getbx{Replace}{s} = s$
+        \noindent $\getbx{Replace}{s} = s$
 
-        $\getbx{\product{bx_1}{bx_2}}{(s_1,s_2)} = \\
+        \noindent $\getbx{\product{bx_1}{bx_2}}{(s_1,s_2)} = \\
             \tab ((\getbx{bx_1}{s_1}),(\getbx{bx_2}{s_2}))$
 
-        $\getbx{\rearrs{f_1}{f_2}{bx}}{s} = \\ 
+        \noindent $\getbx{\rearrs{f_1}{f_2}{bx}}{s} = \\ 
             \tab \getbx{bx}{(f_1 \ s)}$
 
-        $\getbx{\rearrv{g_1}{g_2}{bx}}{s} = \\ 
+        \noindent $\getbx{\rearrv{g_1}{g_2}{bx}}{s} = \\ 
             \tab g_2 \ (\getbx{bx}{s})$
 
-        $\getbx{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s} = \\
+        \noindent $\getbx{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s} = \\
             \tab \text{if} \ {cond_{s} \ s} \\
             \tab \text{then} \ v' \Leftarrow \getbx{bx_1}{s} \\ 
             \tab \text{else} \ v' \Leftarrow \getbx{bx_2}{s} \\ 
             \tab \text{fi} \ {cond_{sv} \ s \ v'}; \ \text{return} \ v'$
 
-        $\getbx{bx_1 \circ bx_2}{s} = \\ 
+        \noindent $\getbx{bx_1 \circ bx_2}{s} = \\ 
             \tab \getbx{bx_2}{(\getbx{bx_1}{s})}$
     \end{definition}
 \end{multicols}
 
-We define the semantics of $put$ and $get$ as in definitions 1 and 2 respectively. Instead of using $v'$ in the $put$ direction like figures \ref{fig:eval-phead}, \ref{fig:eval-comp-phead} and \ref{fig:eval-comp-phead-2}, we just simply use notation $v$ as the updated view. The later definitions also use this convention. $\Leftarrow$ means assignments.
+We define the semantics of $put$ and $get$ as in definitions 1 and 2 respectively. Instead of using $v'$ in the $put$ direction like figures \ref{fig:eval-phead}, \ref{fig:eval-comp-phead} and \ref{fig:eval-comp-phead-2}, we just simply use notation $v$ as the updated view. The later definitions also follow this convention.
 
-In the above definitions, we use if-then-else-fi statements to express semantics of $\putbxinline{Case}$ and $\getbxinline{Case}$. This statement is useful to describe many functions related to $Case$ in this paper. Statement (if $E_1$ then $X_1$ else $X_2$ fi $E_2$) means if the test $E_1$ is true, the statement $X_1$ is executed and the assertion $E_2$ must be true, otherwise, i.e. $E_2$ is false, the statement $X_2$ is executed and the assertion $E_2$ must be false. If the values of $E_1$ and $E_2$ are distinct, the if-then-else-fi structure is undefined. We can write the equivalent if-then-else statement as follows:
+In the above definitions, we use if-then-else-fi statements to express semantics of $\putbxinline{Case}$ and $\getbxinline{Case}$ where $\Leftarrow$ means assignments. This statement is useful to describe many functions related to $Case$ in this paper. Statement (if $E_1$ then $X_1$ else $X_2$ fi $E_2$) means if the test $E_1$ is true, the statement $X_1$ is executed and the assertion $E_2$ must be true, otherwise, i.e. $E_2$ is false, the statement $X_2$ is executed and the assertion $E_2$ must be false. If the values of $E_1$ and $E_2$ are distinct, the if-then-else-fi structure is undefined. We can write the equivalent if-then-else statement as follows:
 
 $\tab \text{if } E_1 \text{ then } X_1 \text{ else } X_2 \text{ fi } E_2; S\\
-\tab \equiv \text{if }E_1 = true \text{ then } \{ X_1; \text{ if } E_2 = true \text{ then } S \text{ else assert } false; \}\\
-    \qtab \text{else } \{ X_2; \text{ if } E_2 = false \text{ then } S \text{ else assert } false; \}$
+\tabs{2} \ \equiv \text{if }E_1 = true \text{ then } \{ X_1; \text{ if } E_2 = true \text{ then } S \text{ else assert } false; \}\\
+    \tabs{4} \text{else } \{ X_2; \text{ if } E_2 = false \text{ then } S \text{ else assert } false; \}$
 
-% Next, let's take a look at some examples to better understand about minBiGUL. We start with quite obvious things as follows:
-
-% $\tab \putbx{Skip \ (\lambda x.(x*x))}{10}{100} = 10 \qtab \ \getbx{Skip \ (\lambda x.(x*x))}{10} = 100\\
-%     \tab \putbx{Skip \ (\lambda \_.())}{1}{()} = 1 \qtabs{3} \getbx{Skip \ (\lambda \_.())}{1} = ()\\
-%     \tab \putbx{Replace}{1}{100} = 100 \qtabs{3} \getbx{Replace}{1} = 1
-% $
-
-We now consider the definition of $phead$ in minBiGUL:
-
+\noindent We now consider the definition of $phead$ in minBiGUL:\\
 $\tab phead = RearrS \ f_1 \ f_2 \ bx_s \ \text{where: } f_1 = \lambda (s::ss).(s,ss), \, f_2 = \lambda (s,ss).(s::ss),\\
     \qtab bx_s = RearrV \ g_1 \ g_2 \ bx_v \ \text{where: } g_1 = \lambda v.(v,()), \, g_2 = \lambda (v,()).v,\\
         \qtabs{2} bx_v = \product{Replace}{(Skip \ (\lambda \_.())}$
 
-The above program rearranges the source, a non-empty list, to a pair of its head element $s$ and its tail $ss$, and the view to a pair $(v, ())$, then we can use $v$ to replace $s$ and $()$ to keep $ss$. Intuitively, $\putbx{phead}{s_0}{v_0}$ returns a list whose head is $v_0$ and tail is the tail of $s_0$, and $\getbx{phead}{s_0}$ returns the head of the list $s_0$. For instance, $\putbx{phead}{[1,2,3]}{100} = [100,2,3]$ and $\getbx{phead}{[1,2,3]} = 1$. If we wanna update the head element of the head element of a list of lists by using the view, we can define a composition like $phead \circ phead$. For example:\\
-\tab $\putbx{phead \circ phead}{[[1,2,3],[\,],[4,5]]}{100} = [[100,2,3],[\,],[4,5]]$\\
-\tab $\getbx{phead \circ phead}{[[1,2,3],[\,],[4,5]]} = 1$
+The above program rearranges the source, a non-empty list, to a pair of its head element $s$ and its tail $ss$, and the view to a pair $(v, ())$, then we can use $v$ to replace $s$ and $()$ to keep $ss$. Intuitively, $\putbx{phead}{s_0}{v_0}$ returns a list whose head is $v_0$ and tail is the tail of $s_0$, and $\getbx{phead}{s_0}$ returns the head of the list $s_0$. For instance, $\putbx{phead}{[1,2,3]}{100} = [100,2,3]$ and $\getbx{phead}{[1,2,3]} = 1$. If we wanna update the head element of the head element of a list of lists by using the view, we can define a composition like $phead \circ phead$. For example:
+
+$\putbx{phead \circ phead}{[[1,2,3],[\,],[4,5]]}{100} = [[100,2,3],[\,],[4,5]]$
+
+$\getbx{phead \circ phead}{[[1,2,3],[\,],[4,5]]} = 1$

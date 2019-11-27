@@ -40,7 +40,7 @@
                 title = {\textit{lcomp-phead-ldata}}, 
                 legend style = {legend to name = grouplegend,},
                 scaled x ticks = {base 10:-5},
-                scaled y ticks = {base 10:-1},
+                scaled y ticks = {base 10:-2},
             ]
                 \pgfplotstableread[col sep=comma]{csv/lcomp-phead-ldata.csv}\data
                 \addplot table[x=nComp,y=minbigul]{\data}; \label{plots:put};

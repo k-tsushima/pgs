@@ -4,7 +4,7 @@ For minBiGUL or even BiGUL, when evaluating a composition of many programs, $get
 
 \begin{definition} $\text{Memo version of } put$
 
-    $\putm{bx}{s}{v} = \text{match } bx \text{ with }\\
+    \noindent $\putm{bx}{s}{v} = \text{match } bx \text{ with }\\
         \tab \vert \ bx_1 \circ bx_2 \to \putm{bx_1}{s}{(\putm{bx_2}{(\getmh{bx_1}{s})}{v})} \\
         \tab \vert \ \_ \to \text{similar to } put$
 \end{definition}
@@ -12,7 +12,7 @@ For minBiGUL or even BiGUL, when evaluating a composition of many programs, $get
 \begin{multicols}{2}
     \begin{definition} $\text{Memo version of } get$
 
-        $\getm{bx}{s} = \text{match } bx \text{ with }\\
+        \noindent $\getm{bx}{s} = \text{match } bx \text{ with }\\
             \tab \ \vert \ bx_1 \circ bx_2 \to\\
             \tabs{2} \text{try } (\text{Hashtbl.find} \ table_g \ (bx, s))\\
             \tabs{2} \text{with Not\_found } \to\\
@@ -24,7 +24,7 @@ For minBiGUL or even BiGUL, when evaluating a composition of many programs, $get
 \columnbreak
     \begin{definition} $\text{Interface for } get_m$
 
-        $\getmh{bx}{s} =\\
+        \noindent $\getmh{bx}{s} =\\
             \tab \text{try } (\text{Hashtbl.find} \ table_g \ (bx, s))\\
             \tab \text{with Not\_found } \to\\
                 \tabs{2} v \Leftarrow \getm{bx}{s}\\
