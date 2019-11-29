@@ -62,7 +62,7 @@ Note that the update to s' uses s and v' as input.
 The composition of BX programs is a fundamental construct to build more complex BX programs. 
 %In BX programs, composition of programs is essential for writing various interesting evaluations.
 Because recursions are achieved by compositions, large number of programs include compositions.
-In the BX lens papers \cite{} compositions are also known as central part of BX programs.
+In the BX lens papers \cite{Bohannon06relationallenses:, Bohannon:2008:BRL:1328438.1328487} compositions are also known as central part of BX programs.
 In this section we use a small BX program that contains compositions as a running example, because the programs including recursions can be complicated easily. The running examples are two versions of two composition of $phead$: ($phead \circ phead) \circ phead$ (we call lp3) and $phead \circ (phead \circ phead$) (we call rp3).
 
 
@@ -74,19 +74,9 @@ By repetitious evaluation of $get$s of $phead$, we can obtain the view $v$, ${1}
 
 First, let us see the standard evaluation method of compositions: ``not keeping any intermediate states and obtaining them by evaluation when they are needed.'' In this example, ``intermediate states'' are \texttt{i$_1$} and \texttt{i$_2$}. This method is used in a BX language, BiGUL \cite{Ko:2016:BFV:2847538.2847544,Ko:2017:ABB:3177123.3158129}. The merit of this method is clear semantics and easy to implement. The disadvantage is the number of $get$s will be quadratic when the BX programs' compositions are left associative. In the evaluation of lp3, two $get$s are required for obtaining \texttt{i$_2$} and one $get$ is required for obtaining \texttt{i$_1$}. In total, three $get$s are evaluated. We explain this method in Section 2.
 
-If the programs are simple like these running examples, we can transform left associative compositions to right associative. However, this is not always possible. \textcolor{red}{For example, let us consider the following 'breverse' program.}
+\textcolor{red}{If the programs are simple like the running examples, we can transform left associative compositions to right associative. However, this is not always possible. For example, let us consider a BX 'reverse' program, $breverse$. $breverse$ is constructed by application of $bfoldr$ (the actual program is shown in Section 2) and $bsnoc$. 
+A part of the definition of $bfoldr$, we have $(\product{Replace}{(bfoldr \ bx)}) \circ bx$. In this program, recursion occurs on the left-hand side of composition. Because of priority, it is impossible to transform this program to right associative compositions. At the same time, we can not apply program fusion \cite{Wadler:1988:DTP:80099.80104} to this program because this BX program is dynamically produced depending on the length of the input list. Therefore, it is important to have a fast evaluation method for left associative compositions.}
 
-%$\tab
-%bsnoc = Rearr\\
-%bfoldr bx = Case \ f_1 \ f_2 \ bx_s \text{where: } f_1 = , f_2% = \\
-
-%breverse = RearrS \ f_1 \ f_2 \ bx_s \ \text{where: } f_1 = \l%ambda s.(s.()), \, f_2 = \lambda (s.()).s,\\
-%\qtab bx_s = bfoldr bsnoc$
-
-\input{breverse.tex}
-
-\noindent \textcolor{red}{In this program, recursion occurs on the left-hand side of composition. Because of priority, it is impossible to tranform this program to right associative compositions. At the same time, we can not apply fusion \cite{} to this program because this program is dynamically produced depending on the length of the input list.}
-Therefore it is important to have a fast evaluation method for left associative compositions.
 
 For achieving this, we introduce two methods that use memoization.
 The first method uses memoization simply: ``keeping all intermediate states and using them when they are needed.'' There is no quadratic $get$s in this method, therefore this method improves the runtime of many BX programs. However, a disadvantage of this is the familiar tradeoff for keeping and searching values in a table. Especially, when we use large inputs, the evaluation time will be long. We explain this method in Section 3.
