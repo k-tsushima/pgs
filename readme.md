@@ -1,4 +1,8 @@
-# pgs
+# An efficient composition of bidirectional programs by memoization and lazy update
+
+### Anonymous authors
+
+---
 
 ## Environments
 - OS supporting OCaml
