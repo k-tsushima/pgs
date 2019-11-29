@@ -12,19 +12,19 @@ In this paper we focus on BiGUL, however our methods can be applicable to other 
 
 \subsubsection*{Optimization Techniques}
 
-Memoization \cite{} is well-known technique to reduce extra evaluation. In our case, simple application of memoization $put_m$ works well for many BX programs.
+Memoization \cite{Bellman:2003:DP:862270,MICHIE1968} is well-known technique to reduce extra evaluation. In our case, simple application of memoization $put_m$ works well for many BX programs.
 Another way to reduce extra evaluation is fusion \cite{Wadler:1988:DTP:80099.80104}. However, fusion of BX programs are not considered well \textcolor{red}{(really?)}. Therefore we did not use this way.
-  Instead of that, we introduce another way that uses tupling \cite{Fokkinga90}, lazy update and lazy computation \cite{}. Tupling is often used for reducing common evaluations, but we use it for reducing the size of complements.
+  Instead of that, we introduce another way that uses tupling \cite{Fokkinga90}, lazy update and lazy computation \cite{Henderson:1976:LE:800168.811543, Hudak:2007:HHL:1238844.1238856}. Tupling is often used for reducing common evaluations, but we use it for reducing the size of complements.
   Lazy evaluation is also a well-known and widly-used optimization technique to reduce the redundant evaluation. Because we use OCaml for implementation, we need to introduce this explicitly. If we use Haskell, a lazy evaluated language, we do not need to introduce them.
 
 
 %In this paper, we use several well-known techniques: tupling, lazy update, and lazy computation (\textcolor{red}{also fusion?}).
 
-%Tupling \cite{tupling} is an optimization technique by combining several computations. Although tupling is usually used for reducing the evaluation cost\cite{}, we use it to reduce the size of the things need to keep.
+%Tupling \cite{tupling} is an optimization technique by combining several computations. Although tupling is usually used for reducing the evaluation cost, we use it to reduce the size of the things need to keep.
 
 %We introduce lazy update to remove repeated evaluation of put. This is different from lazy evaluation. In lazy evaluation we have everything that is needed to evaluate. In our lazy update, because view information is missing, we postpone the evaluation. (\textcolor{red}{Relation between delta lenses?})
 
-%Lazy evaluation \cite{} is well-known and widly-used optimization technique to reduce the redundant evaluation. Because we use OCaml for implementation, we need to introduce this explicitly. If we use Haskell, a lazy evaluated language, we do not need to introduce them.
+%Lazy evaluation is well-known and widly-used optimization technique to reduce the redundant evaluation. Because we use OCaml for implementation, we need to introduce this explicitly. If we use Haskell, a lazy evaluated language, we do not need to introduce them.
 
 %\begin{itemize}
     %\item BiGUL papers (PEPM, POPL, tutorial?)
