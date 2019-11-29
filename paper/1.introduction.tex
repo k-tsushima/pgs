@@ -2,33 +2,33 @@
 
 %\begin{itemize}
 %\item Importance of BX, BX is a solution of view update problem in database.
-%\item goodness of 
+%\item goodness of
 %\item Explanation of put-based BX: BiGUL.
 %\item Current status of BiGUL: Fastest BX language in the world
 %\item But there is a problem: Efficiency of compose evaluation. The current implementation of BiGUL does not save the intermediate states, the number of get is quadratic. This is not good.
 %\item To solve this problem we use an idea: introduce pg : combination of put and get. Then, no information will be lost in a specific condition.
 %  an idea from reversible computation: not to lose any information.
 %\item We extend pg with several ideas to produce faster implementation.
-%\item 
+%\item
 %\end{itemize}
 
 %\begin{itemize}
 %\item Importance of BX, BX is a solution of view update problem in database.
-%\item goodness of 
+%\item goodness of
 %\item Explanation of put-based BX: BiGUL.
 %\item Current status of BiGUL: Fastest BX language in the world
 %\item But there is a problem: Efficiency of compose evaluation. The current implementation of BiGUL does not save the intermediate states, the number of get is quadratic. This is not good.
 %\item To solve this problem we use an idea: introduce pg : combination of put and get. Then, no information will be lost in a specific condition.
 %  an idea from reversible computation: not to lose any information.
 %\item We extend pg with several ideas to produce faster implementation.
-%\item 
+%\item
 %\end{itemize}
 
 %In software, there are strong demands for synchronizing data. In database community this is known as ``the view update problem'' and researched for a long time.
-% A Survey to View Update Problem 
+% A Survey to View Update Problem
 %As a solution for this problem, bidirectional transformation (BX) is introduced.
-The synchronization of data is a common problem. In the database community this problem is known as “the view update problem” and has been investigated for a long time~\cite{Bancilhon:1981:USR:319628.319634}. Bidirectional transformation (BX) is an approach to solve this problem.
-As an example, let us consider a small BX program of $phead$\footnote{The actual program is shown in the next section.}. BX provides two functions: $get$ and $put$. Figure \ref{fig:eval-phead} denotes the behaviors of these functions when evaluating $phead$.
+The synchronization of data is a common problem. In the database community this problem is known as “the view update problem” and has been investigated for a long time~\cite{Bancilhon:1981:USR:319628.319634}. Bidirectional transformation (BX) provides a systematic approach to solving this problem.
+As an example, consider a small BX program of $phead$\footnote{The actual program is shown in the next section.}, which consists of two functions: $get$ (for getting the head of an input list) and $put$ (for relfecting the output to the head of the input). Figure \ref{fig:eval-phead} shows the behaviors of these functions when evaluating $phead$.
 
 \begin{figure}[!t]
   \begin{minipage}{0.3\textwidth}
@@ -59,7 +59,7 @@ In this example, $put$ of $phead$ constructs a new list ${[100,2]}$ from the upd
 Note that the update to s' uses s and v' as input.
 %\texttt{put pHead [1,2] 8 = [8,2]}
 
-The composition of BX programs is a fundamental construct to build more complex BX programs. 
+The composition of BX programs is a fundamental construct to build more complex BX programs.
 %In BX programs, composition of programs is essential for writing various interesting evaluations.
 Because recursions are achieved by compositions, large number of programs include compositions.
 In the BX lens papers \cite{Bohannon06relationallenses:, Bohannon:2008:BRL:1328438.1328487} compositions are also known as central part of BX programs.
@@ -74,7 +74,7 @@ By repetitious evaluation of $get$s of $phead$, we can obtain the view $v$, ${1}
 
 First, let us see the standard evaluation method of compositions: ``not keeping any intermediate states and obtaining them by evaluation when they are needed.'' In this example, ``intermediate states'' are \texttt{i$_1$} and \texttt{i$_2$}. This method is used in a BX language, BiGUL \cite{Ko:2016:BFV:2847538.2847544,Ko:2017:ABB:3177123.3158129}. The merit of this method is clear semantics and easy to implement. The disadvantage is the number of $get$s will be quadratic when the BX programs' compositions are left associative. In the evaluation of lp3, two $get$s are required for obtaining \texttt{i$_2$} and one $get$ is required for obtaining \texttt{i$_1$}. In total, three $get$s are evaluated. We explain this method in Section 2.
 
-\textcolor{red}{If the programs are simple like the running examples, we can transform left associative compositions to right associative. However, this is not always possible. For example, let us consider a BX 'reverse' program, $breverse$. $breverse$ is constructed by application of $bfoldr$ (the actual program is shown in Section 2) and $bsnoc$. 
+\textcolor{red}{If the programs are simple like the running examples, we can transform left associative compositions to right associative. However, this is not always possible. For example, let us consider a BX 'reverse' program, $breverse$. $breverse$ is constructed by application of $bfoldr$ (the actual program is shown in Section 2) and $bsnoc$.
 A part of the definition of $bfoldr$, we have $(\product{Replace}{(bfoldr \ bx)}) \circ bx$. In this program, recursion occurs on the left-hand side of composition. Because of priority, it is impossible to transform this program to right associative compositions. At the same time, we can not apply program fusion \cite{Wadler:1988:DTP:80099.80104} to this program because this BX program is dynamically produced depending on the length of the input list. Therefore, it is important to have a fast evaluation method for left associative compositions.}
 
 
@@ -86,7 +86,7 @@ To treat large inputs, we introduce the second method that uses memoization: ``k
 Readers might already know that it is a hard problem to obtain complements in general. In our work, thanks to the following finding, it is not hard:
 
 \vspace{2mm}
-In very-well behaved \cite{} BX programs, 
+In very-well behaved \cite{} BX programs,
 $put$ is a complement function for $get$.
 %, $get$ can be a complement function for $put$.
 \vspace{2mm}
@@ -100,7 +100,7 @@ $put$ is a complement function for $get$.
 
 For obtaining complements, we use tupling of $put$ and $get$, and produce new function $pg$. Because $put$ produces new complements for $get$, we can shrink the size.
 As an example, let us consider the previous example again: $phead \circ phead \circ phead$ in figure \ref{fig:eval-comp-phead-2}. \texttt{c$_1$} and \texttt{c$_2$} are complements. \texttt{d$_1$} and \texttt{d$_2$} are valid views for \texttt{s} and \texttt{i$_1$}. The points in this figure is two. First, after evaluation of the first $pg$, we do not need to keep the original source \texttt{s}, because all its information is in \texttt{c$_1$} and \texttt{i$_1$}. Second, complements are smaller than the intermediate states in the previous figure.
-%This evaluation looks better than previous two strategies: this does not require repeated evaluation and require smaller storage than the original sources. 
+%This evaluation looks better than previous two strategies: this does not require repeated evaluation and require smaller storage than the original sources.
 Actually, the simple combined $pg$ is not effective for left associative compositions, because this requires other two $put$ in the right part of the figure. To achieve efficient evaluation, we use two techniques, lazy update and lazy evaluation. We explain the second method and optimization in Section 4.
 
 In Section 5, we show experimental results of the approaches. We discuss about related work in Section 6, and conclude in Section 7.
@@ -111,8 +111,8 @@ The contributions of this paper are the following.
 \begin{itemize}
 \item This is the first attempt for seriously considering efficiency of evaluation of BX compositions. Our methods are better than or similar to the results by the original method in BiGUL for all test cases.
 \item We show that memoization is effective for achieving evaluation efficiency in BX languages.
-\item In BX, as far as authors know optimization by $get$ and $put$ more tight is the first attempt. 
-\item Although we focus on a BX language BiGUL in this paper, these techniques can be potentially used in other BX languages. 
+\item In BX, as far as authors know optimization by $get$ and $put$ more tight is the first attempt.
+\item Although we focus on a BX language BiGUL in this paper, these techniques can be potentially used in other BX languages.
   % \begin{itemize}
     % Although the first strategy is implemented in BiGUL \cite{}, the second and third strategies are introduced by this paper.
 %  \item Thanks to introduction of the strategies, it is possible to compare the evaluation strategies.
@@ -120,9 +120,8 @@ The contributions of this paper are the following.
 %  \end{itemize}
 %\item Approaches used in strategy 3
 %  \begin{itemize}
-%  \item 
+%  \item
 % \item Optimization tequniques by tupling, and lazy update
 %  \item These tequniques can be potentially used in other BX languages
 %  \end{itemize}
 \end{itemize}
-
