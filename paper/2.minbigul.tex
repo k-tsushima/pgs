@@ -4,13 +4,13 @@ minBiGUL, our target language in this paper, is a subset of BiGUL which is a sim
 
     $\qtab \getbxinline{bx} : s \to v, \quad \putbxinline{bx} : s * v \to v$
 
-BiGUL is well-behaved [?] since two functions $\putbxinline{bx}$ and $\getbxinline{bx}$ satisfy the round-trip laws as follows:
+BiGUL is well-behaved \cite{Pacheco:2014:MCP:2543728.2543737} since two functions $\putbxinline{bx}$ and $\getbxinline{bx}$ satisfy the round-trip laws as follows:
     
     $\qtab \putbx{bx}{s}{(\getbx{bx}{s})} = s \qquad [\textsc{GetPut}]$
     
     $\qtab \getbx{bx}{(\putbx{bx}{s}{v})} = v \qquad [\textsc{PutGet}]$
 
-The \textsc{GetPut} \cite{Pacheco:2014:MCP:2543728.2543737} law means that if there is no change to the view, there should be no change to the source. The \textsc{PutGet} \cite{Pacheco:2014:MCP:2543728.2543737} law means that we can recover the modified view by applying the forward transformation to the updated source.
+The \textsc{GetPut} law means that if there is no change to the view, there should be no change to the source. The \textsc{PutGet} law means that we can recover the modified view by applying the forward transformation to the updated source.
 
 minBiGUL inherited from BiGUL also supports transformations $put$ and $get$ which satisfy two above laws. In addition, we restrict adaptive cases of BiGUL on minBiGUL. Then $put$ and $get$ satisfy one more law, \textsc{PutPut} \cite{Foster:2007:CBT:1232420.1232424}, like the following:
 
@@ -39,7 +39,7 @@ To help make demonstration more direct, we provide the following alternatives re
 \subsection{Semantics}
 
 \begin{multicols}{2}
-    \begin{definition}
+    \begin{definition} \label{def:minbigulput}
         $\putbx{bx}{s}{v}$
 
         \noindent $\putbx{Skip \ h}{s}{v} = \\
@@ -66,7 +66,7 @@ To help make demonstration more direct, we provide the following alternatives re
             \tab \putbx{bx_1}{s}{(\putbx{bx_2}{(\getbx{bx_1}{s})}{v})}$
     \end{definition}
 \columnbreak
-    \begin{definition}
+    \begin{definition} \label{def:minbigulget}
         $\getbx{bx}{s}$
 
         \noindent $\getbx{Skip \ h}{s} = \\ 
@@ -94,7 +94,7 @@ To help make demonstration more direct, we provide the following alternatives re
     \end{definition}
 \end{multicols}
 
-We define the semantics of $put$ and $get$ as in definitions 1 and 2 respectively. Instead of using $v'$ in the $put$ direction like figures \ref{fig:eval-phead}, \ref{fig:eval-comp-phead} and \ref{fig:eval-comp-phead-2}, we just simply use notation $v$ as the updated view. The later definitions also follow this convention.
+We define the semantics of $put$ and $get$ as in Definitions~\ref{def:minbigulput} and \ref{def:minbigulget} respectively. Instead of using $v'$ in the $put$ direction like figures \ref{fig:eval-phead}, \ref{fig:eval-comp-phead} and \ref{fig:eval-comp-phead-2}, we just simply use notation $v$ as the updated view. The later definitions also follow this convention.
 
 In the above definitions, we use if-then-else-fi statements to express semantics of $\putbxinline{Case}$ and $\getbxinline{Case}$ where $\Leftarrow$ means assignments. This statement is useful to describe many functions related to $Case$ in this paper. Statement (if $E_1$ then $X_1$ else $X_2$ fi $E_2$) means if the test $E_1$ is true, the statement $X_1$ is executed and the assertion $E_2$ must be true, otherwise, i.e. $E_2$ is false, the statement $X_2$ is executed and the assertion $E_2$ must be false. If the values of $E_1$ and $E_2$ are distinct, the if-then-else-fi structure is undefined. We can write the equivalent if-then-else statement as follows:
 

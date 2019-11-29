@@ -1,5 +1,9 @@
 \section{Adding Memoization: minBiGUL$_m$} \label{sect:minbigulm}
 
+When evaluating a composition of several programs in minBiGUL (and the same holds for full BiGUL), the same $get$s have to be evaluated repeatedly because no intermediate states are kept during the evaluation. This problem was illustrated in Figure~\ref{fig:eval-comp-phead}. To avoid reevaluating $get$s, and as our first approach, we introduce memoization in the minBiGUL interpreter.
+% can save 
+To keep it simple, the intermediate states of a composition are saved in a key-value table where the key is a pair of program $bx$ and source $s$, and the value is the result of evaluating $\getbx{bx}{s}$ the first time. Then, instead of recomputing the value, the value in the table is used. The memoizing version, minBiGUL$_m$, needs only two modifications: $get_m$ and $put_m$ (Definitions~\ref{def:putm} and~\ref{def:getm}). Another function, $get_{mh}$, is used to retrieve the value of an already evaluated $get$ from the table or to compute an unevaluated $get$ by $get_m$ and store the key-value tuple in the table (Definition~\ref{def:getmh}).
+
 \begin{definition} \label{def:putm} $\text{Memo version of } put$
 
     \noindent $\putm{bx}{s}{v} = \text{match } bx \text{ with }\\
@@ -33,8 +37,6 @@
     \end{definition}
 \end{multicols}
 
-When evaluating a composition of several programs in minBiGUL (and the same holds for full BiGUL), the same $get$s have to be evaluated repeatedly because no intermediate states are kept during the evaluation. This problem was illustrated in Figure~\ref{fig:eval-comp-phead}. To avoid reevaluating $get$s, and as our first approach, we introduce memoization in the minBiGUL interpreter.
-% can save 
-To keep it simple, the intermediate states of a composition are saved in a key-value table where the key is a pair of program $bx$ and source $s$, and the value is the result of evaluating $\getbx{bx}{s}$ the first time. Then, instead of recomputing the value, the value in the table is used. The memoizing version, minBiGUL$_m$, needs only two modifications: $get_m$ and $put_m$ (Definitions~\ref{def:putm} and~\ref{def:getm}). Another function, $get_{mh}$, is used to retrieve the value of an already evaluated $get$ from the table or to compute an unevaluated $get$ by $get_m$ and store the key-value tuple in the table (Definition~\ref{def:getmh}).
+
 
 Note as a special point that not all states are saved when evaluating a program, only when a composition is evaluated. When evaluating $\putm{bx_1 \circ bx_2}{s}{v}$, an application of $get_{mh}$, not $get$ or $get_m$, appears to indicate the saving. When evaluating $\getm{bx_1 \circ bx_2}{s}$, the key ($bx,s$), $bx \equiv bx_1 \circ bx_2$, is looked up in the table and the corresponding value is used for the next steps in the evaluation. If there is no such key, the value $v$ will be calculated by using $get_{mh}$. The further key-value insertion is needed because the later computation could require to reevaluate $\getm{bx_1 \circ bx_2}{s}$ one more time.
