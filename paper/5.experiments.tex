@@ -2,7 +2,7 @@
 
 We have implemented all methods described above in the same environment as follows: macOS 10.14.6, processor Intel Core i7 (2.6 GHz), RAM 16 GB 2400 MHz DDR4, OCaml 4.07.1. The OCaml runtime system options and garbage collection parameters are set as default. There is no type system in our implementation\footnote{\url{https://mega.nz/\#!yUsgyCxA!yrJfINiwtCwhmd4McYMz2xsFa-ljkgGKmMi839ut5gA}}, so instead of constructing some dummies which are necessary for $pg$, $cpg$, $kpg$ and $xpg$, we replace them by the updated view that helps a program in the $put$ direction valid.
 
-\subsection{Test cases}
+\subsection{Test Cases}
 
 We have conducted 7 test cases shown in Table \ref{tab:test-cases}. Although the number of programs is not so much, they are not trivial and can be completely used in practice. In $s_r$ and $v_r$ are respectively updated source and view which are produced by applying $put$ and $get$ on original source $s_0$ and view $v_0$. This means: $s_r = \putbx{bx}{s_0}{v_0}$ and $v_r = \getbx{bx}{s_0}$, where $bx$ is present in the table. These $bx$ are left associative composition since we we are only interested in this kind of program in the paper. Please note that the results $s_r$ and $v_r$ do not depend on the associative style of the composition.
 
