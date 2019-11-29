@@ -81,6 +81,30 @@ let cpg_rassoc_comp_phead n =
   let (ks, kv, s, v) = cpg (rassoc_comp phead n) (fun _ -> s) id s v [] in
   (s, v)
 
+let cpg_lassoc_comp_phead_2 n =
+  let s = make_binary_list (n + 1) in
+  let v = Int 100 in
+  let (ks, kv, s, v) = cpg (lassoc_comp phead n) (fun _ -> s) id s v [] in
+  (s, v)
+
+let cpg_rassoc_comp_phead_2 n =
+  let s = make_list_for_phead (n + 1) (100000) in
+  let v = Int 100 in
+  let (ks, kv, s, v) = cpg (rassoc_comp phead n) (fun _ -> s) id s v [] in
+  (s, v)
+
+let cpg_lassoc_comp_ptail n = 
+  let s = make_consecutive_list (n + 3) in 
+  let v = make_consecutive_list (10000) in 
+  let (ks, kv, s, v) = cpg (lassoc_comp ptail n) (fun _ -> s) id s v [] in 
+  (s, v)
+
+let cpg_rassoc_comp_ptail n = 
+  let s = make_consecutive_list (n + 3) in 
+  let v = make_consecutive_list (10000) in 
+  let (ks, kv, s, v) = cpg (rassoc_comp ptail n) (fun _ -> s) id s v [] in 
+  (s, v)
+
 let cpg_lassoc_comp_phead2 n =
   let s = make_consecutive_list n in
   let v = Con(Int 100, Unit) in
@@ -130,38 +154,50 @@ let cpg_rassoc_comp_bsnoc n =
   (s, v) 
 
 (* ========================= cpg (complex data )========================= *)
-let cpg_lassoc_comp_bsnoc_nested_list n =
-  let s = make_smallest_nested_list n in
-  let v = make_smallest_nested_list n in
+let cpg_lassoc_comp_bsnoc_ldata n =
+  let s = make_list_of_binary_tree n in
+  let v = s in
   let (ks, kv, s, v) = cpg (lassoc_comp bsnoc_def n) (fun _ -> s) id s v [] in
   (s, v) 
 
-let cpg_rassoc_comp_bsnoc_nested_list n =
-  let s = make_smallest_nested_list n in
-  let v = make_smallest_nested_list n in
+let cpg_rassoc_comp_bsnoc_ldata n =
+  let s = make_list_of_binary_tree n in
+  let v = s in
   let (ks, kv, s, v) = cpg (rassoc_comp bsnoc_def n) (fun _ -> s) id s v [] in
   (s, v) 
 
-let cpg_lassoc_comp_replace_nested_list n =
-  let s = make_smallest_nested_list n in
-  let v = make_smallest_nested_list n in
+let cpg_lassoc_comp_ptail_ldata n =
+  let s = make_list_of_binary_tree (n + 1) in 
+  let v = make_list 1 10 in 
+  let (ks, kv, s, v) = cpg (lassoc_comp ptail n) (fun _ -> s) id s v [] in 
+  (s, v)
+
+let cpg_rassoc_comp_ptail_ldata n =
+  let s = make_list_of_binary_tree (n + 1) in 
+  let v = make_list 1 10 in 
+  let (ks, kv, s, v) = cpg (rassoc_comp ptail n) (fun _ -> s) id s v [] in 
+  (s, v)
+
+let cpg_lassoc_comp_replace_ldata n =
+  let s = make_list_of_binary_tree n in
+  let v = make_list_of_binary_tree n in
   let (ks, kv, s, v) = cpg (lassoc_comp Replace n) (fun _ -> s) id s v [] in
   (s, v) 
 
-let cpg_rassoc_comp_replace_nested_list n =
-  let s = make_smallest_nested_list n in
-  let v = make_smallest_nested_list n in
+let cpg_rassoc_comp_replace_ldata n =
+  let s = make_list_of_binary_tree n in
+  let v = make_list_of_binary_tree n in
   let (ks, kv, s, v) = cpg (rassoc_comp Replace n) (fun _ -> s) id s v [] in
   (s, v) 
 
-let cpg_breverse_nested_list n =
-  let s = make_consecutive_nested_list n in
-  let v = make_consecutive_nested_list n in
+let cpg_breverse_ldata n =
+  let s = make_list_of_binary_tree n in
+  let v = s in
   let (ks, kv, s, v) = cpg breverse (fun _ -> s) id s v [] in
   (s, v) 
 
-let cpg_bmapreplace_nested_list n =
-  let s = make_consecutive_nested_list n in
-  let v = make_consecutive_nested_list n in
+let cpg_bmapreplace_ldata n =
+  let s = make_list_of_binary_tree n in
+  let v = s in
   let (ks, kv, s, v) = cpg bmapreplace (fun _ -> s) id s v [] in
   (s, v)

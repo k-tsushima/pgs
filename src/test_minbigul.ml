@@ -240,56 +240,50 @@ let put_rassoc_comp_bsnoc n =
 
 (* ========================= put (complex data )========================= *)
 
-let put_lassoc_comp_bsnoc_nested_list n =
+let put_lassoc_comp_bsnoc_ldata n =
   let s = make_list_of_binary_tree n in 
   let v = s in 
   let s' = put (lassoc_comp bsnoc_def n) s v [] in 
   s'
 
-let put_rassoc_comp_bsnoc_nested_list n =
+let put_rassoc_comp_bsnoc_ldata n =
   let s = make_list_of_binary_tree n in 
   let v = s in 
   let s' = put (rassoc_comp bsnoc_def n) s v [] in 
   s'
 
-let put_lassoc_comp_ptail_nested_list n =
+let put_lassoc_comp_ptail_ldata n =
   let s = make_list_of_binary_tree (n + 1) in 
   let v = make_list 1 10 in 
   let s' = put (lassoc_comp ptail n) s v [] in 
   s'
 
-let put_rassoc_comp_ptail_nested_list n =
+let put_rassoc_comp_ptail_ldata n =
   let s = make_list_of_binary_tree (n + 1) in 
   let v = make_list 1 10 in 
   let s' = put (rassoc_comp ptail n) s v [] in 
   s'
 
-let put_lassoc_comp_replace_nested_list n =
+let put_lassoc_comp_replace_ldata n =
   let s = make_list_of_binary_tree n in 
   let v = make_list_of_binary_tree n in 
   let s' = put (lassoc_comp Replace n) s v [] in 
   s'
 
-let put_rassoc_comp_replace_nested_list n =
+let put_rassoc_comp_replace_ldata n =
   let s = make_list_of_binary_tree n in 
   let v = make_list_of_binary_tree n in 
   let s' = put (rassoc_comp Replace n) s v [] in 
   s'
 
-let put_breverse_nested_list n =
+let put_breverse_ldata n =
   let s = make_list_of_binary_tree n in
   let v = s in 
   let s' = put breverse s v [] in 
   s'
 
-let put_bmapreplace_nested_list n =
+let put_bmapreplace_ldata n =
   let s = make_list_of_binary_tree n in
   let v = s in 
   let s' = put bmapreplace s v [] in 
-  s'
-
-let put_rassoc_comp_breverse_nested_list n = 
-  let s = make_list_of_binary_tree n in 
-  let v = s in 
-  let s' = put (rassoc_comp breverse n) s v [] in 
   s'

@@ -1,10 +1,7 @@
 open Syntax
 open Utils
 
-(* let count_cpg = ref 0 *)
-
 let rec cpg bx ks kv s v env =
-  (* count_cpg := !count_cpg + 1; *)
   match bx with
   | Def(name, bx1, bx2) ->
     cpg bx2 ks kv s v ((name, bx1) :: env)
@@ -36,16 +33,16 @@ let rec cpg bx ks kv s v env =
   | Case(condsv, conds, bx1, bx2) ->
     if (condsv s v) && (conds s) then
       let (ks, kv, s', v') = cpg bx1 ks kv s v env in 
-        if (conds s') && (condsv s v') then
-            (ks, kv, s', v')
-        else
-            assert false
+      if (conds s') && (condsv s v') then
+        (ks, kv, s', v')
+      else
+        assert false
     else
       let (ks, kv, s', v') = cpg bx2 ks kv s v env in 
-        if not ((conds s') || (condsv s v')) then
-            (ks, kv, s', v')
-        else
-            assert false
+      if not ((conds s') || (condsv s v')) then
+        (ks, kv, s', v')
+      else
+        assert false
   | Compose(bx1, bx2) ->
     (* let (ks1, kv1, s1, v1) = cpg bx1 ks id s (construct_dummy s) env in *)
     let (ks1, kv1, s1, v1) = cpg bx1 ks id s v env in

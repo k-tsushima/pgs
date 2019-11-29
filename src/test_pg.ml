@@ -166,38 +166,50 @@ let pg_rassoc_comp_bsnoc n =
   (s, v)
 
 (* ========================= pg (complex data )========================= *)
-let pg_lassoc_comp_bsnoc_nested_list n =
-  let s = make_smallest_nested_list n in
-  let v = make_smallest_nested_list n in 
+let pg_lassoc_comp_bsnoc_ldata n =
+  let s = make_list_of_binary_tree n in
+  let v = s in 
   let (s, v) = pg (lassoc_comp bsnoc_def n) s v [] in 
   (s, v)
 
-let pg_rassoc_comp_bsnoc_nested_list n =
-  let s = make_smallest_nested_list n in
-  let v = make_smallest_nested_list n in 
+let pg_rassoc_comp_bsnoc_ldata n =
+  let s = make_list_of_binary_tree n in
+  let v = s in 
   let (s, v) = pg (rassoc_comp bsnoc_def n) s v [] in 
   (s, v)
 
-let pg_lassoc_comp_replace_nested_list n =
-  let s = make_smallest_nested_list n in
-  let v = make_smallest_nested_list n in 
+let pg_lassoc_comp_ptail_ldata n =
+  let s = make_list_of_binary_tree (n + 1) in 
+  let v = make_list 1 10 in 
+  let (s, v) = pg (lassoc_comp ptail n) s v [] in 
+  (s, v)
+
+let pg_rassoc_comp_ptail_ldata n =
+  let s = make_list_of_binary_tree (n + 1) in 
+  let v = make_list 1 10 in 
+  let (s, v) = pg (rassoc_comp ptail n) s v [] in 
+  (s, v)
+
+let pg_lassoc_comp_replace_ldata n =
+  let s = make_list_of_binary_tree n in
+  let v = make_list_of_binary_tree n in 
   let (s, v) = pg (lassoc_comp Replace n) s v [] in 
   (s, v)
 
-let pg_rassoc_comp_replace_nested_list n =
-  let s = make_smallest_nested_list n in
-  let v = make_smallest_nested_list n in 
+let pg_rassoc_comp_replace_ldata n =
+  let s = make_list_of_binary_tree n in
+  let v = make_list_of_binary_tree n in 
   let (s, v) = pg (rassoc_comp Replace n) s v [] in 
   (s, v)
 
-let pg_breverse_nested_list n =
-  let s = make_consecutive_nested_list n in
-  let v = make_consecutive_nested_list n in 
+let pg_breverse_ldata n =
+  let s = make_list_of_binary_tree n in
+  let v = s in 
   let (s, v) = pg breverse s v [] in 
   (s, v)
 
-let pg_bmapreplace_nested_list n =
-  let s = make_consecutive_nested_list n in
-  let v = make_consecutive_nested_list n in 
+let pg_bmapreplace_ldata n =
+  let s = make_list_of_binary_tree n in
+  let v = s in 
   let (s, v) = pg bmapreplace s v [] in 
   (s, v)

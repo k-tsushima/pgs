@@ -1,10 +1,7 @@
 open Syntax
 open Utils
 
-(* let count_kpg = ref 0  *)
-
 let rec kpg bx ks kv ks' kv' s v env = 
-  (* count_kpg := !count_kpg + 1; *)
   match bx with
   | Def(name, bx1, bx2) ->
     kpg bx2 ks kv ks' kv' s v ((name, bx1) :: env)
