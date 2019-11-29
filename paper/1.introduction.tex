@@ -28,7 +28,22 @@
 % A Survey to View Update Problem
 %As a solution for this problem, bidirectional transformation (BX) is introduced.
 The synchronization of data is a common problem. In the database community this problem is known as “the view update problem” and has been investigated for a long time~\cite{Bancilhon:1981:USR:319628.319634}. Bidirectional transformation (BX) provides a systematic approach to solving this problem.
-As an example, consider a small BX program of $phead$\footnote{The actual program is shown in the next section.}, which consists of two functions: $get$ (for getting the head of an input list) and $put$ (for relfecting the output to the head of the input). Figure \ref{fig:eval-phead} shows the behaviors of these functions when evaluating $phead$.
+Consider a small BX program of $phead$\footnote{The actual program is shown in the next section.}, which consists of two functions: $get$ (for getting the head of an input list) and $put$ (for reflecting the output to the head of the input). Figure \ref{fig:eval-phead} shows an example of the bidirectional behavior of $phead$.
+Let $[1,2]$ be the original source \texttt{s}.
+$get$ is a projection: $get$ of $phead$ picks the first element of the given original source $[1,2]$ and returns $1$ as a view $v$.
+%\texttt{get pHead [1,2] = 1}.
+%After the view \texttt{v} is obtained, the user can modify the view.
+%In this case, the user
+%modified the view
+%from $1$ to $100$.
+%From this updated view, how can the source be updated?
+%This is ``the view update problem.''
+%To solve this problem, BX provides $put$, an update function on the original source.
+%In this example,
+Supposing that the view is updated to $100$,
+$put$ of $phead$ will construct a new source $s'$ of ${[100,2]}$ from the updated view (\texttt{v'}) of $2$ and the original source (\texttt{s}) of $[1,2]$.
+%Note that the update to \texttt{s'} uses \texttt{s} and \texttt{v'} as input.
+%\texttt{put pHead [1,2] 8 = [8,2]}
 
 \begin{figure}[!t]
   \begin{minipage}{0.3\textwidth}
@@ -45,34 +60,34 @@ As an example, consider a small BX program of $phead$\footnote{The actual progra
   \end{minipage}
 \end{figure}
 
-Here, let $[1,2]$ be the original source \texttt{s}.
-$get$ is a projection: $get$ of $phead$ picks the first element of the given original source as a view.
-%\texttt{get pHead [1,2] = 1}.
-After the view \texttt{v} is obtained, the user can modify the view.
-In this case, the user
-modified the view
-from $1$ to $100$.
-From this updated view, how can the source be updated?
-This is ``the view update problem.''
-To solve this problem, BX provides $put$, an update function on the original source.
-In this example, $put$ of $phead$ constructs a new list ${[100,2]}$ from the updated view (\texttt{v'}) and the original source (\texttt{s}).
-Note that the update to \texttt{s'} uses \texttt{s} and \texttt{v'} as input.
-%\texttt{put pHead [1,2] 8 = [8,2]}
 
-The composition of BX programs is a fundamental construct to build more complex BX programs.
+
+The composition of BX programs is a fundamental construct to build more complex BX programs \cite{Bohannon06relationallenses:, Bohannon:2008:BRL:1328438.1328487}. Let $bx_1$ (defined by $get_{bx_1}$ and $put_{bx_1}$) and $bx_2$ (defined by $get_{bx_2}$ and $put_{bx_2}$) be two bidirectional programs, then their composition $bx_2 \circ bx_1$ is defined by
+\begin{align}
+get_{bx_2 \circ bx_1}~s &= get_{bx_2} (get_{bx_1}~s)\\
+put_{bx_2 \circ bx_1}~(s,v') &= put_{bx_1} (s,put_{bx_2} (get_{bx_1}~s,v'))
+\end{align}
+
+
 %In BX programs, composition of programs is essential for writing various interesting evaluations.
-Because recursions are achieved by compositions, large number of programs include compositions.
-In the BX lens papers \cite{Bohannon06relationallenses:, Bohannon:2008:BRL:1328438.1328487} compositions are also known as central part of BX programs.
-In this section we use a small BX program that contains compositions as a running example, because the programs including recursions can be complicated easily. The running examples are two versions of two composition of $phead$: ($phead \circ phead) \circ phead$ (we call lp3) and $phead \circ (phead \circ phead$) (we call rp3).
+%Because recursions are achieved by compositions, large number of programs include compositions.
+%In the BX lens papers \cite{Bohannon06relationallenses:, Bohannon:2008:BRL:1328438.1328487} compositions are also known as central part of BX programs.
+%In this section we use a small BX program that contains compositions as a running example, because the programs including recursions can be complicated easily. The running examples are two versions of two composition of $phead$: ($phead \circ phead) \circ phead$ (we call lp3) and $phead \circ (phead \circ phead$) (we call rp3).
 
 
 %For more various evaluations, we can use the composition of programs. Let us consider another example, a composition of 3 $pHead$s: $pHead \circ pHead \circ pHead$. Figure \ref{fig:eval-comp-phead} illustrates the evaluation of this program where the original source \texttt{s} is \texttt{[[[1,2],[3]],[4]]} and the updated view is \texttt{100}.
 %By repetitious evaluation of $get$s of $pHead$, we can obtain the view $v$, \texttt{1}. To obtain the final updated source \texttt{s'}, we need to evaluate $put$ three times. The first put evaluation is from \texttt{i2} and \texttt{v'} and we can obtain \texttt{i2'}.
 
-Figure \ref{fig:eval-comp-phead} illustrates the evaluation of these programs where the original source \texttt{s} is ${[[[1,2],[3]],[4]]}$ and the updated view is ${100}$.
-By repetitious evaluation of $get$s of $phead$, we can obtain the view $v$, ${1}$. To obtain the final updated source \texttt{s'}, we need to evaluate $put$ three times. The first put evaluation is from \texttt{i$_2$} and \texttt{v'} and we can obtain \texttt{i$_2$'}.
+One interesting thing is that $put_{bx_2 \circ bx_1}$ needs to call $get_{bx_1}$ to compute the intermediate result, which would introduce an efficient problem when we compose many bidirectional programs. Generally, if we compose $O(n)$ bidirectional programs, we would call $get$ for $O(n^2)$ times. Figure \ref{fig:eval-comp-phead} illustrates the evaluation of our running example:
+\[
+lp3 = (phead \circ phead) \circ phead
+\]
+where the original source \texttt{s} is ${[[[1,2],[3]],[4]]}$ and the updated view is ${100}$.
+%By repetitious evaluation of $get$s of $phead$, we can obtain the view $v$, ${1}$. To obtain the final updated source \texttt{s'}, we need to evaluate $put$ three times. The first put evaluation is from \texttt{i$_2$} and \texttt{v'} and we can obtain \texttt{i$_2$'}.
 
-First, let us see the standard evaluation method of compositions: ``not keeping any intermediate states and obtaining them by evaluation when they are needed.'' In this example, ``intermediate states'' are \texttt{i$_1$} and \texttt{i$_2$}. This method is used in a BX language, BiGUL \cite{Ko:2016:BFV:2847538.2847544,Ko:2017:ABB:3177123.3158129}. The merit of this method is clear semantics and easy to implement. The disadvantage is the number of $get$s will be quadratic when the BX programs' compositions are left associative. In the evaluation of lp3, two $get$s are required for obtaining \texttt{i$_2$} and one $get$ is required for obtaining \texttt{i$_1$}. In total, three $get$s are evaluated. We explain this method in Section~\ref{sect:minbigul}.
+%First, let us see the standard evaluation method of compositions: ``not keeping any intermediate states and obtaining them by evaluation when they are needed.'' In this example, ``intermediate states'' are \texttt{i$_1$} and \texttt{i$_2$}. This method is used in a BX language, BiGUL \cite{Ko:2016:BFV:2847538.2847544,Ko:2017:ABB:3177123.3158129}. The merit of this method is clear semantics and easy to implement. The disadvantage is the number of $get$s will be quadratic when the BX programs' compositions are left associative. In the evaluation of lp3, two $get$s are required for obtaining \texttt{i$_2$} and one $get$ is required for obtaining \texttt{i$_1$}. In total, three $get$s are evaluated. We explain this method in Section~\ref{sect:minbigul}.
+
+\textcolor{red}{I am going to revise the rest of the introduction from here.}
 
 \textcolor{red}{If the BX programs are simple like the running examples, we can transform left associative compositions to right associative. However, this is not always possible. For example, let us consider a BX 'reverse' program, $breverse$. $breverse$ is constructed by application of $bfoldr$ (the actual program is shown in the last part of Section~\ref{sect:minbigul}) and $bsnoc$.
 A part of the definition of $bfoldr$, we have $(\product{Replace}{(bfoldr \ bx)}) \circ bx$. In this program, recursion occurs on the left-hand side of composition. Because of priority, it is impossible to transform this program to right associative compositions. At the same time, we can not apply program fusion \cite{Wadler:1988:DTP:80099.80104} to this program because actual program is dynamically produced by recursions depending on the length of the input list. Therefore, it is important to have a fast evaluation method for left associative compositions.}
