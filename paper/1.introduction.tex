@@ -63,7 +63,7 @@ The composition of BX programs is a fundamental construct to build more complex 
 %In BX programs, composition of programs is essential for writing various interesting evaluations.
 Because recursions are achieved by compositions, large number of programs include compositions.
 In the BX lens papers \cite{} compositions are also known as central part of BX programs.
-In this section we use a small BX program that contains compositions as a running example, because the programs including recursions can be complicated easily. The running examples are two versions of three composition of $phead$: ($phead \circ phead) \circ phead$ (we call lp3) and $phead \circ (phead \circ phead$) (we call rp3).
+In this section we use a small BX program that contains compositions as a running example, because the programs including recursions can be complicated easily. The running examples are two versions of two composition of $phead$: ($phead \circ phead) \circ phead$ (we call lp3) and $phead \circ (phead \circ phead$) (we call rp3).
 
 
 %For more various evaluations, we can use the composition of programs. Let us consider another example, a composition of 3 $pHead$s: $pHead \circ pHead \circ pHead$. Figure \ref{fig:eval-comp-phead} illustrates the evaluation of this program where the original source \texttt{s} is \texttt{[[[1,2],[3]],[4]]} and the updated view is \texttt{100}.
@@ -83,7 +83,9 @@ If the programs are simple like these running examples, we can transform left as
 %breverse = RearrS \ f_1 \ f_2 \ bx_s \ \text{where: } f_1 = \l%ambda s.(s.()), \, f_2 = \lambda (s.()).s,\\
 %\qtab bx_s = bfoldr bsnoc$
 
-\textcolor{red}{In this program, recursion occurs on the left-hand side of composition. Because of priority, it is impossible to tranform this program to right associative compositions. At the same time, we can not apply fusion \cite{} to this program because this program is dynamically produced depending on the length of the input list.}
+\input{breverse.tex}
+
+\noindent \textcolor{red}{In this program, recursion occurs on the left-hand side of composition. Because of priority, it is impossible to tranform this program to right associative compositions. At the same time, we can not apply fusion \cite{} to this program because this program is dynamically produced depending on the length of the input list.}
 Therefore it is important to have a fast evaluation method for left associative compositions.
 
 For achieving this, we introduce two methods that use memoization.
