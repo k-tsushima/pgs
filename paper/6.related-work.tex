@@ -1,6 +1,6 @@
 \section{Related Work}
 
-\subsubsection*{BX languages and implementations}
+\subsubsection*{BX Languages and Implementations}
 
 There are many BX languages \cite{Buchmann:2018:BFI:3362232.3362263,Ko:2016:BFV:2847538.2847544,LeblebiciAS14,Samimi-Dehkordi18,Cicchetti2011,Hinkel:2019:CPB:3318595.3318634}
 %(memo: BXtend, eMoflon, EVL+Strace, JTL, NMF. SDMLib should be added?)
@@ -10,7 +10,7 @@ In this paper we focus on BiGUL, however our methods can be applicable to other 
 %find that there is no best approach for all BX programs. It is important to choose good method depending on the BX programs and their inputs. 
 % its implementation uses ``not keeping any intermediate states and obtaining them by evaluation when they are needed'' strategy. Other BX languages might have the same problem, and our approach can be applicable.
 
-\subsubsection*{Optimization techniques}
+\subsubsection*{Optimization Techniques}
 
 Memoization \cite{} is well-known technique to reduce extra evaluation. In our case, simple application of memoization $put_m$ works well for many BX programs.
 Another way to reduce extra evaluation is fusion \cite{Wadler:1988:DTP:80099.80104}. However, fusion of BX programs are not considered well \textcolor{red}{(really?)}. Therefore we did not use this way.
