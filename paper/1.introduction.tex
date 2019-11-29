@@ -65,7 +65,7 @@ $put$ of $phead$ will construct a new source $s'$ of ${[100,2]}$ from the update
 The composition of BX programs is a fundamental construct to build more complex BX programs \cite{Bohannon06relationallenses:, Bohannon:2008:BRL:1328438.1328487}. Let $bx_1$ (defined by $get_{bx_1}$ and $put_{bx_1}$) and $bx_2$ (defined by $get_{bx_2}$ and $put_{bx_2}$) be two bidirectional programs, then their composition $bx_2 \circ bx_1$ is defined by
 \begin{align}
 get_{bx_2 \circ bx_1}~s &= get_{bx_2} (get_{bx_1}~s)\\
-put_{bx_2 \circ bx_1}~(s,v') &= put_{bx_1} (s,put_{bx_2} (get_{bx_1}~s,v'))
+put_{bx_2 \circ bx_1}~s~v' &= put_{bx_1} s~(put_{bx_2}~ get_{bx_1}~s)~v')
 \end{align}
 
 
