@@ -113,7 +113,7 @@ Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated so
 
 In general, the beginning of a continuation should be an identity function. However, to be able to use the function application to get the result of $\cpginline{bx_1 \circ bx_2}$, the accumulative function on the source $s$ needs to be initiated as a constant function $\lambda \_.s$.
 
-Suppose the beginning of continuations $ks$ and $kv$ are $ks_0$ and $id$ respectively. Let's consider $\cpg{phead_1 \circ phead_2}{ks_0}{id}{s}{v}$ where $s = [[1,2,3], [\,], [4,5]]$ and $v = 100$. After the first two assignments in the definition of $cpg$ for the composition, we have: $ks_1 = f_2 \circ (con \ (fst \circ g_1 \circ id) \ (snd \circ f_1 \circ ks_0))$ and $s_2 = [100,2,3]$ where $f_1 = \lambda (s::ss).(s,ss)$, $f_2 = \lambda (s,ss).(s::ss)$, $g_1 = \lambda v.(v,())$. Then:
+Suppose the beginning of continuations $ks$ and $kv$ are $ks_0$ and $id$ respectively. Let's consider $\cpg{phead \circ phead}{ks_0}{id}{s}{v}$ where $s = [[1,2,3], [\,], [4,5]]$ and $v = 100$. After the first two assignments in the definition of $cpg$ for the composition, we have: $ks_1 = f_2 \circ (con \ (fst \circ g_1 \circ id) \ (snd \circ f_1 \circ ks_0))$ and $s_2 = [100,2,3]$ where $f_1 = \lambda (s::ss).(s,ss)$, $f_2 = \lambda (s,ss).(s::ss)$, $g_1 = \lambda v.(v,())$. Then:
 
 $ks_1 \ s_2 = (f_2 \circ (con \ (fst \circ g_1 \circ id) \ (snd \circ f_1 \circ ks_0))) \ s_2 \\
 \tab \quad = f_2 \ (\ (fst(g_1(id(s_2))) \ , \ snd(f_1(ks_0(s_2))))\ )\\

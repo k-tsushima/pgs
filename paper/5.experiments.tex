@@ -1,6 +1,6 @@
 \section{Experiments}
 
-We have implemented all methods described above in the same environment as follows: macOS 10.14.6, processor Intel Core i7 (2.6 GHz), RAM 16 GB 2400 MHz DDR4, OCaml 4.07.1. The OCaml runtime system options and garbage collection parameters are set as default. There is no type system in our implementation, so instead of constructing some dummies which are necessary for $pg$, $cpg$, $kpg$ and $xpg$, we replace them by the updated view that helps a program in the $put$ direction valid.
+We have implemented all methods described above in the same environment as follows: macOS 10.14.6, processor Intel Core i7 (2.6 GHz), RAM 16 GB 2400 MHz DDR4, OCaml 4.07.1. The OCaml runtime system options and garbage collection parameters are set as default. There is no type system in our implementation\footnote{\url{https://mega.nz/\#!yUsgyCxA!yrJfINiwtCwhmd4McYMz2xsFa-ljkgGKmMi839ut5gA}}, so instead of constructing some dummies which are necessary for $pg$, $cpg$, $kpg$ and $xpg$, we replace them by the updated view that helps a program in the $put$ direction valid.
 
 \subsection{Test cases}
 
@@ -32,7 +32,7 @@ $\putbx{ptail}{s}{v}$ accepts a source list $s$ and a view list $v$ to produce a
 
 $\putbx{bsnoc}{s}{v}$ accepts a source $s$ and a view $v$ as two same length lists, to produce a new list by moving the last element of $v$ to its first position. $\getbx{ptail}{s}$ return another list by moving the first element of the list $s$ to its end position. The compositions of many \textit{ptail}, in the \textit{put} direction, create a permutation of the view list if the source list has a same length with the view, in the \textit{get} direction, produce a permutation of the source list.
 
-\textit{breverse} is defined in terms of \textit{bfoldr}, a putback function of \textit{foldr} which is an important higher-order function on lists. This program, in the \textit{put} direction, produces a reverse of the view list if the source list has a same length with the view, in the \textit{get} direction, produce a reverse of the source list. \textit{breverse} is more natural than the others since \textit{bfoldr} is a Case analysis whose a branch contains a composition $bx_1 \circ bx_2$ where $bx_1$ is a product of a simple function and \textit{bfoldr}. It will look like a composition of more programs at some points in the evaluation if we slow down this process. Note that $\circ$ has a higher priority than $\times$. This leads to seemingly impossible to transform \textit{breverse} as well as \textit{bfoldr} from the left associative style to the right one. 
+\textit{breverse} is defined in terms of \textit{bfoldr}, in the \textit{put} direction, produces a reverse of the view list if the source list has a same length with the view, in the \textit{get} direction, produce a reverse of the source list.
 
 \subsection{Results}
 

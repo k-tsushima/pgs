@@ -109,6 +109,18 @@ $\tab phead = RearrS \ f_1 \ f_2 \ bx_s \ \text{where: } f_1 = \lambda (s::ss).(
 
 The above program rearranges the source, a non-empty list, to a pair of its head element $s$ and its tail $ss$, and the view to a pair $(v, ())$, then we can use $v$ to replace $s$ and $()$ to keep $ss$. Intuitively, $\putbx{phead}{s_0}{v_0}$ returns a list whose head is $v_0$ and tail is the tail of $s_0$, and $\getbx{phead}{s_0}$ returns the head of the list $s_0$. For instance, $\putbx{phead}{[1,2,3]}{100} = [100,2,3]$ and $\getbx{phead}{[1,2,3]} = 1$. If we wanna update the head element of the head element of a list of lists by using the view, we can define a composition like $phead \circ phead$. For example:
 
-$\putbx{phead \circ phead}{[[1,2,3],[\,],[4,5]]}{100} = [[100,2,3],[\,],[4,5]]$
+$\tab \putbx{phead \circ phead}{[[1,2,3],[\,],[4,5]]}{100} = [[100,2,3],[\,],[4,5]]$
 
-$\getbx{phead \circ phead}{[[1,2,3],[\,],[4,5]]} = 1$
+$\tab \getbx{phead \circ phead}{[[1,2,3],[\,],[4,5]]} = 1$
+
+In the end of this section, let's see the definition of $bfoldr$ which is a putback function of an important higher-order function on lists, $foldr$:
+
+$\tab bfoldr \ bx = Case \ cond_{sv} \ cond_s \ bx_1 \ bx_2$ where:\\
+$\tabs{3} \ cond_{sv} = \lambda (s_1,s_2).\lambda v.(s_1 = [\ ]), \ cond_s = \lambda (s_1,s_2).(s_1 = [\ ])$\\
+$\tabs{3} \ bx_1 = RearrV \ g_1 \ g_2 \ bx_v$ where: \\
+    $\tabs{4} g_1 = g_2^{-1} = \lambda [v].(v,[\ ]), bx_v = (Skip \ (\lambda \_.())) \times Replace$\\
+$\tabs{3} \ bx_2 = RearrS \ f_1 \ f_2 \ bx_s$ where:\\
+    $\tabs{4} f_1 = f_2^{-1} = \lambda ((x:xs),e).(x,(xs,e))$, 
+    $bx_s = ((Replace \times bfoldr \ bx) \circ bx)$
+
+$bfoldr$ will look like a composition of many programs at some points in the evaluation if we slow down this process. Since $\circ$ has a higher priority than $\times$, it is seemingly impossible to transform $bfoldr$ from the left associative composition style to the right one. 
