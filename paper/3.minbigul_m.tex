@@ -1,6 +1,6 @@
-\section{Memorizing: minBiGUL$_m$}
+\section{Adding Memoization: minBiGUL$_m$}
 
-\begin{definition} $\text{Memo version of } put$
+\begin{definition} \label{def:putm} $\text{Memo version of } put$
 
     \noindent $\putm{bx}{s}{v} = \text{match } bx \text{ with }\\
         \tab \vert \ bx_1 \circ bx_2 \to \putm{bx_1}{s}{(\putm{bx_2}{(\getmh{bx_1}{s})}{v})} \\
@@ -8,7 +8,7 @@
 \end{definition}
 
 \begin{multicols}{2}
-    \begin{definition} $\text{Memo version of } get$
+    \begin{definition} \label{def:getm} $\text{Memo version of } get$
 
         \noindent $\getm{bx}{s} = \text{match } bx \text{ with }\\
             \tab \ \vert \ bx_1 \circ bx_2 \to\\
@@ -20,7 +20,7 @@
             \tab \ \vert \ \_ \to \text{similar to } get$
     \end{definition}
 \columnbreak
-    \begin{definition} $\text{Interface for } get_m$
+    \begin{definition} \label{def:getmh} $\text{Interface for } get_m$
 
         \noindent $\getmh{bx}{s} =\\
             \tab \text{try } (\text{Hashtbl.find} \ table_g \ (bx, s))\\
@@ -33,6 +33,8 @@
     \end{definition}
 \end{multicols}
 
-For minBiGUL or even BiGUL, when evaluating a composition of many programs, $get$s are reevaluated so many times since no intermediate state is stored during the evaluation. To avoid reevaluating $get$s, we can save intermediate states in a key-value table where the key is a pair of the program $bx$ and the source $s$, and the value is the result of $\getbx{bx}{s}$. Then, searching an evaluated $get$s on the table is used instead of recomputing it. We define a memory version, minBiGUL$_m$, including $get_m$ and $put_m$ as in definition 3 and 4 respectively. Another function introduced in definition 5, $get_{mh}$, is used to retrieve the value of an evaluated $get$ from the table or compute an unevaluated $get$ by using $get_m$ then store the key-value tuple to the table if necessary.
+When evaluating a composition of several programs in minBiGUL (and the same holds for full BiGUL), the same $get$s have to be evaluated repeatedly because no intermediate states are kept during the evaluation. This problem was illustrated in Fig.~\ref{fig:eval-comp-phead}. To avoid reevaluating $get$s, and as our first approach, we introduce memoization in the minBiGUL interpreter.
+% can save 
+To keep it simple, the intermediate states of a composition are saved in a key-value table where the key is a pair of program $bx$ and source $s$, and the value is the result of evaluating $\getbx{bx}{s}$ the first time. Then, instead of recomputing the value, the value in the table is used. The memoizing version, minBiGUL$_m$, needs only two modifications: $get_m$ and $put_m$ (Defs.~\ref{def:putm} and~\ref{def:getm}). Another function, $get_{mh}$, is used to retrieve the value of an already evaluated $get$ from the table or to compute an unevaluated $get$ by $get_m$ and store the key-value tuple in the table (Def.~\ref{def:getmh}).
 
-The special point is that not all states are saved when evaluating a program, only composition evaluations are treated. When evaluating $\putm{bx_1 \circ bx_2}{s}{v}$, an application of $get_{mh}$, not $get$ or $get_m$, appears to indicate the saving. When evaluating $\getm{bx_1 \circ bx_2}{s}$, we try to search key ($bx,s$), $bx \equiv bx_1 \circ bx_2$, on the table. The matched value can be used for next steps in the evaluation. If there is no such key, the value $v$ will be calculated by using $get_{mh}$. The further key-value insertion is needed because the later computation could require to reevaluate $\getm{bx_1 \circ bx_2}{s}$ one more time.
+Note as a special point that not all states are saved when evaluating a program, only when a composition is evaluated. When evaluating $\putm{bx_1 \circ bx_2}{s}{v}$, an application of $get_{mh}$, not $get$ or $get_m$, appears to indicate the saving. When evaluating $\getm{bx_1 \circ bx_2}{s}$, the key ($bx,s$), $bx \equiv bx_1 \circ bx_2$, is looked up in the table and the corresponding value is used for the next steps in the evaluation. If there is no such key, the value $v$ will be calculated by using $get_{mh}$. The further key-value insertion is needed because the later computation could require to reevaluate $\getm{bx_1 \circ bx_2}{s}$ one more time.
