@@ -1,5 +1,5 @@
 \section{Tupling and Lazy Updates: xpg} \label{sect:xpg}
-\subsection{Tupling: pg}
+\subsection{Tupling: pg} \label{sect:pg}
 
 Another solution for saving intermediate states is tupling. If $put$ and $get$ are evaluated simultaneously, it is potential to reduce the number of recomputed $get$s. The following function, $pg$, accepts the pair of a source and a view as the input to produce a new pair that contains the actual result of the corresponding minBiGUL program.
 
@@ -66,7 +66,7 @@ A restriction for $\pginline{Case}$ needs to be introduced here. We know that th
 
 The construction of $\pginline{bx_1 \circ bx_2}$ can be considered as the soul of the $pg$ function. The first two equalities comes from mentioned definitions and some basic transformations. The third one rewrites $v_1 \Leftarrow \getbx{bx_1}{s}$ into $(s_1, v_1) \Leftarrow \pg{bx_1}{s}{dummy}$. This is possible when we consider $\getbx{bx_1}{s}$ as the second element of $\pg{bx_1}{s}{dummy}$ where $dummy$ is a special value that makes the $put \, [\![bx_1]\!]$ valid. We can construct a $dummy$ from the source by \textsc{GetPut} law in some cases or require a valid view from programmers. Since there is no real view, these things are necessary. The last equality changes $dummy$ by an application $construct\_dummy \ s$, and also substitutes $s$ in $(s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2}$ by $s_1$ which equals to $\putbx{bx_1}{s}{(construct\_dummy \ s)}$. The replacement of $s$ and $s_1$ is possible because of the \textsc{PutPut} law. Then, $v_3$ in the result pair $(s_3,v_3)$ equals $dummy$. So we can realize that there is no loss information when computing a composition.
 
-\subsection{Lazy Update: cpg}
+\subsection{Lazy Update: cpg} 
 
 When evaluating $\pginline{bx_1 \circ bx_2}$, there are three $pg$ calls, of which twice for $\pginline{bx_1}$ and once for $\pginline{bx_2}$. If a given program is a left-associative composition, the number of $pg$ calls will be exponential. Therefore, the runtime inefficiency is inevitable. To solve that, we introduce a new function, $cpg$, accumulates changes in the source and the view. $\cpg{bx}{ks}{kv}{s}{v}$ is an extension of $\pg{bx}{s}{v}$ where $ks$ and $kv$ are continuations used to hold the modification information, and $s$ and $v$ are used to keep evaluated values. The output of this function is a 4-tuple $(ks, kv, s, v)$. To be more convenient for presenting the definition of $cpg$ as well as the other functions later, we provide some following utility functions:\\ $fst = \lambda (x_1,x_2). x_1 , \ snd = \lambda (x_1,x_2). x_2 , \ con = \lambda ks_1. \lambda ks_2. \lambda x. ((ks_1 \ x),(ks_2 \ x))$
 
@@ -119,7 +119,7 @@ In general, the beginning of a continuation should be an identity function. Howe
 % \tab \quad = f_2 \ (\ (fst(g_1(id(s_2))) \ , \ snd(f_1(ks_0(s_2))))\ )\\
 % \tab \quad = fst(g_1(id(s_2))) :: snd(f_1(ks_0(s_2))) = [100,2,3] :: snd(f_1(ks_0([100,2,3])))$
 
-% If $ks_0$ is an identity function, $ks_1 \ s_2 = [100,2,3] :: [2,3]$. This is an unexpected result when we target it to be the updated source. If $ks_0 = \lambda \_.s$ where $s = [[1,2,3], [\,], [4,5]]$, the result will be what we want to see.$ks_1 \ s_2 = [100,2,3] :: [[\,], [4,5]] = [[100,2,3], [\,], [4,5]]$. Through the above example, using the continuation $ks$ as a constant function at the beginning contributes to retain the discarded things in the source.
+% If $ks_0$ is an identity function, $ks_1 \ s_2 = [100,2,3] :: [2,3]$. This is an unexpected result when we target it to be the updated source. If $ks_0 = \lambda \_.s$ where $s = [[1,2,3], [\,], [4,5]]$, the result will be what we want to see. $ks_1 \ s_2 = [100,2,3] :: [[\,], [4,5]] = [[100,2,3], [\,], [4,5]]$. Through the above example, using the continuation $ks$ as a constant function at the beginning contributes to retain the discarded things in the source.
 
 
 \subsection{Lazy Computation: kpg}
@@ -170,7 +170,7 @@ $\kpg{bx}{ks}{kv}{ks'}{kv'}{s}{v}$
         \qtab (ks_1 \circ ks_2, kv_2, ks_1 \circ ks_2', kv_2', s_2, v_2)$
 \end{definition}
 
-Except $\kpginline{Skip}$ and $\kpginline{Case}$ where $s$ and $v$ hold actual values, functions for the computation will be kept in $ks'$ and $kv'$. When evaluating $\kpginline{bx_1 \circ bx_2}$, $ks_1'$ and $s_1$ in the result of the first assignment are still redundant but they are not evaluated. In $\kpginline{bx_1 \times bx_2}$, the evaluation of $ks'$ and $kv'$ will be done independently in two assignments using $\kpginline{bx_1}$ and $\kpginline{bx_2}$. There may be same computations in $fst \circ ks'$ and $snd \circ ks'$ as well as $fst \circ kv'$ and $snd \circ kv'$. It is possible to evaluate actual values in $s$ and $v$ before calling $\kpginline{bx_1}$ to remove the redundancy like that. One more thing, in $\kpginline{Case}$, we need to evaluate $ks' \ s'$ and $kv' \ v'$ to check the fi condition before returning the 6-tuple. Such evaluations can be done lazily to make programs run faster. We use the above small optimizations in our implementation.
+Except $\kpginline{Skip}$ and $\kpginline{Case}$ where $s$ and $v$ hold actual values, functions for the computation will be kept in $ks'$ and $kv'$. When evaluating $\kpginline{bx_1 \circ bx_2}$, $ks_1'$ and $s_1$ in the result of the first assignment are still redundant but they are not evaluated. In $\kpginline{bx_1 \times bx_2}$, the evaluation of $ks'$ and $kv'$ will be done independently in two assignments using $\kpginline{bx_1}$ and $\kpginline{bx_2}$. There may be same computations in $fst \circ ks'$ and $snd \circ ks'$ as well as $fst \circ kv'$ and $snd \circ kv'$. It is possible to evaluate actual values in $s$ and $v$ before calling $\kpginline{bx_1}$ to remove the redundancy like that. One more thing, in $\kpginline{Case}$, we need to evaluate $ks' \ s'$ and $kv' \ v'$ to check the $fi$ condition before returning the 6-tuple. Such evaluations can be done lazily to make programs run faster. We use the above small optimizations in our implementation.
 
 \subsection{Combination of pg and kpg: xpg}
 The most important thing when using $kpg$ to evaluate a composition $bx_1 \circ bx_2$ is keeping the dropped parts from the source in a function that is used to produce new source instead of using more recursive call. This is reflected in the first call $\kpginline{bx_1}$ and the last application in $\kpginline{bx_1 \circ bx_2}$. The second call $\kpginline{bx_2}$ just play a syntactic role while it requires many parameters. We can completely reduce this number to 2, including one for the source and one for the view as in a $pg$ call. This idea is realized by function $xpg$ as follows:

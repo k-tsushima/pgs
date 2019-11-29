@@ -113,8 +113,8 @@ $put$ is a complement function for $get$.
   \label{fig:eval-comp-phead-2}
 \end{figure}
 
-For obtaining complements, we use tupling of $put$ and $get$, and produce new function $pg$. Because $put$ produces new complements for $get$, we can shrink the size.
-As an example, let us consider the previous example again: $phead \circ phead \circ phead$ in figure \ref{fig:eval-comp-phead-2}. \texttt{c$_1$} and \texttt{c$_2$} are complements. \texttt{d$_1$} and \texttt{d$_2$} are valid views for \texttt{s} and \texttt{i$_1$}. The points in this figure is two. First, after evaluation of the first $pg$, we do not need to keep the original source \texttt{s}, because all its information is in \texttt{c$_1$} and \texttt{i$_1$}. Second, complements are smaller than the intermediate states in the previous figure.
+\noindent For obtaining complements, we use tupling of $put$ and $get$, and produce new function $pg$. Because $put$ produces new complements for $get$, we can shrink the size.
+As an example, let us consider the previous example again: $phead \circ phead \circ phead$ in Figure \ref{fig:eval-comp-phead-2}. \texttt{c$_1$} and \texttt{c$_2$} are complements. \texttt{d$_1$} and \texttt{d$_2$} are valid views for \texttt{s} and \texttt{i$_1$}. The points in this figure is two. First, after evaluation of the first $pg$, we do not need to keep the original source \texttt{s}, because all its information is in \texttt{c$_1$} and \texttt{i$_1$}. Second, complements are smaller than the intermediate states in the previous figure.
 %This evaluation looks better than previous two strategies: this does not require repeated evaluation and require smaller storage than the original sources.
 Actually, the simple combined $pg$ is not effective for left associative compositions, because this requires other two $put$ in the right part of the figure. To achieve efficient evaluation, we use two techniques, lazy update and lazy evaluation. We explain the second method and optimization in Section~\ref{sect:xpg}.
 
