@@ -1,21 +1,22 @@
 \section{Related Work} \label{sect:related}
 
-\subsubsection*{BX Languages and Implementations}
+%\subsubsection*{BX Languages and Implementations}
 
-There are many BX languages \cite{Buchmann:2018:BFI:3362232.3362263,Ko:2016:BFV:2847538.2847544,LeblebiciAS14,Samimi-Dehkordi18,Cicchetti2011,Hinkel:2019:CPB:3318595.3318634}
+Since the pioneer work of Lens \cite{Foster:2007:CBT:1232420.1232424}, many BX languages have been proposed \cite{Bohannon06relationallenses:, Bohannon:2008:BRL:1328438.1328487,Buchmann:2018:BFI:3362232.3362263,Ko:2016:BFV:2847538.2847544,LeblebiciAS14,Samimi-Dehkordi18,Cicchetti2011,Hinkel:2019:CPB:3318595.3318634}.
 %(memo: BXtend, eMoflon, EVL+Strace, JTL, NMF. SDMLib should be added?)
-based on several application scenarios and BX lenses works \cite{Bohannon06relationallenses:, Bohannon:2008:BRL:1328438.1328487}. The semantics and correctness of BX programs has been investigated intensively during the past years, but their efficiency and optimization are not yet fully understood. Anjorin et. al. introduces the first benchmark for BX languages and compared them \cite{Anjorin2019}. However, the improvement for practical implementation of BX languages is still missing. As a first step, we study different evaluation methods to optimize their evaluation. We can say this paper will be first attempt to improve efficiency of BX composition evaluation. In this paper we focus on a BX language BiGUL \cite{Ko:2016:BFV:2847538.2847544, Ko:2017:ABB:3177123.3158129}, we compare BiGUL's method (in Section~\ref{sect:minbigul}) and our methods (in Sections~\ref{sect:minbigulm} and \ref{sect:xpg}). From experimental results of left associative BX composition programs, we know that our memoization methods are faster than the original BiGUL's evaluation method.
-In this paper we focus on a BX language, BiGUL, however our methods can be applicable to other BX languages which have similar problems.
+%based on several application scenarios and BX lenses works \cite{}.
+Although much progress has been made on the semantics and correctness of BX programs for the past years, as far as we are aware, little work has been done on optimization of BX programs \cite{Horn:2018:IRL:3243631.3236769}. Anjorin et. al. introduces the first benchmark for BX languages and compared them \cite{Anjorin2019}, but a systematic improvement for practical implementation of BX languages is still missing. This paper shows the first attempt of improving efficiency of BX composition evaluation.
 
-%find that there is no best approach for all BX programs. It is important to choose good method depending on the BX programs and their inputs. 
+The baseline of this work is the BX language BiGUL \cite{Ko:2016:BFV:2847538.2847544, Ko:2017:ABB:3177123.3158129}, and we compare BiGUL's method (in Section~\ref{sect:minbigul}) with our methods (in Sections~\ref{sect:minbigulm} and \ref{sect:xpg}). From experimental results of left associative BX composition programs, we can see that our memoization methods are faster than the original BiGUL's evaluation method.
+While we focus on BiGUL, our methods are general and should be applicable to other BX languages.
+
+%find that there is no best approach for all BX programs. It is important to choose good method depending on the BX programs and their inputs.
 % its implementation uses ``not keeping any intermediate states and obtaining them by evaluation when they are needed'' strategy. Other BX languages might have the same problem, and our approach can be applicable.
 
-\subsubsection*{Optimization Techniques}
+%\subsubsection*{Optimization Techniques}
 
-Memoization \cite{Bellman:2003:DP:862270,MICHIE1968} is well-known technique to reduce extra evaluation. In our case, simple application of memoization $put_m$ works well for many BX programs.
-Another way to reduce extra evaluation is program fusion \cite{Wadler:1988:DTP:80099.80104}. However, we can not apply fusion to dynamically produced programs by recursion. Therefore we did not use fusion in this work.
-  Instead of that, we introduced another way that uses tupling \cite{Fokkinga90}, lazy update and lazy computation \cite{Henderson:1976:LE:800168.811543, Hudak:2007:HHL:1238844.1238856}. Tupling is often used for reducing common evaluations, but we use it for reducing the size of complements.
-  Lazy evaluation is also a well-known and widly-used optimization technique to reduce the redundant evaluation. Because we use OCaml for implementation, we need to introduce this explicitly. If we use Haskell, a lazy evaluated language, we do not need to introduce it.
+Our work is related to many known optimization methods for unidirectional programs. Memoization \cite{Bellman:2003:DP:862270,MICHIE1968} is a technique to avoid repeated redundant computation. In our case, we show that two specific memoization methods can be used for bidirectional programs.
+To deal with inefficiency due to compositions, many fusion methods have been studied \cite{Wadler:1988:DTP:80099.80104} to merge a composition of two (recursive) programs into one. However, under the context of bidirectional programs, we need to consider not only compositions of recursive programs but also compositions inside a recursive program (as we have seen in \mbox{\it bfoldr}). This paper focuses on the composition inside a recursion, where compositions are produced dynamically at runtime. We tackled the problem by using tupling \cite{Fokkinga90}, lazy update and lazy computation \cite{Henderson:1976:LE:800168.811543, Hudak:2007:HHL:1238844.1238856}.
 
 
 %In this paper, we use several well-known techniques: tupling, lazy update, and lazy computation (\textcolor{red}{also fusion?}).
