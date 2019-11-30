@@ -29,7 +29,7 @@
 %As a solution for this problem, bidirectional transformation (BX) is introduced.
 The synchronization of data is a common problem. In the database community this problem is known as “the view update problem” and has been investigated for a long time~\cite{Bancilhon:1981:USR:319628.319634}. Bidirectional transformation (BX) provides a systematic approach to solving this problem.
 Consider a small BX program of $phead$\footnote{The actual program is shown in the next section.}, which consists of two functions: $get$ (for getting the head of an input list) and $put$ (for reflecting the output to the head of the input). Figure \ref{fig:eval-phead} shows an example of the bidirectional behavior of $phead$.
-Let $[1,2]$ be the original source \texttt{s}.
+Let $[1,2]$ be the original source $s$.
 $get$ is a projection: $get$ of $phead$ picks the first element of the given original source $[1,2]$ and returns $1$ as a view $v$.
 %\texttt{get pHead [1,2] = 1}.
 %After the view \texttt{v} is obtained, the user can modify the view.
@@ -41,7 +41,7 @@ $get$ is a projection: $get$ of $phead$ picks the first element of the given ori
 %To solve this problem, BX provides $put$, an update function on the original source.
 %In this example,
 Supposing that the view is updated to $100$,
-$put$ of $phead$ will construct a new source $s'$ of ${[100,2]}$ from the updated view (\texttt{v'}) of $2$ and the original source (\texttt{s}) of $[1,2]$.
+$put$ of $phead$ will construct a new source $s'$ of ${[100,2]}$ from the updated view ($v'$) of $2$ and the original source ($s$) of $[1,2]$.
 %Note that the update to \texttt{s'} uses \texttt{s} and \texttt{v'} as input.
 %\texttt{put pHead [1,2] 8 = [8,2]}
 
@@ -62,17 +62,17 @@ $put$ of $phead$ will construct a new source $s'$ of ${[100,2]}$ from the update
 
 
 
-The composition of BX programs is a fundamental construct to build more complex BX programs \cite{Bohannon06relationallenses:, Bohannon:2008:BRL:1328438.1328487}. Let $bx_1$ (defined by $get_{bx_1}$ and $put_{bx_1}$) and $bx_2$ (defined by $get_{bx_2}$ and $put_{bx_2}$) be two bidirectional programs, then their composition $bx_2 \circ bx_1$ is defined by
+The composition of BX programs is a fundamental construct to build more complex BX programs \cite{Bohannon06relationallenses:, Bohannon:2008:BRL:1328438.1328487}. Let $bx_1$ (defined by $get_{bx_1}$ and $put_{bx_1}$) and $bx_2$ (defined by $get_{bx_2}$ and $put_{bx_2}$) be two bidirectional programs, then their composition $bx_1 \circ bx_2$ is defined by
 \begin{align}
-get_{bx_2 \circ bx_1}~s &= get_{bx_2} (get_{bx_1}~s)\\
-put_{bx_2 \circ bx_1}~s~v' &= put_{bx_1} s~(put_{bx_2}~ get_{bx_1}~s)~v')
+get_{bx_1 \circ bx_2}~s &= get_{bx_2} (get_{bx_1}~s)\\
+put_{bx_1 \circ bx_2}~s~v' &= put_{bx_1} s~(put_{bx_2}~ (get_{bx_1}~s)~v')
 \end{align}
-One feature of this composition is that $put_{bx_2 \circ bx_1}$ needs to call $get_{bx_1}$ to compute the intermediate result for $put_{bx_2}$ to use, which would introduce an efficient problem if we compute $put$ for composition of many bidirectional programs. Generally, for a composition of $O(n)$ bidirectional programs, we eed to call $get$ for $O(n^2)$ times. To be concrete, consider the evaluation of the following composition (which will be used as our running example in this paper):
+One feature of this composition is that $put_{bx_1 \circ bx_2}$ needs to call $get_{bx_1}$ to compute the intermediate result for $put_{bx_2}$ to use, which would introduce an efficient problem if we compute $put$ for composition of many bidirectional programs. Generally, for a composition of $O(n)$ bidirectional programs, we need to call $get$ for $O(n^2)$ times. To be concrete, consider the evaluation of the following composition (which will be used as our running example in this paper):
 \[
 lp3 = (phead \circ phead) \circ phead
 \]
-which is illustrated by Figure \ref{fig:eval-comp-phead} with the original source \texttt{s} being ${[[[1,2],[3]],[4]]}$ and the updated view ${100}$.
-To obtain the final updated source \texttt{s'}, $put$ for $lp3$ needs to evaluate $put$ of $phead$ three times. The first is from \texttt{i2} and \texttt{v'} to obtain \texttt{i2'}, which needs to call $get$ twice to compute $i2$; the second is from \texttt{i1} and \texttt{i2'} to obtain \texttt{i1'}, which needs to call $get$ once, and the last is from \texttt{s} and \texttt{i1'} to obtain \texttt{s'}, which is just a direct $put$ computation.
+which is illustrated by Figure \ref{fig:eval-comp-phead} with the original source $s$ being ${[[[1,2],[3]],[4]]}$ and the updated view ${100}$.
+To obtain the final updated source $s'$, $put$ for $lp3$ needs to evaluate $put$ of $phead$ three times. The first is from $i_2$ and $v'$ to obtain $i'_2$, which needs to call $get$ twice to compute $i_2$; the second is from $i_1$ and $i'_2$ to obtain $i'_1$, which needs to call $get$ once, and the last is from $s$ and $i'_1$ to obtain $s'$, which is just a direct $put$ computation.
 
 %In BX programs, composition of programs is essential for writing various interesting evaluations.
 %Because recursions are achieved by compositions, large number of programs include compositions.
@@ -93,7 +93,7 @@ One direct solution to avoid this repeated computation of $get$ is to compute th
 rp3 = phead \circ (phead \circ phead)
 \]
 then the $put$ for $rp3$ only needs to compute $get$ of $phead$ twice, one time less than that for $lp3$.
- However, this transformation is not always easy to do. For instance, let us consider $breverse$, a bidirectional version of the traditional 'reverse' program for reversing a list. It is defined using $\mbox{\it bfoldr}$, a bidrecrtional version of the traditional $\mbox{\it foldr}$, whose definition  is shown in the last part of Section~\ref{sect:minbigul}). Informally, $\mbox{\it bfoldr}$ is a recursive bidirectional program defined in a way like
+ However, this transformation is not always easy to do. For instance, let us consider $breverse$, a bidirectional version of the traditional 'reverse' program for reversing a list. It is defined using $\mbox{\it bfoldr}$, a bidrecrtional version of the traditional $\mbox{\it foldr}$, whose definition  is shown in the last part of Section~\ref{sect:minbigul}. Informally, $\mbox{\it bfoldr}$ is a recursive bidirectional program defined in a way like
  \[
  \mbox{\it bfoldr}~bx~\cdots = \cdots  (\mbox{\it bfoldr}~\cdots) \circ bx \cdots
  \]
@@ -112,9 +112,9 @@ where the composition is inherently left associative, and the number of composit
 
 In this paper, we made the first attempt for seriously considering efficiency of evaluation of BX compositions, and
 solve the problem by introducing two methods based on memoization to gain fast evaluation for (left associative) BX compositions.
-The first method uses memoization simply: ``keeping all intermediate states and using them when they are needed.'' This can avoid repeated computation of  $get$s, therefore it improves the runtime of many BX programs. However, this simple memoization needs to keep and search values in a table, which may introduce big cost for large inputs. We will explain this method in Section~\ref{sect:minbigulm}.
+The first method uses memoization simply: ``keeping all intermediate states and using them when they are needed''. This can avoid repeated computation of  $get$s, therefore it improves the runtime of many BX programs. However, this simple memoization needs to keep and search values in a table, which may introduce big cost for large inputs. We will explain this method in Section~\ref{sect:minbigulm}.
 
-To treat large inputs, we propose the second method based on memoization: ``keeping complements in a closure and using them when they are needed.'' Complements are smaller program fragments than the original intermediate states.
+To treat large inputs, we propose the second method based on memoization: ``keeping complements in a closure and using them when they are needed''. Complements are smaller program fragments than the original intermediate states.
 %Therefore this strategy solves the previous two problems.
 %Readers might already know that it is a hard problem to obtain complements in general. In our work, thanks to the following finding, it is not hard:
 %
@@ -125,7 +125,7 @@ To treat large inputs, we propose the second method based on memoization: ``keep
 %\vspace{2mm}
 %
 For obtaining complements, we tuple $put$ and $get$, and produce a new function $pg$. Because $put$ produces new complements for $get$, we can shrink the size.
-As an example, let us consider the previous example again: $phead \circ phead \circ phead$ in Figure \ref{fig:eval-comp-phead-2}. \texttt{c$_1$} and \texttt{c$_2$} are complements. \texttt{d$_1$} and \texttt{d$_2$} are valid views for \texttt{s} and \texttt{i$_1$}. Here, two points are worth noting. First, after evaluation of the first $pg$, we do not need to keep the original source \texttt{s}, because all its information is in \texttt{c$_1$} and \texttt{i$_1$}. Second, complements are smaller than the intermediate states in the previous figure.
+As an example, let us consider the previous example again: $phead \circ phead \circ phead$ in Figure \ref{fig:eval-comp-phead-2}. $c_1$ and $c_2$ are complements. $d_1$ and $d_2$ are valid views for $s$ and $i_1$. Here, two points are worth noting. First, after evaluation of the first $pg$, we do not need to keep the original source $s$, because all its information is in $c_1$ and $i_1$. Second, complements are smaller than the intermediate states in the previous figure.
 %This evaluation looks better than previous two strategies: this does not require repeated evaluation and require smaller storage than the original sources.
 Actually, the simple combined $pg$ is not effective for left associative compositions, because this requires other two $put$ in the right part of the figure. To achieve efficient evaluation, we use two techniques, lazy update and lazy evaluation. We explain the second method and optimization in Section~\ref{sect:xpg}.
 
