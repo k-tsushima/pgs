@@ -67,7 +67,12 @@ The composition of BX programs is a fundamental construct to build more complex 
 get_{bx_2 \circ bx_1}~s &= get_{bx_2} (get_{bx_1}~s)\\
 put_{bx_2 \circ bx_1}~s~v' &= put_{bx_1} s~(put_{bx_2}~ get_{bx_1}~s)~v')
 \end{align}
-
+One feature of this composition is that $put_{bx_2 \circ bx_1}$ needs to call $get_{bx_1}$ to compute the intermediate result for $put_{bx_2}$ to use, which would introduce an efficient problem if we compute $put$ for composition of many bidirectional programs. Generally, for a composition of $O(n)$ bidirectional programs, we eed to call $get$ for $O(n^2)$ times. To be concrete, consider the evaluation of the following composition (which will be used as our running example in this paper):
+\[
+lp3 = (phead \circ phead) \circ phead
+\]
+which is illustrated by Figure \ref{fig:eval-comp-phead} with the original source \texttt{s} being ${[[[1,2],[3]],[4]]}$ and the updated view ${100}$.
+To obtain the final updated source \texttt{s'}, $put$ for $lp3$ needs to evaluate $put$ of $phead$ three times. The first is from \texttt{i2} and \texttt{v'} to obtain \texttt{i2'}, which needs to call $get$ twice to compute $i2$; the second is from \texttt{i1} and \texttt{i2'} to obtain \texttt{i1'}, which needs to call $get$ once, and the last is from \texttt{s} and \texttt{i1'} to obtain \texttt{s'}, which is just a direct $put$ computation.
 
 %In BX programs, composition of programs is essential for writing various interesting evaluations.
 %Because recursions are achieved by compositions, large number of programs include compositions.
@@ -78,33 +83,24 @@ put_{bx_2 \circ bx_1}~s~v' &= put_{bx_1} s~(put_{bx_2}~ get_{bx_1}~s)~v')
 %For more various evaluations, we can use the composition of programs. Let us consider another example, a composition of 3 $pHead$s: $pHead \circ pHead \circ pHead$. Figure \ref{fig:eval-comp-phead} illustrates the evaluation of this program where the original source \texttt{s} is \texttt{[[[1,2],[3]],[4]]} and the updated view is \texttt{100}.
 %By repetitious evaluation of $get$s of $pHead$, we can obtain the view $v$, \texttt{1}. To obtain the final updated source \texttt{s'}, we need to evaluate $put$ three times. The first put evaluation is from \texttt{i2} and \texttt{v'} and we can obtain \texttt{i2'}.
 
-One interesting thing is that $put_{bx_2 \circ bx_1}$ needs to call $get_{bx_1}$ to compute the intermediate result, which would introduce an efficient problem when we compose many bidirectional programs. Generally, if we compose $O(n)$ bidirectional programs, we would call $get$ for $O(n^2)$ times. Figure \ref{fig:eval-comp-phead} illustrates the evaluation of our running example:
-\[
-lp3 = (phead \circ phead) \circ phead
-\]
-where the original source \texttt{s} is ${[[[1,2],[3]],[4]]}$ and the updated view is ${100}$.
+
 %By repetitious evaluation of $get$s of $phead$, we can obtain the view $v$, ${1}$. To obtain the final updated source \texttt{s'}, we need to evaluate $put$ three times. The first put evaluation is from \texttt{i$_2$} and \texttt{v'} and we can obtain \texttt{i$_2$'}.
 
 %First, let us see the standard evaluation method of compositions: ``not keeping any intermediate states and obtaining them by evaluation when they are needed.'' In this example, ``intermediate states'' are \texttt{i$_1$} and \texttt{i$_2$}. This method is used in a BX language, BiGUL \cite{Ko:2016:BFV:2847538.2847544,Ko:2017:ABB:3177123.3158129}. The merit of this method is clear semantics and easy to implement. The disadvantage is the number of $get$s will be quadratic when the BX programs' compositions are left associative. In the evaluation of lp3, two $get$s are required for obtaining \texttt{i$_2$} and one $get$ is required for obtaining \texttt{i$_1$}. In total, three $get$s are evaluated. We explain this method in Section~\ref{sect:minbigul}.
 
-\textcolor{red}{I am going to revise the rest of the introduction from here.}
+One direct solution to avoid this repeated computation of $get$ is to compute the composition in a right associative manner. For instance, if we transform  $lp3$ to $rp3$:
+\[
+rp3 = phead \circ (phead \circ phead)
+\]
+then the $put$ for $rp3$ only needs to compute $get$ of $phead$ twice, one time less than that for $lp3$.
+ However, this transformation is not always easy to do. For instance, let us consider $breverse$, a bidirectional version of the traditional 'reverse' program for reversing a list. It is defined using $\mbox{\it bfoldr}$, a bidrecrtional version of the traditional $\mbox{\it foldr}$, whose definition  is shown in the last part of Section~\ref{sect:minbigul}). Informally, $\mbox{\it bfoldr}$ is a recursive bidirectional program defined in a way like
+ \[
+ \mbox{\it bfoldr}~bx~\cdots = \cdots  (\mbox{\it bfoldr}~\cdots) \circ bx \cdots
+ \]
+where the composition is inherently left associative, and the number of composition is dynamically determined by the length of the source list. This make it hard to do the above transformation statically.
 
-\textcolor{red}{If the BX programs are simple like the running examples, we can transform left associative compositions to right associative. However, this is not always possible. For example, let us consider a BX 'reverse' program, $breverse$. $breverse$ is constructed by application of $bfoldr$ (the actual program is shown in the last part of Section~\ref{sect:minbigul}) and $bsnoc$.
-A part of the definition of $bfoldr$, we have $(\product{Replace}{(bfoldr \ bx)}) \circ bx$. In this program, recursion occurs on the left-hand side of composition. Because of priority, it is impossible to transform this program to right associative compositions. At the same time, we can not apply program fusion \cite{Wadler:1988:DTP:80099.80104} to this program because actual program is dynamically produced by recursions depending on the length of the input list. Therefore, it is important to have a fast evaluation method for left associative compositions.}
 
-
-For fast evaluation for left associative compositions, we introduce two methods that use memoization.
-The first method uses memoization simply: ``keeping all intermediate states and using them when they are needed.'' There is no quadratic $get$s in this method, therefore this method improves the runtime of many BX programs. However, a disadvantage of this is the familiar tradeoff for keeping and searching values in a table. Especially, when we use large inputs, the evaluation time will be long. We explain this method in Section~\ref{sect:minbigulm}.
-
-To treat large inputs, we introduce the second method that uses memoization: ``keeping complements in a closure and using them when they are needed.'' Complements are smaller program fragments than the original intermediate states.
-%Therefore this strategy solves the previous two problems.
-Readers might already know that it is a hard problem to obtain complements in general. In our work, thanks to the following finding, it is not hard:
-
-\vspace{2mm}
-In very-well behaved \cite{Foster:2007:CBT:1232420.1232424} BX,% programs,
-$put$ is a complement function for $get$.
-%, $get$ can be a complement function for $put$.
-\vspace{2mm}
+%A part of the definition of $\mbox{\it bfoldr}$, we have $(\product{Replace}{(\mbox{\it bfoldr} \ bx)}) \circ bx$. In this program, recursion occurs on the left-hand side of composition. Because of priority, it is impossible to transform this program to right associative compositions. At the same time, we can not apply program fusion \cite{Wadler:1988:DTP:80099.80104} to this program because actual program is dynamically produced by recursions depending on the length of the input list. Therefore, it is important to have a fast evaluation method for left associative compositions.
 
 \begin{figure}[!t]
   \centering
@@ -113,21 +109,37 @@ $put$ is a complement function for $get$.
   \label{fig:eval-comp-phead-2}
 \end{figure}
 
-\noindent For obtaining complements, we use tupling of $put$ and $get$, and produce new function $pg$. Because $put$ produces new complements for $get$, we can shrink the size.
-As an example, let us consider the previous example again: $phead \circ phead \circ phead$ in Figure \ref{fig:eval-comp-phead-2}. \texttt{c$_1$} and \texttt{c$_2$} are complements. \texttt{d$_1$} and \texttt{d$_2$} are valid views for \texttt{s} and \texttt{i$_1$}. The points in this figure is two. First, after evaluation of the first $pg$, we do not need to keep the original source \texttt{s}, because all its information is in \texttt{c$_1$} and \texttt{i$_1$}. Second, complements are smaller than the intermediate states in the previous figure.
+
+In this paper, we made the first attempt for seriously considering efficiency of evaluation of BX compositions, and
+solve the problem by introducing two methods based on memoization to gain fast evaluation for (left associative) BX compositions.
+The first method uses memoization simply: ``keeping all intermediate states and using them when they are needed.'' This can avoid repeated computation of  $get$s, therefore it improves the runtime of many BX programs. However, this simple memoization needs to keep and search values in a table, which may introduce big cost for large inputs. We will explain this method in Section~\ref{sect:minbigulm}.
+
+To treat large inputs, we propose the second method based on memoization: ``keeping complements in a closure and using them when they are needed.'' Complements are smaller program fragments than the original intermediate states.
+%Therefore this strategy solves the previous two problems.
+%Readers might already know that it is a hard problem to obtain complements in general. In our work, thanks to the following finding, it is not hard:
+%
+%\vspace{2mm}
+%In very-well behaved \cite{Foster:2007:CBT:1232420.1232424} BX,% programs,
+%$put$ is a complement function for $get$.
+%, $get$ can be a complement function for $put$.
+%\vspace{2mm}
+%
+For obtaining complements, we tuple $put$ and $get$, and produce a new function $pg$. Because $put$ produces new complements for $get$, we can shrink the size.
+As an example, let us consider the previous example again: $phead \circ phead \circ phead$ in Figure \ref{fig:eval-comp-phead-2}. \texttt{c$_1$} and \texttt{c$_2$} are complements. \texttt{d$_1$} and \texttt{d$_2$} are valid views for \texttt{s} and \texttt{i$_1$}. Here, two points are worth noting. First, after evaluation of the first $pg$, we do not need to keep the original source \texttt{s}, because all its information is in \texttt{c$_1$} and \texttt{i$_1$}. Second, complements are smaller than the intermediate states in the previous figure.
 %This evaluation looks better than previous two strategies: this does not require repeated evaluation and require smaller storage than the original sources.
 Actually, the simple combined $pg$ is not effective for left associative compositions, because this requires other two $put$ in the right part of the figure. To achieve efficient evaluation, we use two techniques, lazy update and lazy evaluation. We explain the second method and optimization in Section~\ref{sect:xpg}.
 
-In Section~\ref{sect:experiments}, we show experimental results of the approaches. We discuss about related work in Section~\ref{sect:related}, and conclude in Section~\ref{sect:conclusion}.
+Both methods were fully implemented for minBiGUL, a core bidirectional language. The experimental results show that our methods are much faster than the original evaluation strategy.
+Iwe give detailed experimental results in Section~\ref{sect:experiments}, discuss related work in Section~\ref{sect:related}, and conclude in Section~\ref{sect:conclusion}.
 
 
-The contributions of this paper are the following.
+%The contributions of this paper are the following.
 
-\begin{itemize}
-\item This is the first attempt for seriously considering efficiency of evaluation of BX compositions. Our methods are better than or similar to the results by the original method in BiGUL for all test cases.
-\item We show that memoization is effective for achieving evaluation efficiency in BX languages.
-\item In BX, as far as authors know optimization by $get$ and $put$ more tight is the first attempt.
-\item Although we focus on a BX language BiGUL in this paper, these techniques can be potentially used in other BX languages.
+%\begin{itemize}
+%\item This is the first attempt for seriously considering efficiency of evaluation of BX compositions. Our methods are better than or similar to the results by the original method in BiGUL for all test cases.
+%\item We show that memoization is effective for achieving evaluation efficiency in BX languages.
+%\item In BX, as far as authors know optimization by $get$ and $put$ more tight is the first attempt.
+%\item Although we focus on a BX language BiGUL in this paper, these techniques can be potentially used in other BX languages.
   % \begin{itemize}
     % Although the first strategy is implemented in BiGUL, the second and third strategies are introduced by this paper.
 %  \item Thanks to introduction of the strategies, it is possible to compare the evaluation strategies.
@@ -139,4 +151,4 @@ The contributions of this paper are the following.
 % \item Optimization tequniques by tupling, and lazy update
 %  \item These tequniques can be potentially used in other BX languages
 %  \end{itemize}
-\end{itemize}
+%\end{itemize}
