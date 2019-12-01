@@ -1,10 +1,20 @@
 \section{Experiments} \label{sect:experiments}
 
-We have implemented all methods described above in the same environment as follows: macOS 10.14.6, processor Intel Core i7 (2.6 GHz), RAM 16 GB 2400 MHz DDR4, OCaml 4.07.1. The OCaml runtime system options and garbage collection parameters are set as default. There is no type system in our implementation\footnote{\url{https://mega.nz/\#!yUsgyCxA!yrJfINiwtCwhmd4McYMz2xsFa-ljkgGKmMi839ut5gA}}, so instead of constructing some dummies which are necessary for $pg$, $cpg$, $kpg$ and $xpg$, we replace them by the updated view that helps a program in the $put$ direction valid.
+We have implemented and tested all methods% 
+%
+\footnote{All experiments on macOS 10.14.6, processor Intel Core i7 (2.6~GHz), RAM 16~GB 2400~MHz DDR4, OCaml 4.07.1. The OCaml runtime system options and garbage collection parameters are set as default. No type system in our implementation.}$^,$%HACK!
+%
+\footnote{Anonymous \url{https://mega.nz/\#!yUsgyCxA!yrJfINiwtCwhmd4McYMz2xsFa-ljkgGKmMi839ut5gA}}
+%
+described in the previous sections.
+Instead of constructing some dummies, which are necessary for $pg$, $cpg$, $kpg$ and $xpg$, we replace them by the updated view that helps a program in the $put$ direction valid.
 
 \subsection{Test Cases}
 
-We have conducted 7 test cases shown in Table~\ref{tab:test-cases}. Although the number of programs is not so much, they are not trivial and can be completely used in practice. In $s_r$ and $v_r$ are respectively updated source and view which are produced by applying $put$ and $get$ on original source $s_0$ and view $v_0$. This means: $s_r = \putbx{bx}{s_0}{v_0}$ and $v_r = \getbx{bx}{s_0}$, where $bx$ is present in the table. These $bx$ are left associative composition since we we are only interested in this kind of program in the paper. Please note that the results $s_r$ and $v_r$ do not depend on the associative style of the composition.
+We have conducted 7 test cases shown in Table~\ref{tab:test-cases}. Although the number of cases is small, 
+% they are not trivial and can be completely used in practice. 
+they represent non-trivial cases of practical significance.
+In $s_r$ and $v_r$ are respectively updated source and view which are produced by applying $put$ and $get$ on original source $s_0$ and view $v_0$. This means: $s_r = \putbx{bx}{s_0}{v_0}$ and $v_r = \getbx{bx}{s_0}$, where $bx$ is present in the table. These $bx$ are left associative compositions since we we are only interested in this kind of program in the paper. Please note that the results $s_r$ and $v_r$ do not depend on the associative style of the composition.
 
 \begin{table}[hbt!]
     \centering
@@ -24,7 +34,18 @@ We have conducted 7 test cases shown in Table~\ref{tab:test-cases}. Although the
     \end{tabular*}
 \end{table}
 
-The first 5 cases merely use $n$ $\circ$ operators to make straight-line compositions from $n + 1$ similar \textit{pure} programs. We use the term \textit{pure} here to refer non-recursion compositions. The prefix \textit{lcomp} means that the associate precedence of $\circ$ in a straight-line composition is left. The suffix \textit{ldata} indicates that the input size is large. The symbol $L$ used in \textit{ldata} test cases can be expressed as a complex list as follows: $L = [T,\ldots,T] \ (n \ T\text{s}), \ T = [A,\ldots,A] \ (10 \ A\text{s}), \ A = [1,\ldots,5]$. These structures are only intended to generate data enough large for observing experimental results. 
+% The first 5 cases merely use $n$ $\circ$ operators to make straight-line compositions from the same $n + 1$ \textit{pure} programs. 
+The first five test cases
+% (no.~1--5) 
+are straight-line compositions of the same $n + 1$ non-recursive programs. We refer to them as `pure' compositions.
+% We use the term \textit{pure} here to refer non-recursion compositions. 
+The prefix \textit{lcomp} in a test name indicates that the compositions are left-associative.
+% that the associate precedence of $\circ$ in a straight-line composition is left.
+The suffix \textit{ldata} indicates that the input size is large. The symbol $L$ in the input column of the \textit{ldata} test cases can be expressed as a complex list as follows: $L = [T,\ldots,T] \ (n \ T\text{s}), \ T = [A,\ldots,A] \ (10 \ A\text{s}), \ A = [1,\ldots,5]$. These structures are only intended to generate test data that is large enough for 
+% observing 
+measuring
+% experimental 
+results. 
 
 We introduced the composition $phead \circ phead$ earlier. The compositions of many \textit{phead} do things similarly, the head of a head element inside a super nested list which expresses the source should be changed by the view. Because of the type of the source, this program is seen as a \textit{ldata} case. Next, we briefly explain the behavior of the remaining compositions in Table~\ref{tab:test-cases}.
 
