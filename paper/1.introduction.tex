@@ -97,7 +97,7 @@ then the $put$ for $rp3$ only needs to compute $get$ of $phead$ twice, one time 
  \[
  \mbox{\it bfoldr}~bx~\cdots = \cdots  (\mbox{\it bfoldr}~\cdots) \circ bx \cdots
  \]
-where the composition is inherently left associative, and the number of composition is dynamically determined by the length of the source list. This makes it hard to do the above transformation statically.
+where the composition is inherently left associative, and the number of composition is dynamically determined by the length of the source list. This makes it hard to do the above transformation statically. The same efficiency problem occurs in all BX languages.
 
 
 %A part of the definition of $\mbox{\it bfoldr}$, we have $(\product{Replace}{(\mbox{\it bfoldr} \ bx)}) \circ bx$. In this program, recursion occurs on the left-hand side of composition. Because of priority, it is impossible to transform this program to right associative compositions. At the same time, we can not apply program fusion \cite{Wadler:1988:DTP:80099.80104} to this program because actual program is dynamically produced by recursions depending on the length of the input list. Therefore, it is important to have a fast evaluation method for left associative compositions.
@@ -129,11 +129,11 @@ intermediate states.
 %\vspace{2mm}
 %
 For obtaining complements, we tuple $put$ and $get$, and produce a new function $pg$. Because $put$ produces new complements for $get$, we can shrink the size.
-Let us reconsider our example $phead \circ phead \circ phead$ in Figure \ref{fig:eval-comp-phead-2}, where $c_1$ and $c_2$ are complements and $d_1$ and $d_2$ are valid views for $s$ and~$i_1$. Here, two points are worth noting. First, after evaluating the leftmost $pg$, the original source $s$ need not be kept because its complete contents is in $c_1$ and~$i_1$. Second, the complements are smaller than the intermediate states in Figure~\ref{fig:eval-comp-phead}.
+Let us reconsider our example $phead \circ phead \circ phead$ in Figure \ref{fig:eval-comp-phead-2}, where $c_1$ and $c_2$ are complements and $d_1$ and $d_2$ are valid views for $s$ and~$i_1$. Here, two points are worth noting. First, after evaluating the leftmost $pg$, the original source $s$ need not be kept because its complete contents are in $c_1$ and~$i_1$. Second, the complements are smaller than the intermediate states in Figure~\ref{fig:eval-comp-phead}.
 %This evaluation looks better than previous two strategies: this does not require repeated evaluation and require smaller storage than the original sources.
 Actually, this simple
 % combined
-$pg$ alone is not yet effective for left associative compositions because it requires two more $put$s, which can be seen one the right side of Figure \ref{fig:eval-comp-phead-2}. To achieve an efficient evaluation, we combine two techniques, lazy update and lazy evaluation. We explain this second method and all optimizations in Section~\ref{sect:xpg}.
+$pg$ alone is not yet effective for left associative compositions because it requires two more $put$s, which can be seen on the right side of Figure \ref{fig:eval-comp-phead-2}. To achieve an efficient evaluation, we combine two techniques, lazy update and lazy evaluation. We explain this second method and all optimizations in Section~\ref{sect:xpg}.
 
 Both methods have been fully implemented for \emph{minBiGUL}, a core bidirectional language, which is a subset of the full bidirectional language \emph{BiGUL}. The experimental results show that our methods are much faster than the original evaluation strategy.
 We give detailed experimental results in Section~\ref{sect:experiments}, discuss related work in Section~\ref{sect:related}, and conclude in Section~\ref{sect:conclusion}.
