@@ -2,19 +2,25 @@
 
 minBiGUL, our target language in this paper, is a subset of BiGUL which is a simple yet powerful putback-based bidirectional language. BiGUL supports two transformations: a forward transformation $get$ producing a view from a source and a backward transformation $put$ taking a source and a modified view to produce an updated source. Intuitively, if we have a BiGUL program $bx$, these two transformations are following functions:
 
+ \smallvspace
     $\qtab \getbxinline{bx} : s \to v, \quad \putbxinline{bx} : s * v \to v$
-
+ \smallvspace
+ 
 BiGUL is well-behaved \cite{Pacheco:2014:MCP:2543728.2543737} since two functions $\putbxinline{bx}$ and $\getbxinline{bx}$ satisfy the round-trip laws as follows:
-    
+
+\smallvspace
     $\qtab \putbx{bx}{s}{(\getbx{bx}{s})} = s \qquad [\textsc{GetPut}]$
     
     $\qtab \getbx{bx}{(\putbx{bx}{s}{v})} = v \qquad [\textsc{PutGet}]$
+\smallvspace
 
 The \textsc{GetPut} law means that if there is no change to the view, there should be no change to the source. The \textsc{PutGet} law means that we can recover the modified view by applying the forward transformation to the updated source.
 
 minBiGUL inherited from BiGUL also supports transformations $put$ and $get$ which satisfy two above laws. In addition, we restrict 'adaptive case's of BiGUL on minBiGUL. Then $put$ and $get$ satisfy one more law, \textsc{PutPut} \cite{Foster:2007:CBT:1232420.1232424}, like the following:
 
-    $\qtab \putbx{bx}{(\putbx{bx}{s}{v'})}{v} = \putbx{bx}{s}{v} \qquad [\textsc{PutPut}]$
+\smallvspace
+$\qtab \putbx{bx}{(\putbx{bx}{s}{v'})}{v} = \putbx{bx}{s}{v} \qquad [\textsc{PutPut}]$
+\smallvspace
 
 The \textsc{PutPut} law means that a source update should overwrite the effect of previous source updates. Due to the satisfaction of three laws, \textsc{GetPut}, \textsc{PutGet} and \textsc{PutPut}, minBiGUL is very well-behaved \cite{Foster:2007:CBT:1232420.1232424}.
 
@@ -22,6 +28,7 @@ The \textsc{PutPut} law means that a source update should overwrite the effect o
 
 The syntax of minBiGUL is briefly written as follows:
 
+\smallvspace
     $bx := Skip \ h \
         | \ Replace \
         | \ Prod \ bx_1 \ bx_2 \
@@ -29,7 +36,8 @@ The syntax of minBiGUL is briefly written as follows:
         | \ RearrV \ g_1 \ g_2 \ bx \\
     \qtabs{2} | \ Case \ cond_{sv} \ cond_{s} \ bx_1 \ bx_2 \
         | \ Compose \ bx_1 \ bx_2$
-
+\smallvspace
+        
 A minBiGUL program may be either a skip of a function or a replacement or a product of two minBiGUL programs or a source/view rearrangement or a case combinator without adaptive cases or a composition of some minBiGUL programs. We use numbers, pairs and lists to construct the program inputs including the source and/or the view.
 
 For source/view rearrangement, BiGUL uses just one lambda expression to express how to deconstruct as well as reconstruct data. It is a kind of bijection. However, to be able to implement it in OCaml, the environment used for developing minBiGUL and solutions in the paper, we need give two functions which one is the inverse of the other. In the above syntax, $f_2 = f_1^{-1}$ and $g_2 = g_1^{-1}$.
@@ -98,30 +106,38 @@ We define the semantics of $put$ and $get$ as in Definitions~\ref{def:minbigulpu
 
 In the above definitions, we use if-then-else-fi statements to express semantics of $\putbxinline{Case}$ and $\getbxinline{Case}$ where $\Leftarrow$ means assignments. This statement is useful to describe many functions related to $Case$ in this paper. Statement (if $E_1$ then $X_1$ else $X_2$ fi $E_2$) means ``if the test $E_1$ is true, the statement $X_1$ is executed and the assertion $E_2$ must be true, otherwise, if $E_2$ is false, the statement $X_2$ is executed and the assertion $E_2$ must be false.'' If the values of $E_1$ and $E_2$ are distinct, the if-then-else-fi structure is undefined. We can write the equivalent if-then-else statement as follows:
 
+\smallvspace
 $\tab \text{if } E_1 \text{ then } X_1 \text{ else } X_2 \text{ fi } E_2; S\\
-\tabs{2} \ \equiv \text{if }E_1 = true \text{ then } \{ X_1; \text{ if } E_2 = true \text{ then } S \text{ else assert } false \}\\
-    \tabs{4} \text{else } \{ X_2; \text{ if } E_2 = false \text{ then } S \text{ else assert } false \}$
-
+\tabs{2} \ \equiv \text{if }E_1 = true \text{ then } \{ X_1; \text{ if } E_2 = true \text{ then } S \text{ else } undefined \}\\
+    \tabs{4} \text{else } \{ X_2; \text{ if } E_2 = false \text{ then } S \text{ else } undefined \}$
+\smallvspace
+    
 \noindent As an example of minBiGUL program, consider the definition of $phead$ :\\
+\smallvspace
 $\tab phead = RearrS \ f_1 \ f_2 \ bx_s \ \text{where: } f_1 = \lambda (s::ss).(s,ss), \, f_2 = \lambda (s,ss).(s::ss),\\
     \qtab bx_s = RearrV \ g_1 \ g_2 \ bx_v \ \text{where: } g_1 = \lambda v.(v,()), \, g_2 = \lambda (v,()).v,\\
         \qtabs{2} bx_v = \product{Replace}{(Skip \ (\lambda \_.())}$
-
+\smallvspace
+        
 The above program rearranges the source, a non-empty list, to a pair of its head element $s$ and its tail $ss$, and the view to a pair $(v, ())$, then we can use $v$ to replace $s$ and $()$ to keep $ss$. Intuitively, $\putbx{phead}{s_0}{v_0}$ returns a list whose head is $v_0$ and tail is the tail of $s_0$, and $\getbx{phead}{s_0}$ returns the head of the list $s_0$. For instance, $\putbx{phead}{[1,2,3]}{100} = [100,2,3]$ and $\getbx{phead}{[1,2,3]} = 1$. If we want to update the head element of the head element of a list of lists by using the view, we can define a composition like $phead \circ phead$. For example:
 
+\smallvspace
 $\tab \putbx{phead \circ phead}{[[1,2,3],[\,],[4,5]]}{100} = [[100,2,3],[\,],[4,5]]$
 
 $\tab \getbx{phead \circ phead}{[[1,2,3],[\,],[4,5]]} = 1$
+\smallvspace
 
 In the end of this section, let's see the minBiGUL definition of $bfoldr$ which is a putback function of an important higher-order function on lists, $foldr$:
 
+\smallvspace
 $\tab bfoldr \ bx = Case \ cond_{sv} \ cond_s \ bx_1 \ bx_2$ where:\\
 $\tabs{3} \ cond_{sv} = \lambda (s_1,s_2).\lambda v.(s_1 = [\ ]), \ cond_s = \lambda (s_1,s_2).(s_1 = [\ ])$\\
 $\tabs{3} \ bx_1 = RearrV \ g_1 \ g_2 \ bx_v$ where: \\
     $\tabs{4} g_1 = g_2^{-1} = \lambda [v].(v,[\ ]), bx_v = (Skip \ (\lambda \_.())) \times Replace$\\
 $\tabs{3} \ bx_2 = RearrS \ f_1 \ f_2 \ bx_s$ where:\\
     $\tabs{4} f_1 = f_2^{-1} = \lambda ((x:xs),e).(x,(xs,e))$, 
-    $bx_s = ((Replace \times bfoldr \ bx) \circ bx)$
+$bx_s = ((Replace \times bfoldr \ bx) \circ bx)$
+\smallvspace
 
 \noindent In $bfoldr$, the composition is inherently left associative, and the number of composition is dynamically determined by the length of the source list. Since $\circ$ has a higher priority than $\times$, it is seemingly impossible to transform $bfoldr$ from the left associative composition style to the right one. 
 %will look like a composition of many programs at some points in the evaluation if we slow down this process. Since $\circ$ has a higher priority than $\times$, it is seemingly impossible to transform $bfoldr$ from the left associative composition style to the right one. 
