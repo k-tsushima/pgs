@@ -133,13 +133,13 @@ Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated so
 
 \subsection{Lazy Computation: kpg}
 
-The problem for $cpg$ lies in redundant computation during evaluating. For keeping away such computations, we introduce an extension named $kpg$. While $cpg$ evaluate values eagerly, $kpg$ does the opposite. Every values are evaluated lazily in a computation of $kpg$. The input of $\kpginline{bx}$ is expanded to a 6-tuple $(ks, kv, ks', kv', s, v)$ where $ks$ and $kv$ keep the modification information, $s$ and $v$ hold evaluated values, and $ks'$ and $kv'$ are used for lazy evaluation of actual values. The output of this function is also a 6-tuple $(ks, kv, ks', kv', s, v)$.\\
+The problem for $cpg$ lies in redundant computation during evaluating. For keeping away such computations, we introduce an extension named $kpg$. While $cpg$ evaluate values eagerly, $kpg$ does the opposite. Every values are evaluated lazily in a computation of $kpg$. The input of $\kpginline{bx}$ is expanded to a 6-tuple $(ks, kv, ks', kv', s, v)$ where $ks$ and $kv$ keep the modification information same as $cpg$, $s$ and $v$ hold evaluated values, and $ks'$ and $kv'$ are used for lazy evaluation of actual values. The output of this function is also a 6-tuple $(ks, kv, ks', kv', s, v)$.\\
 Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated source and view $(s, v)$ where $s = \putbx{bx}{s_0}{v_0}$ and $v = \getbx{bx}{s_0}$ can be obtained using $kpg$ as follows:
 
     $\tab s \Leftarrow s_0; v \Leftarrow v_0; (ks, kv, ks', kv', s, v) \Leftarrow \kpg{bx}{\lambda \_.s}{id}{id}{id}{s}{v};\\
         \tab \qtab (ks' \ s; kv' \ v)$
 
-The beginning of accumulative functions $ks'$ and $kv'$ are set as identity, while $ks$ and $kv$ are initiated as the same with the corresponding ones in $cpg$.
+The beginning of accumulative functions $ks'$ and $kv'$ are set as identity function, while $ks$ and $kv$ are initiated as the same with the corresponding ones in $cpg$.
 
 \begin{definition}
 $\kpg{bx}{ks}{kv}{ks'}{kv'}{s}{v}$
@@ -179,7 +179,15 @@ $\kpg{bx}{ks}{kv}{ks'}{kv'}{s}{v}$
         \qtab (ks_1 \circ ks_2, kv_2, ks_1 \circ ks_2', kv_2', s_2, v_2)$
 \end{definition}
 
-Except $\kpginline{Skip}$ and $\kpginline{Case}$ where $s$ and $v$ hold actual values, functions for the computation will be kept in $ks'$ and $kv'$. When evaluating $\kpginline{bx_1 \circ bx_2}$, $ks_1'$ and $s_1$ in the result of the first assignment are still redundant but they are not evaluated. In $\kpginline{bx_1 \times bx_2}$, the evaluation of $ks'$ and $kv'$ will be done independently in two assignments using $\kpginline{bx_1}$ and $\kpginline{bx_2}$. There may be same computations in $fst \circ ks'$ and $snd \circ ks'$ as well as $fst \circ kv'$ and $snd \circ kv'$. It is possible to evaluate actual values in $s$ and $v$ before calling $\kpginline{bx_1}$ to remove the redundancy like that. One more thing, in $\kpginline{Case}$, we need to evaluate $ks' \ s'$ and $kv' \ v'$ to check the $fi$ condition before returning the 6-tuple. Such evaluations can be done lazily to make programs run faster. We use the above small optimizations in our implementation.
+In $kpg$, basically, functions for the updates will be kept in $ks'$ and $kv'$.
+$\kpginline{Skip}$ and $\kpginline{Case}$ are special cases, because they require the actual values for evaluation. Therefore we evaluate the values by application of $ks' s$ and $kv' v$ and update $ks'$ and $ks'$ with the identity fuctions.
+%Except $\kpginline{Skip}$ and $\kpginline{Case}$ where $s$ and $v$ hold actual values, functions for the computation will be kept in $ks'$ and $kv'$.
+When evaluating $\kpginline{bx_1 \circ bx_2}$, $ks_1'$ and $s_1$ in the result of the first assignment are still redundant but they are not evaluated.
+
+In $kpg$, we did two optimizations. First is in $\kpginline{bx_1 \times bx_2}$, the evaluation of $ks'$ and $kv'$ will be done independently in two assignments using $\kpginline{bx_1}$ and $\kpginline{bx_2}$. There may be same computations in $fst \circ ks'$ and $snd \circ ks'$ as well as $fst \circ kv'$ and $snd \circ kv'$.
+To remove duplicate evaluations, we evaluate actual values in $s$ and $v$ before calling $\kpginline{bx_1}$.
+%It is possible to evaluate actual values in $s$ and $v$ before calling $\kpginline{bx_1}$ to remove the redundancy like that. One more thing,
+Second is in $\kpginline{Case}$. We need to evaluate $ks' \ s'$ and $kv' \ v'$ to check the $fi$ condition before returning the 6-tuple. Such evaluations can be done lazily to make programs run faster. We use the above small optimizations in our implementation.
 
 \subsection{Combination of pg and kpg: xpg}
 The most important thing when using $kpg$ to evaluate a composition $bx_1 \circ bx_2$ is keeping the dropped parts from the source in a function that is used to produce new source instead of using more recursive call. This is reflected in the first call $\kpginline{bx_1}$ and the last application in $\kpginline{bx_1 \circ bx_2}$. The second call $\kpginline{bx_2}$ just play a syntactic role while it requires many parameters. We can completely reduce this number to 2, including one for the source and one for the view as in a $pg$ call. This idea is realized by function $xpg$ as follows:
