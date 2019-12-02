@@ -23,7 +23,7 @@ Another solution for saving intermediate states is tupling. If $put$ and $get$ a
     \noindent $\tabs{2} \pg{Skip \ h}{s}{v} \overset{1}{=} (\sif{h \ s = v}{s}{\text{fail}}, h \ s) \\
         \tab \qtab \overset{2}{=} \sif{h \ s = v}{(s, h \ s)}{\text{fail}} \\
         \tab \qtab \overset{3}{=} \sif{h \ s = v}{(s, v)}{\text{fail}}$
-
+        
 The first equality is simply based on the definitions of $pg$, $\putbxinline{Skip \ h}$ and $\getbxinline{Skip \ h}$. The second one tuples two results of $put$ and $get$ in the body of the if-expression. This is a trick since in some cases, the result of $pg$ may be fail although there is no fail when evaluating $\getbxinline{Skip \ h}$. The last equality is relatively oblivious.
 
     \noindent $\tabs{2} \pg{Replace}{s}{v} = (v, s)$\\
@@ -37,7 +37,7 @@ The first equality is simply based on the definitions of $pg$, $\putbxinline{Ski
             \tab \qtabs{2} (f_2 \ s, v)$\\
     $\tabs{2} \pg{\rearrv{g_1}{g_2}{bx}}{s}{v} \overset{1}{=} (\putbx{bx}{s}{(g_1 \ v)}, g_2 \ (\getbx{bx}{s})) \\
         \tab \qtab \overset{2}{=} (s, v) \Leftarrow \pg{bx}{s}{g_1 \ v}; \\
-            \tab \qtabs{2} (s, g_2 \ v)$
+        \tab \qtabs{2} (s, g_2 \ v)$
 
 Constructions of $pg$ for the replacement, the product and the source/view rearrangements are very clear when just paring $put$ and $get$ respectively, then doing basic changes.
 
@@ -63,7 +63,7 @@ A restriction for $\pginline{Case}$ needs to be introduced here. We know that th
         \tab \qtab (s_2, v_2) \Leftarrow \pg{bx_2}{v_1}{v}; \\
         \tab \qtab (s_3, v_3) \Leftarrow \pg{bx_1}{s_1}{s_2}; \\
             \qtab \tabs{2} (s_3, v_2)$
-
+            
             The construction of $\pginline{bx_1 \circ bx_2}$ can be considered as the soul of the $pg$ function. The first two equalities comes from mentioned definitions and some basic transformations. The third one rewrites $v_1 \Leftarrow \getbx{bx_1}{s}$ into $(s_1, v_1) \Leftarrow \pg{bx_1}{s}{dummy}$. This is possible when we consider $\getbx{bx_1}{s}$ as the second element of $\pg{bx_1}{s}{dummy}$ where $dummy$ is a special value that makes the $put \, [\![bx_1]\!]$ valid.
             %We can construct a $dummy$ from the source by \textsc{GetPut} law in some cases or require programmers to give a valid view.
             Since there is no real view, this $dummy$ is necessary. The last equality changes two. First one is a change from $dummy$ to an application $construct\_dummy \ s$. This shows that we need a way to construct $dummy$ from the current source, $s$. We can require programmers to give this $construct\_dummy$ function. Second is a substitution on $s$ in $(s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2}$ by $s_1$ which equals to $\putbx{bx_1}{s}{(construct\_dummy \ s)}$. The replacement of $s$ and $s_1$ is possible because of the \textsc{PutPut} law. Then, $v_3$ in the result pair $(s_3,v_3)$ equals $dummy$. So we can realize that there is no loss information when computing a composition.
@@ -112,9 +112,11 @@ Thanks to this accumulation, in $\cpginline{bx_1 \circ bx_2}$, there are only tw
 
 Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated source and view $(s, v)$ where $s = \putbx{bx}{s_0}{v_0}$ and $v = \getbx{bx}{s_0}$ can be obtained using $cpg$ as follows:
 
+\smallvspace
     $\tab s \Leftarrow s_0; v \Leftarrow v_0; (ks, kv, s, v) \Leftarrow \cpg{bx}{\lambda \_.s}{id}{s}{v};\\
         \tab \qtab (s; v)$
-
+\smallvspace
+        
         In general, the beginning of a continuation should be an identity function. However, to be able to use the function application to get the result of $\cpginline{bx_1 \circ bx_2}$, the accumulative function on the source $s$ needs to be initiated as $\lambda \_.s$. This constant function helps to retain the discarded things in the source.
 
 
@@ -136,9 +138,11 @@ Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated so
 The problem for $cpg$ lies in redundant computation during evaluating. For keeping away such computations, we introduce an extension named $kpg$. While $cpg$ evaluate values eagerly, $kpg$ does the opposite. Every values are evaluated lazily in a computation of $kpg$. The input of $\kpginline{bx}$ is expanded to a 6-tuple $(ks, kv, ks', kv', s, v)$ where $ks$ and $kv$ keep the modification information same as $cpg$, $s$ and $v$ hold evaluated values, and $ks'$ and $kv'$ are used for lazy evaluation of actual values. The output of this function is also a 6-tuple $(ks, kv, ks', kv', s, v)$.\\
 Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated source and view $(s, v)$ where $s = \putbx{bx}{s_0}{v_0}$ and $v = \getbx{bx}{s_0}$ can be obtained using $kpg$ as follows:
 
+\smallvspace
     $\tab s \Leftarrow s_0; v \Leftarrow v_0; (ks, kv, ks', kv', s, v) \Leftarrow \kpg{bx}{\lambda \_.s}{id}{id}{id}{s}{v};\\
         \tab \qtab (ks' \ s; kv' \ v)$
-
+\smallvspace
+        
 The beginning of accumulative functions $ks'$ and $kv'$ are set as identity function, while $ks$ and $kv$ are initiated as the same with the corresponding ones in $cpg$.
 
 \begin{definition}
@@ -200,7 +204,7 @@ $\xpg{bx}{s}{v}$
         \tabs{2} (ks_1,kv_1, ks_1', kv_1', s_1, v_1) \Leftarrow \kpg{bx_1}{\lambda \_.s}{id}{id}{id}{s}{construct\_dummy \ s};\\
         \tabs{2} (s_2, v_2) \Leftarrow \xpg{bx_2}{kv_1' \ v_1}{v};\\
         \tabs{3} (ks_1 \ s_2, v_2)\\
-    \tab \vert \ \_ \to \text{similar to } put$
+    \tab \vert \ \_ \to \text{similar to } pg$
 \end{definition}
 
 Similar to $pg$, $\xpginline{bx}$ accepts a pair of the source and the view $(s,v)$ to produce the new pair. The constructions of $\xpginline{bx}$ when $bx$ is not a composition are the same as the ones of $\pginline{bx}$. Note that, $xpg$ is called recursively instead of $pg$. For $\xpginline{bx_1 \circ bx_2}$, we use two function calls and a function application to calculate the result. The first call and the function application come from $kpg$, while the second call is based on $pg$.

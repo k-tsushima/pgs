@@ -59,7 +59,7 @@ $put$ of $phead$ will construct a new source $s'$ of ${[100,2]}$ from the update
     \label{fig:eval-comp-phead}
   \end{minipage}
 \end{figure}
-
+\vspace*{-5.5mm}
 
 
 The composition of BX programs is a fundamental construct to build more complex BX programs \cite{Bohannon06relationallenses:, Bohannon:2008:BRL:1328438.1328487}. Let $bx_1$ (defined by $get_{bx_1}$ and $put_{bx_1}$) and $bx_2$ (defined by $get_{bx_2}$ and $put_{bx_2}$) be two bidirectional programs, then their composition $bx_1 \circ bx_2$ is defined by
@@ -96,18 +96,20 @@ To obtain the final updated source $s'$, $put$ for $lp3$ needs to evaluate $put$
 
 %First, let us see the standard evaluation method of compositions: ``not keeping any intermediate states and obtaining them by evaluation when they are needed.'' In this example, ``intermediate states'' are \texttt{i$_1$} and \texttt{i$_2$}. This method is used in a BX language, BiGUL \cite{Ko:2016:BFV:2847538.2847544,Ko:2017:ABB:3177123.3158129}. The merit of this method is clear semantics and easy to implement. The disadvantage is the number of $get$s will be quadratic when the BX programs' compositions are left associative. In the evaluation of lp3, two $get$s are required for obtaining \texttt{i$_2$} and one $get$ is required for obtaining \texttt{i$_1$}. In total, three $get$s are evaluated. We explain this method in Section~\ref{sect:minbigul}.
 
-One direct solution to avoid this repeated computation of $get$ is to compute the composition in a right associative manner. For instance, if we transform  $lp3$ to $rp3$:
+One direct solution to avoid this repeated $get$ computation is to compute compositions in a right associative manner. For instance, if we transform $lp3$ to $rp3$:\break
 
 \minusvspacetwo
-\vspace{-4mm}
+\vspace{-3mm}
 \[
 rp3 = phead \circ (phead \circ phead)
 \]
 \minusvspacetwo
+\vspace{-0mm}
 
 \noindent then the $put$ for $rp3$ only needs to compute $get$ of $phead$ twice, one time less than that for $lp3$.
 However, this transformation is not always easy to do. For instance, let us consider $breverse$, a bidirectional version of the traditional `reverse' program for reversing a list. It is defined using $\mbox{\it bfoldr}$, a bidirectional version of the traditional $\mbox{\it foldr}$, whose definition  is shown in the last part of Section~\ref{sect:minbigul}. Informally, $\mbox{\it bfoldr}$ is a recursive bidirectional program defined in a way like
 
+\vspace{1mm}
 \minusvspacetwo
  \[
  \mbox{\it bfoldr}~bx~\cdots = \cdots  (\mbox{\it bfoldr}~\cdots) \circ bx \cdots
