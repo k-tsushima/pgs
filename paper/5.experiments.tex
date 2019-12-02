@@ -2,7 +2,7 @@
 
 We have implemented and tested all methods% 
 %
-\footnote{All experiments on macOS 10.14.6, processor Intel Core i7 (2.6~GHz), RAM 16~GB 2400~MHz DDR4, OCaml 4.07.1. The OCaml runtime system options and garbage collection parameters are set as default. In our language, there is no type system.}$^,$%HACK!
+\footnote{All experiments on macOS 10.14.6, processor Intel Core i7 (2.6~GHz), RAM 16~GB 2400~MHz DDR4, OCaml 4.07.1. The OCaml runtime system options and garbage collection parameters are set as default. In our target language, there is no type system.}$^,$%HACK!
 %
 \footnote{Anonymous \url{https://mega.nz/\#!yUsgyCxA!yrJfINiwtCwhmd4McYMz2xsFa-ljkgGKmMi839ut5gA}}
 %
@@ -35,7 +35,7 @@ In $s_r$ and $v_r$ are respectively updated source and view which are produced b
 \end{table}
 
 % The first 5 cases merely use $n$ $\circ$ operators to make straight-line compositions from the same $n + 1$ \textit{pure} programs. 
-The first five test cases
+The first 5 test cases
 % (no.~1--5) 
 are straight-line compositions of the same $n + 1$ non-recursive programs.
 % We refer to them as `pure' compositions.
@@ -50,17 +50,17 @@ results.
 
 We introduced the composition $phead \circ phead$ earlier. The compositions of many \textit{phead} do things similarly, the head of a head element inside a super nested list which expresses the source should be changed by the view. Because of the type of the source, this program is seen as a \textit{ldata} case. Next, we briefly explain the behavior of the remaining compositions in Table~\ref{tab:test-cases}.
 
-$\putbx{ptail}{s}{v}$ accepts a source list $s$ and a view list $v$ to produce a new list by replacing the tail of $s$ with $v$. $\getbx{ptail}{s}$ returns the tail of the source list $s$. The compositions of many $ptail$, in the \textit{put} direction, replace a part of the tail of the source list by the view list, in the \textit{get} direction, returns the such tail from the the source.
+$\putbx{ptail}{s}{v}$ accepts a source list $s$ and a view list $v$ to produce a new list by replacing the tail of $s$ with $v$. $\getbx{ptail}{s}$ returns the tail of the source list $s$. The compositions of many $ptail$, in the \textit{put} direction, replace a part of the tail of the source list by the view list, in the \textit{get} direction, returns the such tail from the source.
 
 $\putbx{bsnoc}{s}{v}$ accepts a source $s$ and a view $v$ as two same length lists, to produce a new list by moving the last element of $v$ to its first position. $\getbx{ptail}{s}$ returns another list by moving the first element of the list $s$ to its end position. The compositions of many \textit{ptail}, in the \textit{put} direction, create a permutation of the view list if the source list has a same length with the view, in the \textit{get} direction, produce a permutation of the source list.
 
-\textit{breverse} is defined in terms of \textit{bfoldr}, in the \textit{put} direction, produces a reverse of the view list if the source list has a same length with the view, in the \textit{get} direction, produce a reverse of the source list. Note that compositions is by the recursions of $breverse$ and 
+\textit{breverse} is defined in terms of \textit{bfoldr}, in the \textit{put} direction, produces a reverse of the view list if the source list has a same length with the view, in the \textit{get} direction, produce a reverse of the source list. Note that compositions are by the recursions of $breverse$ and 
 the number of compositions are dynamically determined by the length of the source list.
 
 \subsection{Results}
 
 \input{result.tex}
 
-Figure \ref{fig:result} illustrates the evaluation times of $put$ in minBiGUL, $put_m$ in minBiGUL$_m$ and $xpg$ for 7 test cases. We simply ignore the experimental results of $pg$, $cpg$ and $kpg$ since they are shown the slowness compared to $xpg$. For left associative compositions, $put$ works poorly because of the number of reevaluated $get$s.
+Figure \ref{fig:result} illustrates the evaluation time of $put$ in minBiGUL, $put_m$ in minBiGUL$_m$ and $xpg$ for 7 test cases. We simply ignore the experimental results of $pg$, $cpg$ and $kpg$ since they are shown the slowness compared to $xpg$. For left associative compositions, $put$ works poorly because of the number of reevaluated $get$s.
 %The figure shows $put_m$ and $xpg$ are better than $put$ in some cases.
-The left part of the figure contains tests using not-large inputs, and we see that $put_m$ is the fastest method for not-large inputs. However if the input size is large enough, in the cases of the right part of the figure, $put_m$ will be slower quickly due to times for manipulating data in the table. At that time, $xpg$ proved to be the most effective method.
+The left part of the figure contains tests using not-large inputs, and we see that $put_m$ is the fastest method for them. However if the input size is large enough, in the cases of the right part of the figure, $put_m$ will be slower quickly due to time for manipulating data in the table. At that time, $xpg$ is proved to be the most effective method.

@@ -18,7 +18,7 @@ Another solution for saving intermediate states is tupling. If $put$ and $get$ a
 %     \tab = (s, v) \quad [\textsc{GetPut}]$
 % \end{proof}
 
-\noindent Now, let's see how we construct $pg$ recursively.
+\noindent Now, let us see how we construct $pg$ recursively.
 
     \noindent $\tabs{2} \pg{Skip \ h}{s}{v} \overset{1}{=} (\sif{h \ s = v}{s}{\text{fail}}, h \ s) \\
         \tab \qtab \overset{2}{=} \sif{h \ s = v}{(s, h \ s)}{\text{fail}} \\
@@ -66,7 +66,7 @@ A restriction for $\pginline{Case}$ needs to be introduced here. We know that th
             
             The construction of $\pginline{bx_1 \circ bx_2}$ can be considered as the soul of the $pg$ function. The first two equalities comes from mentioned definitions and some basic transformations. The third one rewrites $v_1 \Leftarrow \getbx{bx_1}{s}$ into $(s_1, v_1) \Leftarrow \pg{bx_1}{s}{dummy}$. This is possible when we consider $\getbx{bx_1}{s}$ as the second element of $\pg{bx_1}{s}{dummy}$ where $dummy$ is a special value that makes the $put \, [\![bx_1]\!]$ valid.
             %We can construct a $dummy$ from the source by \textsc{GetPut} law in some cases or require programmers to give a valid view.
-            Since there is no real view, this $dummy$ is necessary. The last equality changes two. First one is a change from $dummy$ to an application $construct\_dummy \ s$. This shows that we need a way to construct $dummy$ from the current source, $s$. We can require programmers to give this $construct\_dummy$ function. Second is a substitution on $s$ in $(s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2}$ by $s_1$ which equals to $\putbx{bx_1}{s}{(construct\_dummy \ s)}$. The replacement of $s$ and $s_1$ is possible because of the \textsc{PutPut} law. Then, $v_3$ in the result pair $(s_3,v_3)$ equals $dummy$. So we can realize that there is no loss information when computing a composition.
+            Since there is no real view, this $dummy$ is necessary. The last equality changes two. First is a change from $dummy$ to an application $construct\_dummy \ s$. This shows that we need a way to construct $dummy$ from the current source, $s$. We can require programmers to give this $construct\_dummy$ function. Second is a substitution on $s$ in $(s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2}$ by $s_1$ which equals to $\putbx{bx_1}{s}{(construct\_dummy \ s)}$. The replacement of $s$ and $s_1$ is possible because of the \textsc{PutPut} law. Then, $v_3$ in the result pair $(s_3,v_3)$ equals $dummy$. So we can realize that there is no loss information when computing a composition.
 
 \subsection{Lazy Update: cpg} 
 
@@ -104,11 +104,9 @@ $\cpg{bx}{ks}{kv}{s}{v}$
             \qtab (ks_1 \circ ks_2, kv_2,  ks_1 \ s_2, v_2)$
 \end{definition}
 
-In the places where thrid and/or fourth argument ($s$ and $v$) are updated by applications, the computations are also accumulated in $ks$ and/or $kv$.
-
+In the places where third and/or fourth argument ($s$ and $v$) are updated by applications, the computations are also accumulated in $ks$ and/or $kv$.
 %Apart from the last construction, the others are quite similar to the corresponding ones of $pg$, but have some updates over the source and the view on accumulative functions $ks$ and $kv$ respectively.
-
-Thanks to this accumulation, in $\cpginline{bx_1 \circ bx_2}$, there are only two $cpg$ calls. The first call $\cpginline{bx_1}$ requires parameter $(ks, id, s, construct\_dummy \ s)$ where $s$ and $ks$ are corresponding to the source and the update over source. Since there is no real view here, we need to construct a dummy from the source. Then the continuation updating on this dummy should be initiated as an identity function. The first $cpg$ call is assigned to a 4-tuple $(ks_1, kv_1, s_1, v_1)$. In the next assignment, a 4-tuple $(ks_2, kv_2, s_2, v_2)$ is assigned by the second $cpg$ call which uses the input as $(kv_1, kv, v_1, v)$ where $kv_1$ and $v_1$ are obtained from the result of the first assignment, and $kv$ and $v$ come from the input. It is relatively similar to the second $pg$ call assignment in $\pginline{bx_1 \circ bx_2}$. After two $cpg$ calls, a function application, $ks_1 \ s_2$, is used to produce the updated source instead of calling recursively one more time like in $\pginline{bx_1 \circ bx_2}$.
+Thanks to this accumulation, in $\cpginline{bx_1 \circ bx_2}$, there are only two $cpg$ calls. The first call $\cpginline{bx_1}$ requires parameter $(ks, id, s, construct\_dummy \ s)$ where $s$ and $ks$ are corresponding to the source and the update over source. Since there is no real view here, we need to construct a dummy from the source same as $pg$. Then the continuation updating on this dummy should be initiated as an identity function. The first $cpg$ call is assigned to a 4-tuple $(ks_1, kv_1, s_1, v_1)$. In the next assignment, a 4-tuple $(ks_2, kv_2, s_2, v_2)$ is assigned by the second $cpg$ call which uses the input as $(kv_1, kv, v_1, v)$ where $kv_1$ and $v_1$ are obtained from the result of the first assignment, and $kv$ and $v$ come from the input. It is relatively similar to the second $pg$ call assignment in $\pginline{bx_1 \circ bx_2}$. After two $cpg$ calls, a function application, $ks_1 \ s_2$, is used to produce the updated source instead of calling recursively one more time like in $\pginline{bx_1 \circ bx_2}$.
 
 Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated source and view $(s, v)$ where $s = \putbx{bx}{s_0}{v_0}$ and $v = \getbx{bx}{s_0}$ can be obtained using $cpg$ as follows:
 
@@ -135,7 +133,7 @@ Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated so
 
 \subsection{Lazy Computation: kpg}
 
-The problem for $cpg$ lies in redundant computation during evaluating. For keeping away such computations, we introduce an extension named $kpg$. While $cpg$ evaluate values eagerly, $kpg$ does the opposite. Every values are evaluated lazily in a computation of $kpg$. The input of $\kpginline{bx}$ is expanded to a 6-tuple $(ks, kv, ks', kv', s, v)$ where $ks$ and $kv$ keep the modification information same as $cpg$, $s$ and $v$ hold evaluated values, and $ks'$ and $kv'$ are used for lazy evaluation of actual values. The output of this function is also a 6-tuple $(ks, kv, ks', kv', s, v)$.\\
+The problem for $cpg$ lies in redundant computation during evaluating. For keeping away such computations, we introduce an extension named $kpg$. While $cpg$ evaluates values eagerly, $kpg$ does the opposite. Every values are evaluated lazily in a computation of $kpg$. The input of $\kpginline{bx}$ is expanded to a 6-tuple $(ks, kv, ks', kv', s, v)$ where $ks$ and $kv$ keep the modification information same as $cpg$, $s$ and $v$ hold evaluated values, and $ks'$ and $kv'$ are used for lazy evaluation of actual values. The output of this function is also a 6-tuple $(ks, kv, ks', kv', s, v)$.\\
 Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated source and view $(s, v)$ where $s = \putbx{bx}{s_0}{v_0}$ and $v = \getbx{bx}{s_0}$ can be obtained using $kpg$ as follows:
 
 \smallvspace
@@ -184,11 +182,11 @@ $\kpg{bx}{ks}{kv}{ks'}{kv'}{s}{v}$
 \end{definition}
 
 In $kpg$, basically, functions for the updates will be kept in $ks'$ and $kv'$.
-$\kpginline{Skip}$ and $\kpginline{Case}$ are special cases, because they require the actual values for evaluation. Therefore we evaluate the values by application of $ks' s$ and $kv' v$ and update $ks'$ and $ks'$ with the identity fuctions.
+$\kpginline{Skip}$ and $\kpginline{Case}$ are special cases, because they require the actual values for evaluation. Therefore we evaluate the values by application of $ks' s$ and $kv' v$ and update $ks'$ and $kv'$ with the identity functions.
 %Except $\kpginline{Skip}$ and $\kpginline{Case}$ where $s$ and $v$ hold actual values, functions for the computation will be kept in $ks'$ and $kv'$.
 When evaluating $\kpginline{bx_1 \circ bx_2}$, $ks_1'$ and $s_1$ in the result of the first assignment are still redundant but they are not evaluated.
 
-In $kpg$, we did two optimizations. First is in $\kpginline{bx_1 \times bx_2}$, the evaluation of $ks'$ and $kv'$ will be done independently in two assignments using $\kpginline{bx_1}$ and $\kpginline{bx_2}$. There may be same computations in $fst \circ ks'$ and $snd \circ ks'$ as well as $fst \circ kv'$ and $snd \circ kv'$.
+Additionally we did two optimizations in $kpg$. First is in $\kpginline{bx_1 \times bx_2}$. The evaluation of $ks'$ and $kv'$ will be done independently in two assignments using $\kpginline{bx_1}$ and $\kpginline{bx_2}$. There may be same computations in $fst \circ ks'$ and $snd \circ ks'$ as well as $fst \circ kv'$ and $snd \circ kv'$.
 To remove duplicate evaluations, we evaluate actual values in $s$ and $v$ before calling $\kpginline{bx_1}$.
 %It is possible to evaluate actual values in $s$ and $v$ before calling $\kpginline{bx_1}$ to remove the redundancy like that. One more thing,
 Second is in $\kpginline{Case}$. We need to evaluate $ks' \ s'$ and $kv' \ v'$ to check the $fi$ condition before returning the 6-tuple. Such evaluations can be done lazily to make programs run faster. We use the above small optimizations in our implementation.
