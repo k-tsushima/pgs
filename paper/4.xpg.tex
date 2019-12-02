@@ -20,11 +20,11 @@ Another solution for saving intermediate states is tupling. If $put$ and $get$ a
 
 \noindent Now, let us see how we construct $pg$ recursively.
 
-    \noindent $\tabs{2} \pg{Skip \ h}{s}{v} \overset{1}{=} (\sif{h \ s = v}{s}{\text{fail}}, h \ s) \\
-        \tab \qtab \overset{2}{=} \sif{h \ s = v}{(s, h \ s)}{\text{fail}} \\
-        \tab \qtab \overset{3}{=} \sif{h \ s = v}{(s, v)}{\text{fail}}$
+    \noindent $\tabs{2} \pg{Skip \ h}{s}{v} \overset{1}{=} (\sif{h \ s = v}{s}{\text{undefined}}, h \ s) \\
+        \tab \qtab \overset{2}{=} \sif{h \ s = v}{(s, h \ s)}{\text{undefined}} \\
+        \tab \qtab \overset{3}{=} \sif{h \ s = v}{(s, v)}{\text{undefined}}$
         
-The first equality is simply based on the definitions of $pg$, $\putbxinline{Skip \ h}$ and $\getbxinline{Skip \ h}$. The second one tuples two results of $put$ and $get$ in the body of the if-expression. This is a trick since in some cases, the result of $pg$ may be fail although there is no fail when evaluating $\getbxinline{Skip \ h}$. The last equality is relatively oblivious.
+The first equality is simply based on the definitions of $pg$, $\putbxinline{Skip \ h}$ and $\getbxinline{Skip \ h}$. The second one tuples two results of $put$ and $get$ in the body of the if-expression. This is a trick since in some cases, the result of $pg$ may be undefined although there is no undefined when evaluating $\getbxinline{Skip \ h}$. The last equality is relatively oblivious.
 
     \noindent $\tabs{2} \pg{Replace}{s}{v} = (v, s)$\\
     $\tabs{2} \pg{\product{bx_1}{bx_2}}{(s_1,s_2)}{(v_1,v_2)}\\
@@ -75,7 +75,7 @@ When evaluating $\pginline{bx_1 \circ bx_2}$, there are three $pg$ calls, of whi
 \begin{definition}
 $\cpg{bx}{ks}{kv}{s}{v}$
 
-    \noindent $\cpg{Skip \ h}{ks}{kv}{s}{v} = \text{ if } h \ s = v \text{ then } (ks, kv, s, v) \text{ else fail}$
+    \noindent $\cpg{Skip \ h}{ks}{kv}{s}{v} = \text{ if } h \ s = v \text{ then } (ks, kv, s, v) \text{ else undefined}$
 
     \noindent $\cpg{Replace}{ks}{kv}{s}{v} = (kv, ks, v, s)$
 
@@ -148,7 +148,7 @@ $\kpg{bx}{ks}{kv}{ks'}{kv'}{s}{v}$
 
     \noindent $\kpg{Skip \ h}{ks}{kv}{ks'}{kv'}{s}{v} =\\
         \tab s \Leftarrow ks' \ s; \quad v \Leftarrow kv' \ v; \quad ks' \Leftarrow id; \quad kv' \Leftarrow id;\\
-        \tab \text{if} \ h \ s = v \ \text{then} \ (ks, kv, ks', kv', s, v) \ \text{else fail}$
+        \tab \text{if} \ h \ s = v \ \text{then} \ (ks, kv, ks', kv', s, v) \ \text{else undefined}$
 
     \noindent $\kpg{Replace}{ks}{kv}{ks'}{kv'}{s}{v} = (kv, ks, kv', ks', v, s)$
 
