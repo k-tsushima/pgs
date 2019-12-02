@@ -70,7 +70,7 @@ A restriction for $\pginline{Case}$ needs to be introduced here. We know that th
 
 \subsection{Lazy Update: cpg} 
 
-When evaluating $\pginline{bx_1 \circ bx_2}$, there are three $pg$ calls, of which twice for $\pginline{bx_1}$ and once for $\pginline{bx_2}$. If a given program is a left-associative composition, the number of $pg$ calls will be exponential. Therefore, the runtime inefficiency is inevitable. To solve that, we introduce a new function, $cpg$, accumulates changes in the source and the view. $\cpg{bx}{ks}{kv}{s}{v}$ is an extension of $\pg{bx}{s}{v}$ where $ks$ and $kv$ are continuations used to hold the modification information, and $s$ and $v$ are used to keep evaluated values. The output of this function is a 4-tuple $(ks, kv, s, v)$. To be more convenient for presenting the definition of $cpg$ as well as the other functions later, we provide some following utility functions:\\ $fst = \lambda (x_1,x_2). x_1 , \ snd = \lambda (x_1,x_2). x_2 , \ con = \lambda ks_1. \lambda ks_2. \lambda x. ((ks_1 \ x),(ks_2 \ x))$
+When evaluating $\pginline{bx_1 \circ bx_2}$, there are three $pg$ calls, of which twice for $\pginline{bx_1}$ and once for $\pginline{bx_2}$. If a given program is a left-associative composition, the number of $pg$ calls will be exponential. Therefore, the runtime inefficiency is inevitable. To solve that, we introduce a new function, $cpg$, accumulates updates in the source and the view. $\cpg{bx}{ks}{kv}{s}{v}$ is an extension of $\pg{bx}{s}{v}$ where $ks$ and $kv$ are continuations used to hold the modification information, and $s$ and $v$ are used to keep evaluated values same as $pg$. The output of this function is a 4-tuple $(ks, kv, s, v)$. To be more convenient for presenting the definition of $cpg$ as well as the other functions later, we provide some following utility functions:\\ $fst = \lambda (x_1,x_2). x_1 , \ snd = \lambda (x_1,x_2). x_2 , \ con = \lambda ks_1. \lambda ks_2. \lambda x. ((ks_1 \ x),(ks_2 \ x))$
 
 \begin{definition}
 $\cpg{bx}{ks}{kv}{s}{v}$
@@ -104,16 +104,23 @@ $\cpg{bx}{ks}{kv}{s}{v}$
             \qtab (ks_1 \circ ks_2, kv_2,  ks_1 \ s_2, v_2)$
 \end{definition}
 
-Apart from the last construction, the others are quite similar to the corresponding ones of $pg$, but have some updates over the source and the view on accumulative functions $ks$ and $kv$ respectively.
+In the places where thrid and/or fourth argument ($s$ and $v$) are updated by applications, the computations are also accumulated in $ks$ and/or $kv$.
 
-For $\cpginline{bx_1 \circ bx_2}$, there are only two $cpg$ calls. The first call $\cpginline{bx_1}$ requires parameter $(ks, id, s, construct\_dummy \ s)$ where $s$ and $ks$ are corresponding to the source and the update over source. Since there is no real view here, we need to construct a dummy from the source. Then the continuation updating on this dummy should be initiated as an identity function. The first $cpg$ call is assigned to a 4-tuple $(ks_1, kv_1, s_1, v_1)$ where $s_1$ is redundant because this evaluated variable is not used in the later steps. In the next assignment, a 4-tuple $(ks_2, kv_2, s_2, v_2)$ is assigned by the second $cpg$ call which uses the input as $(kv_1, kv, v_1, v)$ where $kv_1$ and $v_1$ are obtained from the result of the first assignment, and $kv$ and $v$ come from the input. It is relatively similar to the second $pg$ call assignment in $\pginline{bx_1 \circ bx_2}$. After two $cpg$ calls, a function application, $ks_1 \ s_2$, is used to produce the updated source instead of calling recursively one more time like in $\pginline{bx_1 \circ bx_2}$.
+%Apart from the last construction, the others are quite similar to the corresponding ones of $pg$, but have some updates over the source and the view on accumulative functions $ks$ and $kv$ respectively.
+
+Thanks to this accumulation, in $\cpginline{bx_1 \circ bx_2}$, there are only two $cpg$ calls. The first call $\cpginline{bx_1}$ requires parameter $(ks, id, s, construct\_dummy \ s)$ where $s$ and $ks$ are corresponding to the source and the update over source. Since there is no real view here, we need to construct a dummy from the source. Then the continuation updating on this dummy should be initiated as an identity function. The first $cpg$ call is assigned to a 4-tuple $(ks_1, kv_1, s_1, v_1)$. In the next assignment, a 4-tuple $(ks_2, kv_2, s_2, v_2)$ is assigned by the second $cpg$ call which uses the input as $(kv_1, kv, v_1, v)$ where $kv_1$ and $v_1$ are obtained from the result of the first assignment, and $kv$ and $v$ come from the input. It is relatively similar to the second $pg$ call assignment in $\pginline{bx_1 \circ bx_2}$. After two $cpg$ calls, a function application, $ks_1 \ s_2$, is used to produce the updated source instead of calling recursively one more time like in $\pginline{bx_1 \circ bx_2}$.
 
 Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated source and view $(s, v)$ where $s = \putbx{bx}{s_0}{v_0}$ and $v = \getbx{bx}{s_0}$ can be obtained using $cpg$ as follows:
 
     $\tab s \Leftarrow s_0; v \Leftarrow v_0; (ks, kv, s, v) \Leftarrow \cpg{bx}{\lambda \_.s}{id}{s}{v};\\
         \tab \qtab (s; v)$
 
-In general, the beginning of a continuation should be an identity function. However, to be able to use the function application to get the result of $\cpginline{bx_1 \circ bx_2}$, the accumulative function on the source $s$ needs to be initiated as $\lambda \_.s$. This constant function helps to retain the discarded things in the source.
+        In general, the beginning of a continuation should be an identity function. However, to be able to use the function application to get the result of $\cpginline{bx_1 \circ bx_2}$, the accumulative function on the source $s$ needs to be initiated as $\lambda \_.s$. This constant function helps to retain the discarded things in the source.
+
+
+
+        Note that, in $\cpginline{bx_1 \circ bx_2}$, $s_1$ is redundant because this evaluated variable is not used in the later steps.
+        In the next session, we will optimize this redundancy.
 
 % Suppose the beginning of continuations $ks$ and $kv$ are $ks_0$ and $id$ respectively. Let's consider $\cpg{phead \circ phead}{ks_0}{id}{s}{v}$ where $s = [[1,2,3], [\,], [4,5]]$ and $v = 100$. After the first two assignments in the definition of $cpg$ for the composition, we have: $ks_1 = f_2 \circ (con \ (fst \circ g_1 \circ id) \ (snd \circ f_1 \circ ks_0))$ and $s_2 = [100,2,3]$ where $f_1 = \lambda (s::ss).(s,ss)$, $f_2 = \lambda (s,ss).(s::ss)$, $g_1 = \lambda v.(v,())$. Then:
 
