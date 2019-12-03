@@ -17,7 +17,7 @@ The memoizing version, minBiGUL$_m$, needs only two modifications: $get_m$ and $
 
 \begin{definition} \label{def:putm} $\text{Memo version of } put$
 
-    \noindent $\putm{bx}{s}{v} = \text{match } bx \text{ with }\\
+    \noindent $\putm{bx}{s}{v} = \textnormal{match } bx \textnormal{ with }\\
         \tab \vert \ bx_1 \circ bx_2 \to \putm{bx_1}{s}{(\putm{bx_2}{(\getmh{bx_1}{s})}{v})} \\
         \tab \vert \ \_ \to \text{similar to } put$
 \end{definition}
@@ -25,10 +25,10 @@ The memoizing version, minBiGUL$_m$, needs only two modifications: $get_m$ and $
 \begin{multicols}{2}
     \begin{definition} \label{def:getm} $\text{Memo version of } get$
 
-        \noindent $\getm{bx}{s} = \text{match } bx \text{ with }\\
+        \noindent $\getm{bx}{s} = \textnormal{match } bx \textnormal{ with }\\
             \tab \ \vert \ bx_1 \circ bx_2 \to\\
-            \tabs{2} \text{try } (\text{Hashtbl.find} \ table_g \ (bx, s))\\
-            \tabs{2} \text{with Not\_found } \to\\
+            \tabs{2} \textnormal{try } (\text{Hashtbl.find} \ table_g \ (bx, s))\\
+            \tabs{2} \textnormal{with } \text{Not\_found } \to\\
                 \tabs{3} v \Leftarrow \getmh{bx_2}{(\getmh{bx_1}{s})}\\
                 \tabs{3} \text{Hashtbl.add } \ table_g \ (bx, s) \ v\\
                 \tabs{3} v \\
@@ -38,10 +38,10 @@ The memoizing version, minBiGUL$_m$, needs only two modifications: $get_m$ and $
     \begin{definition} \label{def:getmh} $\text{Interface for } get_m$
 
         \noindent $\getmh{bx}{s} =\\
-            \tab \text{try } (\text{Hashtbl.find} \ table_g \ (bx, s))\\
-            \tab \text{with Not\_found } \to\\
+            \tab \textnormal{try } (\text{Hashtbl.find} \ table_g \ (bx, s))\\
+            \tab \textnormal{with } \text{Not\_found } \to\\
                 \tabs{2} v \Leftarrow \getm{bx}{s}\\
-                \tabs{2} \text{match } bx \text{ with } \\
+                \tabs{2} \textnormal{match } bx \textnormal{ with } \\
                 \tabs{2} \ \vert \ bx_1 \circ bx_2 \to v \\
                 \tabs{2} \ \vert \ \_ \to \text{Hashtbl.add } \ table_g \ (bx, s) \ v\\
                 \qtabs{2} \ v$
