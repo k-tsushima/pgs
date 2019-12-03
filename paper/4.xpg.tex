@@ -24,7 +24,7 @@ Another solution for saving intermediate states is tupling. If $put$ and $get$ a
         \tab \qtab \overset{2}{=} \sif{h \ s = v}{(s, h \ s)}{\textit{undefined}} \\
         \tab \qtab \overset{3}{=} \sif{h \ s = v}{(s, v)}{\textit{undefined}}$
         
-The first equality is simply based on the definitions of $pg$, $\putbxinline{Skip \ h}$ and $\getbxinline{Skip \ h}$. The second one tuples two results of $put$ and $get$ in the body of the if-expression. This is a trick since in some cases, the result of $pg$ may be undefined although there is no undefined when evaluating $\getbxinline{Skip \ h}$. The last equality is relatively oblivious.
+The first equality is simply based on the definitions of $pg$, $\putbxinline{Skip \ h}$ and $\getbxinline{Skip \ h}$. The second one tuples two results of $put$ and $get$ in the body of the if-expression. This is a trick since in some cases, the result of $pg$ may be undefined although there is no undefined when evaluating $\getbxinline{Skip \ h}$. The last equality is relatively obvious.
 
     \noindent $\tabs{2} \pg{Replace}{s}{v} = (v, s)$\\
     $\tabs{2} \pg{\product{bx_1}{bx_2}}{(s_1,s_2)}{(v_1,v_2)}\\
@@ -133,7 +133,7 @@ In the next session, we will optimize this redundancy.
 
 \subsection{Lazy Computation: kpg}
 
-The problem for $cpg$ lies in redundant computation during evaluating. For keeping away such computations, we introduce an extension named $kpg$. While $cpg$ evaluates values eagerly, $kpg$ does the opposite. Every values are evaluated lazily in a computation of $kpg$. The input of $\kpginline{bx}$ is expanded to a 6-tuple $(ks, kv, ks', kv', s, v)$ where $ks$ and $kv$ keep the modification information same as $cpg$, $s$ and $v$ hold evaluated values, and $ks'$ and $kv'$ are used for lazy evaluation of actual values. The output of this function is also a 6-tuple $(ks, kv, ks', kv', s, v)$.\\
+The problem for $cpg$ lies in redundant computations during evaluating. For keeping away such computations, we introduce an extension named $kpg$. While $cpg$ evaluates values eagerly, $kpg$ does the opposite. Every values are evaluated lazily in a computation of $kpg$. The input of $\kpginline{bx}$ is expanded to a 6-tuple $(ks, kv, ks', kv', s, v)$ where $ks$ and $kv$ keep the modification information same as $cpg$, $s$ and $v$ hold evaluated values, and $ks'$ and $kv'$ are used for lazy evaluation of actual values. The output of this function is also a 6-tuple $(ks, kv, ks', kv', s, v)$.\\
 Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated source and view $(s, v)$ where $s = \putbx{bx}{s_0}{v_0}$ and $v = \getbx{bx}{s_0}$ can be obtained using $kpg$ as follows:
 
 \smallvspace
@@ -184,7 +184,7 @@ $\kpg{bx}{ks}{kv}{ks'}{kv'}{s}{v}$
 In $kpg$, basically, functions for the updates will be kept in $ks'$ and $kv'$.
 $\kpginline{Skip}$ and $\kpginline{Case}$ are special cases, because they require the actual values for evaluation. Therefore we evaluate the values by application of $ks' \ s$ and $kv' \ v$ and update $ks'$ and $kv'$ with the identity functions.
 %Except $\kpginline{Skip}$ and $\kpginline{Case}$ where $s$ and $v$ hold actual values, functions for the computation will be kept in $ks'$ and $kv'$.
-When evaluating $\kpginline{bx_1 \circ bx_2}$, $\underline{ks_1'}$ and $\underline{s_1}$ in the result of the first assignment are still redundant but they are not evaluated.
+When evaluating $\kpginline{bx_1 \circ bx_2}$, $\underline{ks_1'}$ and $\underline{s_1}$ in the result of the first assignment are still redundant but not evaluated.
 
 Additionally we did two optimizations in $kpg$. First is in $\kpginline{bx_1 \times bx_2}$. The evaluation of $ks'$ and $kv'$ will be done independently in two assignments using $\kpginline{bx_1}$ and $\kpginline{bx_2}$. There may be same computations in $fst \circ ks'$ and $snd \circ ks'$ as well as $fst \circ kv'$ and $snd \circ kv'$.
 To remove duplicate evaluations, we evaluate actual values in $s$ and $v$ before calling $\kpginline{bx_1}$.
