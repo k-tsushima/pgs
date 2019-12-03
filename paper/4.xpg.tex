@@ -20,9 +20,9 @@ Another solution for saving intermediate states is tupling. If $put$ and $get$ a
 
 \noindent Now, let us see how we construct $pg$ recursively.
 
-    \noindent $\tabs{2} \pg{Skip \ h}{s}{v} \overset{1}{=} (\sif{h \ s = v}{s}{undefined}, h \ s) \\
-        \tab \qtab \overset{2}{=} \sif{h \ s = v}{(s, h \ s)}{undefined} \\
-        \tab \qtab \overset{3}{=} \sif{h \ s = v}{(s, v)}{undefined}$
+    \noindent $\tabs{2} \pg{Skip \ h}{s}{v} \overset{1}{=} (\sif{h \ s = v}{s}{\textit{undefined}}, h \ s) \\
+        \tab \qtab \overset{2}{=} \sif{h \ s = v}{(s, h \ s)}{\textit{undefined}} \\
+        \tab \qtab \overset{3}{=} \sif{h \ s = v}{(s, v)}{\textit{undefined}}$
         
 The first equality is simply based on the definitions of $pg$, $\putbxinline{Skip \ h}$ and $\getbxinline{Skip \ h}$. The second one tuples two results of $put$ and $get$ in the body of the if-expression. This is a trick since in some cases, the result of $pg$ may be undefined although there is no undefined when evaluating $\getbxinline{Skip \ h}$. The last equality is relatively oblivious.
 
@@ -39,7 +39,7 @@ The first equality is simply based on the definitions of $pg$, $\putbxinline{Ski
         \tab \qtab \overset{2}{=} (s, v) \Leftarrow \pg{bx}{s}{g_1 \ v}; \\
         \tab \qtabs{2} (s, g_2 \ v)$
 
-Constructions of $pg$ for the replacement, the product and the source/view rearrangements are very clear when just paring $put$ and $get$ respectively, then doing basic changes.
+Constructions of $pg$ for the replacement, the product and the source/view rearrangements are very clear when just paring $put$ and $get$ respectively, then doing basic changes.\\
 
     \noindent $\tabs{2} \pg{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s}{v} \\
     \tabs{3} \overset{1}{=} (\text{if} \ {cond_{sv} \ s \ v} \qtabs{3} \tab \text{if} \ {cond_{s} \ s} \\
@@ -56,26 +56,26 @@ A restriction for $\pginline{Case}$ needs to be introduced here. We know that th
     \noindent $\tabs{2} \pg{bx_1 \circ bx_2}{s}{v} \\
     \tabs{3} \overset{1}{=} (\putbx{bx_1}{s}{(\putbx{bx_2}{(\getbx{bx_1}{s})}{v})}, \getbx{bx_2}{(\getbx{bx_1}{s})}) \\
     \tabs{3} \overset{2}{=} v_1 \Leftarrow \getbx{bx_1}{s}; \qtabs{3} \ \, \overset{3}{=} (s_1, v_1) \Leftarrow \pg{bx_1}{s}{dummy};\\
-        \tab \qtab (s_2, v_2) \Leftarrow \pg{bx_2}{v_1}{v}; \qtabs{2} (s_2, v_2) \Leftarrow \pg{bx_2}{v_1}{v};\\
-        \tab \qtab (s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2}; \qtabs{2} (s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2};\\
-            \qtab \tabs{2} (s_3, v_2) \qtabs{6} (s_3, v_2)\\
+        \tabs{2} \qtab (s_2, v_2) \Leftarrow \pg{bx_2}{v_1}{v}; \qtabs{2} (s_2, v_2) \Leftarrow \pg{bx_2}{v_1}{v};\\
+        \tabs{2} \qtab (s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2}; \qtabs{2} (s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2};\\
+            \qtab \tabs{3} (s_3, v_2) \qtabs{6} (s_3, v_2)\\
     \tabs{3} \overset{4}{=} (s_1, v_1) \Leftarrow \pg{bx_1}{s}{construct\_dummy \ s}; \\
-        \tab \qtab (s_2, v_2) \Leftarrow \pg{bx_2}{v_1}{v}; \\
-        \tab \qtab (s_3, v_3) \Leftarrow \pg{bx_1}{s_1}{s_2}; \\
-            \qtab \tabs{2} (s_3, v_2)$
+        \tabs{2} \qtab (s_2, v_2) \Leftarrow \pg{bx_2}{v_1}{v}; \\
+        \tabs{2} \qtab (s_3, v_3) \Leftarrow \pg{bx_1}{s_1}{s_2}; \\
+            \qtab \tabs{3} (s_3, v_2)$
             
-            The construction of $\pginline{bx_1 \circ bx_2}$ can be considered as the soul of the $pg$ function. The first two equalities comes from mentioned definitions and some basic transformations. The third one rewrites $v_1 \Leftarrow \getbx{bx_1}{s}$ into $(s_1, v_1) \Leftarrow \pg{bx_1}{s}{dummy}$. This is possible when we consider $\getbx{bx_1}{s}$ as the second element of $\pg{bx_1}{s}{dummy}$ where $dummy$ is a special value that makes the $put \, [\![bx_1]\!]$ valid.
-            %We can construct a $dummy$ from the source by \textsc{GetPut} law in some cases or require programmers to give a valid view.
-            Since there is no real view, this $dummy$ is necessary. The last equality changes two. First is a change from $dummy$ to an application $construct\_dummy \ s$. This shows that we need a way to construct $dummy$ from the current source, $s$. We can require programmers to give this $construct\_dummy$ function. Second is a substitution on $s$ in $(s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2}$ by $s_1$ which equals to $\putbx{bx_1}{s}{(construct\_dummy \ s)}$. The replacement of $s$ and $s_1$ is possible because of the \textsc{PutPut} law. Then, $v_3$ in the result pair $(s_3,v_3)$ equals $dummy$. So we can realize that there is no loss information when computing a composition.
+The construction of $\pginline{bx_1 \circ bx_2}$ can be considered as the soul of the $pg$ function. The first two equalities comes from mentioned definitions and some basic transformations. The third one rewrites $v_1 \Leftarrow \getbx{bx_1}{s}$ into $(s_1, v_1) \Leftarrow \pg{bx_1}{s}{dummy}$. This is possible when we consider $\getbx{bx_1}{s}$ as the second element of $\pg{bx_1}{s}{dummy}$ where $dummy$ is a special value that makes the $put \, [\![bx_1]\!]$ valid.
+%We can construct a $dummy$ from the source by \textsc{GetPut} law in some cases or require programmers to give a valid view.
+Since there is no real view, this $dummy$ is necessary. The last equality changes two. First is a change from $dummy$ to an application $construct\_dummy \ s$. This means we need a way to construct $dummy$ from the current source, $s$. We can require programmers to give this $construct\_dummy$ function. Second is a substitution under the \textsc{PutPut} law on $s$ of $(s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2}$ by $s_1$ which equals to $\putbx{bx_1}{s}{(construct\_dummy \ s)}$. $v_3$ in the result pair $(s_3,v_3)$ equals $dummy$. So we realize that there is no loss information when computing a composition.
 
 \subsection{Lazy Update: cpg} 
 
-When evaluating $\pginline{bx_1 \circ bx_2}$, there are three $pg$ calls, of which twice for $\pginline{bx_1}$ and once for $\pginline{bx_2}$. If a given program is a left-associative composition, the number of $pg$ calls will be exponential. Therefore, the runtime inefficiency is inevitable. To solve that, we introduce a new function, $cpg$, accumulates updates in the source and the view. $\cpg{bx}{ks}{kv}{s}{v}$ is an extension of $\pg{bx}{s}{v}$ where $ks$ and $kv$ are continuations used to hold the modification information, and $s$ and $v$ are used to keep evaluated values same as $pg$. The output of this function is a 4-tuple $(ks, kv, s, v)$. To be more convenient for presenting the definition of $cpg$ as well as the other functions later, we provide some following utility functions:\\ $fst = \lambda (x_1,x_2). x_1 , \ snd = \lambda (x_1,x_2). x_2 , \ con = \lambda ks_1. \lambda ks_2. \lambda x. ((ks_1 \ x),(ks_2 \ x))$
+When evaluating $\pginline{bx_1 \circ bx_2}$, there are three $pg$ calls, of which twice for $\pginline{bx_1}$ and once for $\pginline{bx_2}$. If a given program is a left associative composition, the number of $pg$ calls will be exponential. Therefore, the runtime inefficiency is inevitable. To solve that, we introduce a new function, $cpg$, accumulates updates on the source and the view. $\cpg{bx}{ks}{kv}{s}{v}$ is an extension of $\pg{bx}{s}{v}$ where $ks$ and $kv$ are continuations used to hold the modification information, and $s$ and $v$ are used to keep evaluated values same as $pg$. The output of this function is a 4-tuple $(ks, kv, s, v)$. To be more convenient for presenting the definition of $cpg$ as well as the other functions later, we provide some following utility functions:\\ $fst = \lambda (x_1,x_2). x_1 , \ snd = \lambda (x_1,x_2). x_2 , \ con = \lambda ks_1. \lambda ks_2. \lambda x. ((ks_1 \ x),(ks_2 \ x))$
 
 \begin{definition}
 $\cpg{bx}{ks}{kv}{s}{v}$
 
-    \noindent $\cpg{Skip \ h}{ks}{kv}{s}{v} = \text{ if } h \ s = v \text{ then } (ks, kv, s, v) \text{ else } undefined$
+    \noindent $\cpg{Skip \ h}{ks}{kv}{s}{v} = \textnormal{ if } h \ s = v \text{ then } (ks, kv, s, v) \textnormal{ else } \textit{undefined}$
 
     \noindent $\cpg{Replace}{ks}{kv}{s}{v} = (kv, ks, v, s)$
 
@@ -93,20 +93,20 @@ $\cpg{bx}{ks}{kv}{s}{v}$
         \qtab (ks, g_2 \circ kv, ks, g_2 \ v)$
 
     \noindent $\cpg{Case \ cond_{sv} \ cond_{s} \ bx_1 \ bx_2}{ks}{kv}{s}{v} =\\
-        \tab \text{if} \ cond_{sv} \ s \ v \ \&\& \ cond_{s} \ s\\
-        \tab \text{then} \ (ks, kv, s', v') \Leftarrow \cpg{bx_1}{ks}{kv}{s}{v}\\
-        \tab \text{else} \ (ks, kv, s', v') \Leftarrow \cpg{bx_2}{ks}{kv}{s}{v}\\
-        \tab \text{fi} \ cond_{s} \ s' \ \&\& \ cond_{sv} \ s \ v'; \ \text{return} \ (ks, kv, s', v')$
+        \tab \textnormal{if} \ cond_{sv} \ s \ v \ \&\& \ cond_{s} \ s\\
+        \tab \textnormal{then} \ (ks, kv, s', v') \Leftarrow \cpg{bx_1}{ks}{kv}{s}{v}\\
+        \tab \textnormal{else} \ (ks, kv, s', v') \Leftarrow \cpg{bx_2}{ks}{kv}{s}{v}\\
+        \tab \textnormal{fi} \ cond_{s} \ s' \ \&\& \ cond_{sv} \ s \ v'; \ \textnormal{return} \ (ks, kv, s', v')$
 
     \noindent $\cpg{bx_1 \circ bx_2}{ks}{kv}{s}{v} =\\
-        \tab (ks_1, kv_1, s_1, v_1) \Leftarrow \cpg{bx_1}{ks}{id}{s}{construct\_dummy \ s};\\
+        \tab (ks_1, kv_1, \underline{s_1}, v_1) \Leftarrow \cpg{bx_1}{ks}{id}{s}{construct\_dummy \ s};\\
         \tab (ks_2, kv_2, s_2, v_2) \Leftarrow \cpg{bx_2}{kv_1}{kv}{v_1}{v};\\
             \qtab (ks_1 \circ ks_2, kv_2,  ks_1 \ s_2, v_2)$
 \end{definition}
 
 In the places where third and/or fourth argument ($s$ and $v$) are updated by applications, the computations are also accumulated in $ks$ and/or $kv$.
 %Apart from the last construction, the others are quite similar to the corresponding ones of $pg$, but have some updates over the source and the view on accumulative functions $ks$ and $kv$ respectively.
-Thanks to this accumulation, in $\cpginline{bx_1 \circ bx_2}$, there are only two $cpg$ calls. The first call $\cpginline{bx_1}$ requires parameter $(ks, id, s, construct\_dummy \ s)$ where $s$ and $ks$ are corresponding to the source and the update over source. Since there is no real view here, we need to construct a dummy from the source same as $pg$. Then the continuation updating on this dummy should be initiated as an identity function. The first $cpg$ call is assigned to a 4-tuple $(ks_1, kv_1, s_1, v_1)$. In the next assignment, a 4-tuple $(ks_2, kv_2, s_2, v_2)$ is assigned by the second $cpg$ call which uses the input as $(kv_1, kv, v_1, v)$ where $kv_1$ and $v_1$ are obtained from the result of the first assignment, and $kv$ and $v$ come from the input. It is relatively similar to the second $pg$ call assignment in $\pginline{bx_1 \circ bx_2}$. After two $cpg$ calls, a function application, $ks_1 \ s_2$, is used to produce the updated source instead of calling recursively one more time like in $\pginline{bx_1 \circ bx_2}$.
+Thanks to these accumulations, there are only two $cpg$ calls in $\cpginline{bx_1 \circ bx_2}$. The first call $\cpginline{bx_1}$ requires parameter $(ks, id, s, construct\_dummy \ s)$ where $s$ and $ks$ are corresponding to the source and the update over source. Since there is no real view here, we need to construct a dummy from the source same as $pg$. Then the continuation updating on this dummy should be initiated as an identity function. The first $cpg$ call is assigned to a 4-tuple $(ks_1, kv_1, s_1, v_1)$. In the next assignment, a 4-tuple $(ks_2, kv_2, s_2, v_2)$ is assigned by the second $cpg$ call which uses the input as $(kv_1, kv, v_1, v)$ where $kv_1$ and $v_1$ are obtained from the result of the first assignment, and $kv$ and $v$ come from the input. It is relatively similar to the second $pg$ call assignment in $\pginline{bx_1 \circ bx_2}$. After two $cpg$ calls, a function application, $ks_1 \ s_2$, is used to produce the updated source instead of calling recursively one more time like in $\pginline{bx_1 \circ bx_2}$.
 
 Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated source and view $(s, v)$ where $s = \putbx{bx}{s_0}{v_0}$ and $v = \getbx{bx}{s_0}$ can be obtained using $cpg$ as follows:
 
@@ -115,12 +115,12 @@ Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated so
         \tab \qtab (s; v)$
 \smallvspace
         
-        In general, the beginning of a continuation should be an identity function. However, to be able to use the function application to get the result of $\cpginline{bx_1 \circ bx_2}$, the accumulative function on the source $s$ needs to be initiated as $\lambda \_.s$. This constant function helps to retain the discarded things in the source.
+In general, the beginning of a continuation should be an identity function. However, to be able to use the function application to get the result of $\cpginline{bx_1 \circ bx_2}$, the accumulative function on the source $s$ needs to be initiated as $\lambda \_.s$. This constant function helps to retain the discarded things in the source.
 
 
 
-        Note that, in $\cpginline{bx_1 \circ bx_2}$, $s_1$ is redundant because this evaluated variable is not used in the later steps.
-        In the next session, we will optimize this redundancy.
+Note that, in $\cpginline{bx_1 \circ bx_2}$, $\underline{s_1}$ is redundant because this evaluated variable is not used in the later steps.
+In the next session, we will optimize this redundancy.
 
 % Suppose the beginning of continuations $ks$ and $kv$ are $ks_0$ and $id$ respectively. Let's consider $\cpg{phead \circ phead}{ks_0}{id}{s}{v}$ where $s = [[1,2,3], [\,], [4,5]]$ and $v = 100$. After the first two assignments in the definition of $cpg$ for the composition, we have: $ks_1 = f_2 \circ (con \ (fst \circ g_1 \circ id) \ (snd \circ f_1 \circ ks_0))$ and $s_2 = [100,2,3]$ where $f_1 = \lambda (s::ss).(s,ss)$, $f_2 = \lambda (s,ss).(s::ss)$, $g_1 = \lambda v.(v,())$. Then:
 
@@ -148,7 +148,7 @@ $\kpg{bx}{ks}{kv}{ks'}{kv'}{s}{v}$
 
     \noindent $\kpg{Skip \ h}{ks}{kv}{ks'}{kv'}{s}{v} =\\
         \tab s \Leftarrow ks' \ s; \quad v \Leftarrow kv' \ v; \quad ks' \Leftarrow id; \quad kv' \Leftarrow id;\\
-        \tab \text{if} \ h \ s = v \ \text{then} \ (ks, kv, ks', kv', s, v) \ \text{else } undefined$
+        \tab \textnormal{if} \ h \ s = v \ \textnormal{then} \ (ks, kv, ks', kv', s, v) \ \textnormal{else } \text{undefined}$
 
     \noindent $\kpg{Replace}{ks}{kv}{ks'}{kv'}{s}{v} = (kv, ks, kv', ks', v, s)$
 
@@ -170,26 +170,26 @@ $\kpg{bx}{ks}{kv}{ks'}{kv'}{s}{v}$
 
     \noindent $\kpg{Case \ cond_{sv} \ cond_{s} \ bx_1 \ bx_2}{ks}{kv}{ks'}{kv'}{s}{v} =\\
         \tab s \Leftarrow ks' \ s; \quad v \Leftarrow kv' \ v; \quad ks' \Leftarrow id ; \quad kv' \Leftarrow id;\\
-        \tab \text{if} \ cond_{sv} \ s \ v \ \&\& \ cond_{s} \ s\\
-        \tab \text{then} \ (ks, kv, ks', kv', s', v') \Leftarrow \kpg{bx_1}{ks}{kv}{ks'}{kv'}{s}{v}\\
-        \tab \text{else} \ (ks, kv, ks', kv', s', v') \Leftarrow \kpg{bx_2}{ks}{kv}{ks'}{kv'}{s}{v}\\
-        \tab \text{fi} \ cond_s \ (ks' \ s') \ \&\& \ cond_{sv} \ s \ (kv' \ v'); \ \text{return} \ (ks, kv, ks', kv', s', v')$
+        \tab \textnormal{if} \ cond_{sv} \ s \ v \ \&\& \ cond_{s} \ s\\
+        \tab \textnormal{then} \ (ks, kv, ks', kv', s', v') \Leftarrow \kpg{bx_1}{ks}{kv}{ks'}{kv'}{s}{v}\\
+        \tab \textnormal{else} \ (ks, kv, ks', kv', s', v') \Leftarrow \kpg{bx_2}{ks}{kv}{ks'}{kv'}{s}{v}\\
+        \tab \underline{\textnormal{fi}} \ cond_s \ (ks' \ s') \ \&\& \ cond_{sv} \ s \ (kv' \ v'); \ \textnormal{return} \ (ks, kv, ks', kv', s', v')$
 
     \noindent $\kpg{bx_1 \circ bx_2}{ks}{kv}{ks'}{kv'}{s}{v} =\\
-        \tab (ks_1, kv_1, ks_1', kv_1', s_1, v_1) \Leftarrow \kpg{bx_1}{ks}{id}{ks'}{id}{s}{construct\_dummy \ s};\\
+        \tab (ks_1, kv_1, \underline{ks_1'}, kv_1', \underline{s_1}, v_1) \Leftarrow \kpg{bx_1}{ks}{id}{ks'}{id}{s}{construct\_dummy \ s};\\
         \tab (ks_2, kv_2, ks_2', kv_2', s_2, v_2) \Leftarrow \kpg{bx_2}{kv_1}{kv}{kv_1'}{kv'}{v_1}{v};\\
         \qtab (ks_1 \circ ks_2, kv_2, ks_1 \circ ks_2', kv_2', s_2, v_2)$
 \end{definition}
 
 In $kpg$, basically, functions for the updates will be kept in $ks'$ and $kv'$.
-$\kpginline{Skip}$ and $\kpginline{Case}$ are special cases, because they require the actual values for evaluation. Therefore we evaluate the values by application of $ks' s$ and $kv' v$ and update $ks'$ and $kv'$ with the identity functions.
+$\kpginline{Skip}$ and $\kpginline{Case}$ are special cases, because they require the actual values for evaluation. Therefore we evaluate the values by application of $ks' \ s$ and $kv' \ v$ and update $ks'$ and $kv'$ with the identity functions.
 %Except $\kpginline{Skip}$ and $\kpginline{Case}$ where $s$ and $v$ hold actual values, functions for the computation will be kept in $ks'$ and $kv'$.
-When evaluating $\kpginline{bx_1 \circ bx_2}$, $ks_1'$ and $s_1$ in the result of the first assignment are still redundant but they are not evaluated.
+When evaluating $\kpginline{bx_1 \circ bx_2}$, $\underline{ks_1'}$ and $\underline{s_1}$ in the result of the first assignment are still redundant but they are not evaluated.
 
 Additionally we did two optimizations in $kpg$. First is in $\kpginline{bx_1 \times bx_2}$. The evaluation of $ks'$ and $kv'$ will be done independently in two assignments using $\kpginline{bx_1}$ and $\kpginline{bx_2}$. There may be same computations in $fst \circ ks'$ and $snd \circ ks'$ as well as $fst \circ kv'$ and $snd \circ kv'$.
 To remove duplicate evaluations, we evaluate actual values in $s$ and $v$ before calling $\kpginline{bx_1}$.
 %It is possible to evaluate actual values in $s$ and $v$ before calling $\kpginline{bx_1}$ to remove the redundancy like that. One more thing,
-Second is in $\kpginline{Case}$. We need to evaluate $ks' \ s'$ and $kv' \ v'$ to check the $fi$ condition before returning the 6-tuple. Such evaluations can be done lazily to make programs run faster. We use the above small optimizations in our implementation.
+Second is in $\kpginline{Case}$. We need to evaluate $ks' \ s'$ and $kv' \ v'$ to check the \underline{fi} condition before returning the 6-tuple. Such evaluations can be done lazily to make programs run faster. We use the above small optimizations in our implementation.
 
 \subsection{Combination of pg and kpg: xpg}
 The most important thing when using $kpg$ to evaluate a composition $bx_1 \circ bx_2$ is keeping the dropped parts from the source in a function that is used to produce new source instead of using more recursive call. This is reflected in the first call $\kpginline{bx_1}$ and the last application in $\kpginline{bx_1 \circ bx_2}$. The second call $\kpginline{bx_2}$ just play a syntactic role while it requires many parameters. We can completely reduce this number to 2, including one for the source and one for the view as in a $pg$ call. This idea is realized by function $xpg$ as follows:
@@ -197,7 +197,7 @@ The most important thing when using $kpg$ to evaluate a composition $bx_1 \circ 
 \begin{definition}
 $\xpg{bx}{s}{v}$
 
-    \noindent $\xpg{bx}{s}{v} = \text{match } bx \text{ with }\\
+    \noindent $\xpg{bx}{s}{v} = \textnormal{match } bx \textnormal{ with }\\
     \tab \vert \ bx_1 \circ bx_2 \to \\
         \tabs{2} (ks_1,kv_1, ks_1', kv_1', s_1, v_1) \Leftarrow \kpg{bx_1}{\lambda \_.s}{id}{id}{id}{s}{construct\_dummy \ s};\\
         \tabs{2} (s_2, v_2) \Leftarrow \xpg{bx_2}{kv_1' \ v_1}{v};\\

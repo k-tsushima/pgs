@@ -88,10 +88,10 @@ use~$v$ below. The later definitions also follow this convention.
             \tab \putbx{bx}{s}{(g_1 \ v)}$
     
         \noindent $\putbx{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s}{v} =\\
-            \tab \text{if} \ {cond_{sv} \ s \ v} \\
-            \tab \text{then} \ s' \Leftarrow \putbx{bx_1}{s}{v} \\
-            \tab \text{else} \ s' \Leftarrow \putbx{bx_2}{s}{v} \\
-            \tab \text{fi} \ cond_{s} \ s'; \ \text{return} \ s'$
+            \tab \textnormal{if} \ {cond_{sv} \ s \ v} \\
+            \tab \textnormal{then} \ s' \Leftarrow \putbx{bx_1}{s}{v} \\
+            \tab \textnormal{else} \ s' \Leftarrow \putbx{bx_2}{s}{v} \\
+            \tab \textnormal{fi} \ cond_{s} \ s'; \ \textnormal{return} \ s'$
     
         \noindent $\putbx{bx_1 \circ bx_2}{s}{v} = \\
             \tab \putbx{bx_1}{s}{(\putbx{bx_2}{(\getbx{bx_1}{s})}{v})}$
@@ -115,10 +115,10 @@ use~$v$ below. The later definitions also follow this convention.
             \tab g_2 \ (\getbx{bx}{s})$
 
         \noindent $\getbx{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s} = \\
-            \tab \text{if} \ {cond_{s} \ s} \\
-            \tab \text{then} \ v' \Leftarrow \getbx{bx_1}{s} \\ 
-            \tab \text{else} \ v' \Leftarrow \getbx{bx_2}{s} \\ 
-            \tab \text{fi} \ {cond_{sv} \ s \ v'}; \ \text{return} \ v'$
+            \tab \textnormal{if} \ {cond_{s} \ s} \\
+            \tab \textnormal{then} \ v' \Leftarrow \getbx{bx_1}{s} \\ 
+            \tab \textnormal{else} \ v' \Leftarrow \getbx{bx_2}{s} \\ 
+            \tab \textnormal{fi} \ {cond_{sv} \ s \ v'}; \ \textnormal{return} \ v'$
 
         \noindent $\getbx{bx_1 \circ bx_2}{s} = \\ 
             \tab \getbx{bx_2}{(\getbx{bx_1}{s})}$
@@ -131,8 +131,8 @@ to define the semantics of $\putbxinline{Case}$ and $\getbxinline{Case}$, where 
 
 \smallvspace
 $\tab \text{if } E_1 \text{ then } X_1 \text{ else } X_2 \text{ fi } E_2; S\\
-\tabs{2} \ \equiv \text{if }E_1 = true \text{ then } \{ X_1; \text{ if } E_2 = true \text{ then } S \text{ else } undefined \}\\
-    \tabs{4} \text{else } \{ X_2; \text{ if } E_2 = false \text{ then } S \text{ else } undefined \}$
+\tabs{2} \ \equiv \text{if }E_1 = \textit{true} \text{ then } \{ X_1; \text{ if } E_2 = true \text{ then } S \text{ else } \textit{undefined}\}\\
+    \tabs{4} \text{else } \{ X_2; \text{ if } E_2 = \textit{false} \text{ then } S \text{ else } \textit{undefined} \}$
 \smallvspace
     
 \noindent As an example of minBiGUL program, consider the definition of $phead$ :\\
