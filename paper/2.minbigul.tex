@@ -127,7 +127,7 @@ use~$v$ below. The later definitions also follow this convention.
 
 The two definitions use if-then-else-fi statements 
 %express 
-to define the semantics of $\putbxinline{Case}$ and $\getbxinline{Case}$, where $\Leftarrow$ means assignments. This statement is useful to describe many functions related to $Case$ in this paper. Statement (if $E_1$ then $X_1$ else $X_2$ fi $E_2$) means ``if the test $E_1$ is true, the statement $X_1$ is executed and the assertion $E_2$ must be true, otherwise, if $E_2$ is false, the statement $X_2$ is executed and the assertion $E_2$ must be false.'' If the values of $E_1$ and $E_2$ are distinct, the if-then-else-fi structure is undefined. We can write the equivalent if-then-else statement as follows:
+to define the semantics of $\putbxinline{Case}$ and $\getbxinline{Case}$, where $\Leftarrow$ denotes an assignment. This statement is useful to describe many functions related to $Case$ in this paper. Statement (if $E_1$ then $X_1$ else $X_2$ fi $E_2$) means ``if the test $E_1$ is true, the statement $X_1$ is executed and the assertion $E_2$ must be true, otherwise, if $E_1$ is false, the statement $X_2$ is executed and the assertion $E_2$ must be false.'' If the values of $E_1$ and $E_2$ are distinct, the if-then-else-fi structure is undefined. We can write the equivalent if-then-else statement as follows:
 
 \smallvspace
 $\tab \text{if } E_1 \text{ then } X_1 \text{ else } X_2 \text{ fi } E_2; S\\
