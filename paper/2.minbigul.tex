@@ -152,10 +152,10 @@ $\tab \getbx{phead \circ phead}{[[1,2,3],[\,],[4,5]]} = 1$
 
 To close this section,
 % In the end of this section, 
-let us see the minBiGUL definition of $\textit{bfoldr}$ which is a putback function of an important higher-order function on lists, $\textit{foldr}$:
+let us see the minBiGUL definition of $\mathit{bfoldr}$ which is a putback function of an important higher-order function on lists, $\mathit{foldr}$:
 
 \smallvspace
-$\tab \textit{bfoldr} \ bx = Case \ cond_{sv} \ cond_s \ bx_1 \ bx_2$ where:\\
+$\tab \mathit{bfoldr} \ bx = Case \ cond_{sv} \ cond_s \ bx_1 \ bx_2$ where:\\
 $\tabs{3} \ cond_{sv} = \lambda (s_1,s_2).\lambda v.(s_1 = [\ ]), \ cond_s = \lambda (s_1,s_2).(s_1 = [\ ])$\\
 $\tabs{3} \ bx_1 = RearrV \ g_1 \ g_2 \ bx_v$ where: \\
     $\tabs{4} g_1 = g_2^{-1} = \lambda [v].(v,[\ ]), bx_v = (Skip \ (\lambda \_.())) \times Replace$\\
@@ -164,5 +164,5 @@ $\tabs{3} \ bx_2 = RearrS \ f_1 \ f_2 \ bx_s$ where:\\
 $bx_s = ((Replace \times bfoldr \ bx) \circ bx)$
 \smallvspace
 
-\noindent In $\textit{bfoldr}$, the composition is inherently left associative, and the number of composition is dynamically determined by the length of the source list. Because~$\circ$ has a higher priority than~$\times$, it is seemingly impossible to transform $\mathit{bfoldr}$ from the left associative composition style to the right one. 
+\noindent In $\mathit{bfoldr}$, the composition is inherently left associative, and the number of composition is dynamically determined by the length of the source list. Because~$\circ$ has a higher priority than~$\times$, it is in general not possible to transform $\mathit{bfoldr}$ from the left associative composition style to the right one. 
 %will look like a composition of many programs at some points in the evaluation if we slow down this process. Since $\circ$ has a higher priority than $\times$, it is seemingly impossible to transform $bfoldr$ from the left associative composition style to the right one. 
