@@ -18,13 +18,15 @@ Another solution for saving intermediate states is tupling. If $put$ and $get$ a
 %     \tab = (s, v) \quad [\textsc{GetPut}]$
 % \end{proof}
 
-\noindent Now, let us see how we construct $pg$ recursively.
+\noindent Now, let us see how we construct $pg$ respectively.
 
     \noindent $\tabs{2} \pg{Skip \ h}{s}{v} \overset{1}{=} (\sif{h \ s = v}{s}{\textit{undefined}}, h \ s) \\
         \tab \qtab \overset{2}{=} \sif{h \ s = v}{(s, h \ s)}{\textit{undefined}} \\
         \tab \qtab \overset{3}{=} \sif{h \ s = v}{(s, v)}{\textit{undefined}}$
         
-The first equality is simply based on the definitions of $pg$, $\putbxinline{Skip \ h}$ and $\getbxinline{Skip \ h}$. The second one tuples two results of $put$ and $get$ in the body of the if-expression. This is a trick since in some cases, the result of $pg$ may be undefined although there is no undefined when evaluating $\getbxinline{Skip \ h}$. The last equality is relatively obvious.
+The first equality is simply based on the definitions of $pg$, $\putbxinline{Skip \ h}$ and $\getbxinline{Skip \ h}$. The second one tuples two results of $put$ and $get$ in the body of the if-expression. This is a trick since in some cases, the result of $pg$ may be undefined although the result is not 
+\end
+undefined when evaluating $\getbxinline{Skip \ h}$. The last equality is relatively obvious.
 
     \noindent $\tabs{2} \pg{Replace}{s}{v} = (v, s)$\\
     $\tabs{2} \pg{\product{bx_1}{bx_2}}{(s_1,s_2)}{(v_1,v_2)}\\
