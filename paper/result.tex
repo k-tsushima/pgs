@@ -1,8 +1,8 @@
 \newcommand{\qaddplot}[1]{
     \pgfplotstableread[col sep=comma]{csv/#1.csv}\data
-    \addplot table[x=nComp,y=minbigul]{\data};
-    \addplot table[x=nComp,y=minbigul_m]{\data};
-    \addplot table[x=nComp,y=xpg]{\data};
+    \addplot[color=blue,mark=*] table[x=nComp,y=minbigul]{\data};
+    \addplot[color=red,mark=square*] table[x=nComp,y=minbigul_m]{\data};
+    \addplot[color=black,mark=diamond*] table[x=nComp,y=xpg]{\data};
 }
 
 \begin{figure}[!hbt]
@@ -43,9 +43,9 @@
                 scaled y ticks = {base 10:-2},
             ]
                 \pgfplotstableread[col sep=comma]{csv/lcomp-phead-ldata.csv}\data
-                \addplot table[x=nComp,y=minbigul]{\data}; \label{plots:put};
-                \addplot table[x=nComp,y=minbigul_m]{\data}; \label{plots:put$_m$};
-                \addplot table[x=nComp,y=xpg]{\data}; \label{plots:xpg};
+                \addplot[color=blue,mark=*] table[x=nComp,y=minbigul]{\data}; \label{plots:put};
+                \addplot[color=red,mark=square*] table[x=nComp,y=minbigul_m]{\data}; \label{plots:put$_m$};
+                \addplot[color=black,mark=diamond*] table[x=nComp,y=xpg]{\data}; \label{plots:xpg};
                 \coordinate (topl) at (rel axis cs:-2,1);
 
             \nextgroupplot[
