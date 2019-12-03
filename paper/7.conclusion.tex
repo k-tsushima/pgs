@@ -2,7 +2,8 @@
 
 In this paper, we focus on efficiency of composition of BX programs.
 To achieve fast evaluation, we introduce two different methods using memoization.
-From the experimental results of left associative BX composition programs, we know that $put_m$ is fastest method if input size is not large and $xpg$ is fastest for other left associative programs.
+From the experimental results of left associative BX composition programs, we know that $xpg$ is fastest method if input size is large and
+$put_m$ is fastest for other left associative programs.
 This shows that if programmers choose one method based on their BX programs and inputs, they can use an efficient evaluation method. 
 
 %there is no best approach for all BX programs. However, if programmer can choose one method based on the BX programs and inputs, we can use better evaluation methods.
@@ -11,7 +12,7 @@ We will continue our work on the following three points.
 First is overcoming our limitation in $xpg$. In $xpg$, there are two limitations: only for very-well-behaved programs and restriction for $\pginline{Case}$ in Section~\ref{sect:pg}. To be a practical evaluation method, an extension of the target language is needed. After extension of the language, we can evaluate more various programs for experimental results.
 Second is introducing an automatic analysis about BX programs and inputs to choose the best evaluation method.
 Currently, programmers have to choose the evaluation method by themselves based on their BX programs and inputs. If this analysis is achieved, we can reduce programmers' burden.
-Third is introducing a type system to our target language, especially the datatype of sources and view. If we introduce this, we can avoid runtime errors like statically-typed functional languages. For this, we need to investigate more about $construct\_dummy$, because the current definition that is used in our experiments %Section~\ref{sect:experiments}
+Third is introducing a type system to our target language, especially the datatype of sources and view. If we introduce this, we can avoid runtime errors like statically-typed functional languages. For this, we need to investigate more about $construct\_dummy$, because the current definition used in our experiments %Section~\ref{sect:experiments}
 will cause type errors. 
 
 %\begin{itemize}
