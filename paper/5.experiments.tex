@@ -105,9 +105,7 @@ the number of compositions are dynamically determined by the length of the sourc
 
 Figure \ref{fig:result} 
 % illustrates 
-shows the evaluation times for each of the seven test cases using the three methods: $put$ in minBiGUL, $put_m$ in minBiGUL$_m$ and $xpg$.
-% We simply ignore 
-For simplicity, we omit the experimental results of $pg$, $cpg$ and $kpg$ because they are shown the slowness compared to $xpg$. For left associative compositions, $put$ works poorly because of the number of reevaluated $get$s.
+shows the evaluation times for each of the seven test cases using the three methods: $put$ in minBiGUL, $put_m$ in minBiGUL$_m$ and $xpg$. We also tried doing similar experiments with $pg$, $cpg$ and $kpg$, but their results are slower than the corresponding ones of $xpg$. Then we simply ignore these tedious results. As we all know, $put$ works poorly for left associative compositions because of the number of reevaluated $get$s.
 %The figure shows $put_m$ and $xpg$ are better than $put$ in some cases.
 The left part of the figure contains tests using not-large inputs, and we see that $put_m$ is the fastest method for them. However if the input size is large enough, in the cases of the right part of the figure, $put_m$ will be slower quickly due to time for manipulating data in the table. At that time, $xpg$ is 
 % proved to be
