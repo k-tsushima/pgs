@@ -117,7 +117,7 @@ src
     ```ocaml
     let s = $s_value$ in
     let bx = $bx_value$ in
-    let v = get bx s v [] in 
+    let v = get bx s [] in 
         v
     ```
 3. **put_m**
@@ -132,7 +132,7 @@ src
     ```ocaml
     let s = $s_value$ in
     let bx = $bx_value$ in
-    let v = get_m bx s v [] in 
+    let v = get_m bx s [] in 
         v
     ```
 5. **pg**
