@@ -96,16 +96,16 @@
                 \coordinate (botr) at (rel axis cs:1,0);
         \end{groupplot}
 
-        \path (topl|-current bounding box.north)--
+        \path (topl|-current bounding box.south west)--
             coordinate(legendpos)
-            (botr|-current bounding box.north);
+            (botr|-current bounding box.south east);
         \matrix[
             matrix of nodes,
             anchor = south,
             draw,
             inner sep = 0.2em,
             draw
-        ]at([yshift=1ex]legendpos) {
+        ]at([yshift=-6ex]legendpos) {
             \ref{plots:put} & $put$ & [2pt]
             \ref{plots:put$_m$} & $put_m$ & [2pt]
             \ref{plots:xpg} & $xpg$\\
