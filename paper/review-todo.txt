@@ -1,0 +1,340 @@
+I have enumerated the suggested changes:
+TODO-A1 ... [review A=1, B=2, C=3, D=4]
+
+If you fix/change one of those, please add "DONE [nn]" with your initials nn or any other comment in the TODO-xx line, e.g.
+TODO-A7: DONE [RG].
+TODO-A8: DONE [RG], rewrote sentence.
+TODO-A9: NOOP [RG], out of scope.
+
+
+----------------------- REVIEW 1 ---------------------
+SUBMISSION: 16
+TITLE: An efficient composition of bidirectional programs by memoization and lazy update
+AUTHORS: Kanae Tsushima, Bách Nguyễn Trọng, Robert Glück and Zhenjiang Hu
+
+----------- Overall evaluation -----------
+SCORE: 2 (accept)
+----- TEXT:
+The paper presents two optimizations based on memoization and
+ laziness for a slightly restricted version of a core of the BiGUL
+ bidirectional language. The paper is well-written and solves a clear
+ efficiency problem in bidirectional programming. I particularly
+ appreciated the incremental buildup to xpg, motivating each step
+ along the way as optimizing away unnecessary calls.
+
+TODO-A1:
+ One thing that is not entirely clear from the presentation is how
+ important the restriction on Case (presented in 4.1) is. What kinds
+ of programs does it rule out? An example could go a long way.  
+
+TODO-A2:
+ This ties in with a weakness in the evaluation of the paper: while it is
+ clear that for left-associative programs the optimizations presented
+ are very effective, it's not clear how put_m and xpg perform in
+ other benchmarks, e.g. the ones in [14], or which of them are
+ actually completely out of scope. I guess it could also be up to the
+ user to pick between put_m, xpg and a traditional evaluation method,
+ but then a more thorough evaluation would help users make more
+ informed choices (just like the paper gives a clear guideline
+ between xpg and put_m in terms of input size).
+
+ Minor:
+
+TODO-A3:
+ - Lots of missing spaces between words. Examples:
+   p6: In all definitions: missing space between "match bx" and "with"
+   p9: Missing space before else in cpg skip
+   p12: missing space after construct_dummy
+
+TODO-A4:
+ - p6: The bfoldr definition is essentially opaque without additional
+   explanation or an example.
+
+
+----------------------- REVIEW 2 ---------------------
+SUBMISSION: 16
+TITLE: An efficient composition of bidirectional programs by memoization and lazy update
+AUTHORS: Kanae Tsushima, Bách Nguyễn Trọng, Robert Glück and Zhenjiang Hu
+
+----------- Overall evaluation -----------
+SCORE: 2 (accept)
+----- TEXT:
+This paper covers bidirectional (BX) programming, a well-established technique for handling the "view update" problem, which occurs in a variety of areas from databases, model based engineering and program refactoring.
+
+The authors observe that while the technique provides a solution to a variety of problems, it comes with a cost in terms of efficiency. They note that another group has also recently observed this (in a 2019 paper) but claim to be the first to propose a systematic solution to this issue.
+
+The work is presented in the context of the BX system BiGUL, specifically in the subset miniBiGUL.
+
+Their contribution is to present memoisation and lazy evaluation as mechanisms for improving performance. Timing measurements are presented to support their hypothesis.
+
+Positives: 
+- presents a particular problem, and attempts to address it;
+- concrete details presented;
+- well motivated;
+- measurement based, as well as giving asymptotic analyses.
+
+Negatives:
+- quite a lot of detailed code, which is routine(ish)
+- typo in an elementary position (see below): can we be sure of the correctness of the rest of the code in the light of this?
+
+Questions:
+
+TODO-B1:
+- it is not quite clear from the paper what the context of miniBiGUL is, but I assume it's a strict language: how would this work look in an explicitly lazy language like Haskell?
+
+TODO-B2:
+- timing measurements are presented: what are the *space* consequences of the transformations presented: it would be good to see data on that as well?
+
+Detailed points:
+
+TODO-B3:
+p3: what are complements here? Not clear from the informal account: please explain explicitly.
+
+TODO-B4:
+p4: is the type of put wrong? Would expect co-domain to be s, not v.
+
+
+----------------------- REVIEW 3 ---------------------
+SUBMISSION: 16
+TITLE: An efficient composition of bidirectional programs by memoization and lazy update
+AUTHORS: Kanae Tsushima, Bách Nguyễn Trọng, Robert Glück and Zhenjiang Hu
+
+----------- Overall evaluation -----------
+SCORE: -1 (weak reject)
+----- TEXT:
+This paper concerns the efficient implementation of bidirectional
+programs in BiGUL, specifically the implementation of the composition
+of two bidirectional functions. The implementation of composition
+described in [4] is efficient for the "get" direction... the getter of
+a composition is just the composition of the getters for each
+part... but it is inefficient in the "put" direction, because in order
+to invoke the two putters, it is necessary also to "get" the
+intermediate value. Thus the put operation of a composition invokes
+both the put *and the get* of the first program. When many
+compositions are nested to the left, then this can result in a
+quadratic number of calls to getters, with inefficiency as the result.
+
+The paper proposes two approaches to avoid this inefficiency. The
+first is simply to memoise get. The reduces the complexity to linear
+number of get calls, but if the arguments to get are large
+data-structures, then the memoization itself can be costly. The second
+approach is to tuple put and get together, and derive an
+implementation of the tupled function that avoids the complexity
+problem. This is rather intricate, and several alternatives are
+discussed, the best being "xpg".
+
+There are some small benchmarks on programs with many left-nested
+compositions. It turns out that, for small data, the memoization
+approach works best, whereas operating on much larger data gives the
+tupling approach the advantage.
+
+Not all approaches to bidirectional programming suffer from this
+problem. For example, as far as I can determine, there is no such
+complexity problem in the Haskell Lens library. So the problem does
+seem to be rather specialized. The paper is hard to follow in places,
+also.
+
+TODO-C1:
+* "Complements" are discussed on p3, but not explained--you have to
+ know what they are from the literature to understand this
+ discussion.
+
+TODO-C2:
+* It's unclear (on p6) why we need BOTH get_m and get_mh... indeed,
+ the call to get_m from get_mh repeats the same table-lookup, and
+ performs the same table addition, for the composition case, that
+ get_mh does next for all the other cases. Why this complexity?
+
+TODO-C3:
+* On p7 and later, I think the same names are being rebound in
+ non-recursive definitions... e.g. (s_1,v_1) <= pg [[bx_1]]
+ (s_1,v_1), which I think is binding new s_1 and v_1 and shadowing
+ the old definitions. In a context which is also discussing lazy
+ updates, then a recursive definition might make sense, so it is
+ confusing to reuse the same names.
+
+TODO-C4:
+* p8 discusses case programs, which test a condition both before and
+ after the case. In this paper, both conditions must take the same
+ value. This restriction is mentioned on page 8, but I do not see how
+ it is enforced by the definitions at the top of the page.
+
+TODO-C5:
+* Dummy values are introduced on p8 and p9, which are used when a value
+ is needed for a hitherto unknown component. But it's very unclear how
+ they are to be constructed.
+
+TODO-C6:
+* On page 9, it's clear what the pg function is, but it's unclear what
+ the *specification* of cpg is. As a result, it's hard to understand,
+ or judge the correctness of, the following definition. Is there an
+ equation relating pg and cpg that should hold? If so, stating it
+ would help the reader. I have the same concern about kpg and xpg--it
+ simply isn't clear what they are supposed to do.
+
+The paper is certainly of some interest, but given that the problem
+it's addressing seems very specialized, and that it lacks clarity,
+then it's hard to recommend acceptance.
+
+----------------------------
+
+TODO-C7:
+p2 Your example [[[1, 2], [3]], [4]] is ill-typed. (I think this is a typo).
+
+TODO-C8:
+p4 The type given for put [[bx]] is wrong (wrong return type).
+
+
+----------------------- REVIEW 4 ---------------------
+SUBMISSION: 16
+TITLE: An efficient composition of bidirectional programs by memoization and lazy update
+AUTHORS: Kanae Tsushima, Bách Nguyễn Trọng, Robert Glück and Zhenjiang Hu
+
+----------- Overall evaluation -----------
+SCORE: -1 (weak reject)
+----- TEXT:
+This paper describes how the composition of bidirectional transformations is
+sensitive to the associativity, and how this can be remedied using memoization.
+The result is restricted to the specific context of very-well-behaved
+transformations.
+
+The work itself is well motivated and introduced and the central result of this
+paper is good, so I recommend acceptance. On the whole the paper does a good
+job of motivating the development of the required functions, 
+
+TODO-D1:
+My main reason for rejection is that although on a cursory glance the functions
+seem to be well explained, the crucial functions "cpg", "kpg" and "xpg" need
+more detailed explanation of *why* they work rather than stating what they do.
+
+My understanding is that cpg as being the cps-version of pg: which is roughly
+the same trick as using a Cayley representation/ to the problem (I think). But
+this is largely guesswork because I'm aware of how the quadratic function
+application problem is generally solved. This really ought to be explained in
+the paper itself.
+
+TODO-D2:
+The claim is that kpg does this more lazily, and I assumed that this had
+something to do with the underlined values in the final case of kpg. But it
+turns out that it is to do with when the compositisions are applied in the
+RearrV and RearrS cases. Admittedly this is not in the main text and ought to
+be explained, and this is just an educated guess.
+
+TODO-D3:
+As for xpg, I don't have a good sense of *why* it is better, and this isn't
+clear from the text.
+
+TODO-D4:
+One aspect that appears to be missing is a discussion of the overhead
+introduced by the technique. I would have liked to see cases where we see the
+cost of memoization: it is surely not for free.
+
+Minor comments
+--------------
+
+TODO-D5:
+p1, abstract,
+ "and enables to use them later" ~>
+ "and enables them to be used later"
+
+TODO-D6:
+p1 line -5,
+ ... "original source s. get is a" ... ~>
+ ... "original source s. The function get is a" ... ~>
+
+TODO-D7:
+p2 The composition get_{bx1 . bx2} uses a composition in the reverse order
+ compared to function composition. I realise that this is standard in the bx
+ community but it is so unusual that perhaps a simple line to justify or point
+ this out would be useful.
+
+TODO-D8:
+p6 two occurences of "match bx with": there should be space between "bx" and
+ "with"
+
+TODO-D9:
+p7, line 1,
+ "s v, function get_m,h" ~>
+ "s v, the function get_m,h"
+
+TODO-D10
+p7 line 2,
+ "the key (bx, s), bx == bx1 . bx2" ~>
+ "the key (bx, s), where bx == bx1 . bx2"
+
+TODO-D11:
+p7, sec 4.1, para 1
+ "it is potential to" ~>
+ "there is the potential to" ~>
+
+TODO-D12:
+p7, Def 6
+ "Now, let us see how to construct pg respectively."
+ Respective of what?
+
+TODO-D13:
+p7 
+ "The last equality is relatively obvious" 
+ It wouldn't be too onerous to just say that it's a function application
+
+TODO-D14:
+p7, def pg, `pg [[ bx1 x bx2]]((s1,s2,),(v1,v2))`:
+ on the following line the type returned looks like a quadruple rather than a
+ pair, so I think there are some missing parentheses.
+
+TODO-D15:
+p7, line -2 "rearrangements are very clear" ... "then doing basic changes"
+ If I'm right about the typo above, I think that it's perhaps not so clear.
+
+TODO-D16:
+p7/p8: some of the definitions end in a `return` and others don't. I'm unclear
+ about the difference.
+
+TODO-D17:
+p7, line -2
+ "paring" ~>
+ "pairing"
+
+TODO-D18:
+p8 "considered as the soul": I'm not sure that this metaphor works too well
+here
+
+TODO-D19:
+p9 "Therefore, the runtime inefficiency is inevitable:"
+ As an unqualified statement this is surely false, as demonstrated by the
+results of your paper.
+
+TODO-D20:
+p10, S4.3
+ "For keeping away such computations" 
+ this needs to be reworded, perhaps something like "To prevent such redundant
+ computations from occuring"
+
+TODO-D21:
+p10, S4.3
+ "Every values are" ~>
+ "Every value is"
+
+TODO-D22:
+p10, Def 8
+ I found this definition somewhat overwhelming. Could you break it down and
+ explain more carefully?
+
+TODO-D23:
+p11, para 2
+ "First is in kpg" ~>
+ "The first is in kpg"
+
+TODO-D24:
+p11, "a function that is used to produce" ~>
+    "a function that are used to produce"
+
+TODO-D25:
+p13, last para
+ "Then we simply omit ..."
+ I'm not sure I understand the logic of the "Then"
+
+TODO-D26:
+p14
+ "Since the pioneer work of lens" ~>
+ "Since the pioneering work on lenses"
