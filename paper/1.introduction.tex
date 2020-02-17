@@ -30,7 +30,7 @@
 The synchronization of data is a common problem. In the database community this problem is known as ``the view update problem'' and has been investigated for a long time~\cite{Bancilhon:1981:USR:319628.319634}. Bidirectional transformation (BX) provides a systematic approach to solving this problem.
 Consider a small BX program of $phead$\footnote{The actual program is shown in the next section.}, which consists of two functions: $get$ (for getting the head of an input list) and $put$ (for reflecting the output to the head of the input). Figure \ref{fig:eval-phead} shows an example of the bidirectional behavior of $phead$.
 Let $[1,2]$ be the original source~$s$.
-$get$ is a projection: $get$ of $phead$ picks the first element of the given original source $[1,2]$ and returns $1$ as a view $v$.
+The function $get$ is a projection: $get$ of $phead$ picks the first element of the given original source $[1,2]$ and returns $1$ as a view $v$.
 %\texttt{get pHead [1,2] = 1}.
 %After the view \texttt{v} is obtained, the user can modify the view.
 %In this case, the user
@@ -79,7 +79,7 @@ lp3 = (phead \circ phead) \circ phead
 \]
 \minusvspacetwo
 
-\noindent which is illustrated by Figure \ref{fig:eval-comp-phead} with the original source $s$ being ${[[[1,2],[3]],[4]]}$ and the updated view ${100}$.
+\noindent which is illustrated by Figure \ref{fig:eval-comp-phead} with the original source $s$ being ${[[[1,2],[3]],[[4]]]}$ and the updated view ${100}$.
 To obtain the final updated source $s'$, $put$ for $lp3$ needs to evaluate $put$ of $phead$ three times. The first is from $i_2$ and $v'$ to obtain $i'_2$, which needs to call $get$ twice to compute $i_2$; the second is from $i_1$ and $i'_2$ to obtain $i'_1$, which needs to call $get$ once, and the last is from $s$ and $i'_1$ to obtain~$s'$, which is just a direct $put$ computation.
 
 %In BX programs, composition of programs is essential for writing various interesting evaluations.

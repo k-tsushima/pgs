@@ -1,7 +1,7 @@
 \section{Tupling and Lazy Updates: xpg} \label{sect:xpg}
 \subsection{Tupling: pg} \label{sect:pg}
 
-Another solution for saving intermediate states is tupling. If $put$ and $get$ are evaluated simultaneously, it is potential to reduce the number of recomputed $get$s. The following function, $pg$, accepts the pair of a source and a view as the input to produce a new pair that contains the actual result of the corresponding minBiGUL program.
+Another solution for saving intermediate states is tupling. If $put$ and $get$ are evaluated simultaneously, there is potential to reduce the number of recomputed $get$s. The following function, $pg$, accepts the pair of a source and a view as the input to produce a new pair that contains the actual result of the corresponding minBiGUL program.
 
 \begin{definition}
     $\pg{bx}{s}{v} = (\putbx{bx}{s}{v}, \getbx{bx}{s})$
@@ -39,7 +39,7 @@ The first equality is simply based on the definitions of $pg$, $\putbxinline{Ski
         \tab \qtab \overset{2}{=} (s, v) \Leftarrow \pg{bx}{s}{g_1 \ v}; \\
         \tab \qtabs{2} (s, g_2 \ v)$
 
-Constructions of $pg$ for the replacement, the product and the source/view rearrangements are very clear when just paring $put$ and $get$ respectively, then doing basic changes.\\
+Constructions of $pg$ for the replacement, the product and the source/view rearrangements are very clear when just pairing $put$ and $get$ respectively, then doing basic changes.\\
 
     \noindent $\tabs{2} \pg{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s}{v} \\
     \tabs{3} \overset{1}{=} (\text{if} \ {cond_{sv} \ s \ v} \qtabs{3} \tab \text{if} \ {cond_{s} \ s} \\
@@ -75,7 +75,7 @@ When evaluating $\pginline{bx_1 \circ bx_2}$, there are three $pg$ calls, of whi
 \begin{definition}
 $\cpg{bx}{ks}{kv}{s}{v}$
 
-    \noindent $\cpg{Skip \ h}{ks}{kv}{s}{v} = \textnormal{ if } h \ s = v \text{ then } (ks, kv, s, v) \textnormal{ else } \textit{undefined}$
+    \noindent $\cpg{Skip \ h}{ks}{kv}{s}{v} = \textnormal{ if } h \ s = v \text{ then } (ks, kv, s, v) \ \textnormal{ else } \textit{undefined}$
 
     \noindent $\cpg{Replace}{ks}{kv}{s}{v} = (kv, ks, v, s)$
 
@@ -133,7 +133,7 @@ In the next session, we will optimize this redundancy.
 
 \subsection{Lazy Computation: kpg}
 
-The problem for $cpg$ lies in redundant computations during evaluating. For keeping away such computations, we introduce an extension named $kpg$. While $cpg$ evaluates values eagerly, $kpg$ does the opposite. Every values are evaluated lazily in a computation of $kpg$. The input of $\kpginline{bx}$ is expanded to a 6-tuple $(ks, kv, ks', kv', s, v)$ where $ks$ and $kv$ keep the modification information same as $cpg$, $s$ and $v$ hold evaluated values, and $ks'$ and $kv'$ are used for lazy evaluation of actual values. The output of this function is also a 6-tuple $(ks, kv, ks', kv', s, v)$.\\
+The problem for $cpg$ lies in redundant computations during evaluating. For keeping away such computations, we introduce an extension named $kpg$. While $cpg$ evaluates values eagerly, $kpg$ does the opposite. Every value is evaluated lazily in a computation of $kpg$. The input of $\kpginline{bx}$ is expanded to a 6-tuple $(ks, kv, ks', kv', s, v)$ where $ks$ and $kv$ keep the modification information same as $cpg$, $s$ and $v$ hold evaluated values, and $ks'$ and $kv'$ are used for lazy evaluation of actual values. The output of this function is also a 6-tuple $(ks, kv, ks', kv', s, v)$.\\
 Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated source and view $(s, v)$ where $s = \putbx{bx}{s_0}{v_0}$ and $v = \getbx{bx}{s_0}$ can be obtained using $kpg$ as follows:
 
 \smallvspace
@@ -186,18 +186,18 @@ $\kpginline{Skip}$ and $\kpginline{Case}$ are special cases, because they requir
 %Except $\kpginline{Skip}$ and $\kpginline{Case}$ where $s$ and $v$ hold actual values, functions for the computation will be kept in $ks'$ and $kv'$.
 When evaluating $\kpginline{bx_1 \circ bx_2}$, $\underline{ks_1'}$ and $\underline{s_1}$ in the result of the first assignment are still redundant but not evaluated.
 
-Additionally we did two optimizations in $kpg$. First is in $\kpginline{bx_1 \times bx_2}$. The evaluation of $ks'$ and $kv'$ will be done independently in two assignments using $\kpginline{bx_1}$ and $\kpginline{bx_2}$. There may be same computations in $fst \circ ks'$ and $snd \circ ks'$ as well as $fst \circ kv'$ and $snd \circ kv'$.
+Additionally we did two optimizations in $kpg$. The first is in $\kpginline{bx_1 \times bx_2}$. The evaluation of $ks'$ and $kv'$ will be done independently in two assignments using $\kpginline{bx_1}$ and $\kpginline{bx_2}$. There may be same computations in $fst \circ ks'$ and $snd \circ ks'$ as well as $fst \circ kv'$ and $snd \circ kv'$.
 To remove duplicate evaluations, we evaluate actual values in $s$ and $v$ before calling $\kpginline{bx_1}$.
 %It is possible to evaluate actual values in $s$ and $v$ before calling $\kpginline{bx_1}$ to remove the redundancy like that. One more thing,
 Second is in $\kpginline{Case}$. We need to evaluate $ks' \ s'$ and $kv' \ v'$ to check the \underline{fi} condition before returning the 6-tuple. Such evaluations can be done lazily to make programs run faster. We use the above small optimizations in our implementation.
 
 \subsection{Combination of pg and kpg: xpg}
-The most important thing when using $kpg$ to evaluate a composition $bx_1 \circ bx_2$ is keeping the dropped parts from the source in a function that is used to produce new source instead of using more recursive call. This is reflected in the first call $\kpginline{bx_1}$ and the last application in $\kpginline{bx_1 \circ bx_2}$. The second call $\kpginline{bx_2}$ just play a syntactic role while it requires many parameters. We can completely reduce this number to 2, including one for the source and one for the view as in a $pg$ call. This idea is realized by function $xpg$ as follows:
+The most important thing when using $kpg$ to evaluate a composition $bx_1 \circ bx_2$ is keeping the dropped parts from the source in a function that are used to produce new source instead of using more recursive call. This is reflected in the first call $\kpginline{bx_1}$ and the last application in $\kpginline{bx_1 \circ bx_2}$. The second call $\kpginline{bx_2}$ just play a syntactic role while it requires many parameters. We can completely reduce this number to 2, including one for the source and one for the view as in a $pg$ call. This idea is realized by function $xpg$ as follows:
 
 \begin{definition}
 $\xpg{bx}{s}{v}$
 
-    \noindent $\xpg{bx}{s}{v} = \textnormal{match } bx \textnormal{ with }\\
+    \noindent $\xpg{bx}{s}{v} = \match{bx}\\
     \tab \vert \ bx_1 \circ bx_2 \to \\
         \tabs{2} (ks_1,kv_1, ks_1', kv_1', s_1, v_1) \Leftarrow \kpg{bx_1}{\lambda \_.s}{id}{id}{id}{s}{construct\_dummy \ s};\\
         \tabs{2} (s_2, v_2) \Leftarrow \xpg{bx_2}{kv_1' \ v_1}{v};\\

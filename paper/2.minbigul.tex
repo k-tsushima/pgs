@@ -5,7 +5,7 @@ The target language in this paper, minBiGUL, is a very-well behaved subset of Bi
 BiGUL supports two transformations: a forward transformation $get$ producing a view from a source and a backward transformation $put$ taking a source and a modified view to produce an updated source. Intuitively, if we have a BiGUL program $bx$, these two transformations are the following functions:
 
  \smallvspace
-    $\qtab \getbxinline{bx} : s \to v, \quad \putbxinline{bx} : s * v \to v$
+    $\qtab \getbxinline{bx} : s \to v, \quad \putbxinline{bx} : s * v \to s$
  \smallvspace
  
 BiGUL is well-behaved \cite{Pacheco:2014:MCP:2543728.2543737} since two functions $\putbxinline{bx}$ and $\getbxinline{bx}$ satisfy the round-trip laws as follows:

@@ -40,7 +40,7 @@ TODO-A2:
 
  Minor:
 
-TODO-A3:
+TODO-A3: DONE [KT]
  - Lots of missing spaces between words. Examples:
    p6: In all definitions: missing space between "match bx" and "with"
    p9: Missing space before else in cpg skip
@@ -90,7 +90,7 @@ Detailed points:
 TODO-B3:
 p3: what are complements here? Not clear from the informal account: please explain explicitly.
 
-TODO-B4:
+TODO-B4: DONE [KT]
 p4: is the type of put wrong? Would expect co-domain to be s, not v.
 
 
@@ -178,10 +178,10 @@ then it's hard to recommend acceptance.
 
 ----------------------------
 
-TODO-C7:
+TODO-C7: DONE[KT]
 p2 Your example [[[1, 2], [3]], [4]] is ill-typed. (I think this is a typo).
 
-TODO-C8:
+TODO-C8: DONE[KT]
 p4 The type given for put [[bx]] is wrong (wrong return type).
 
 
@@ -232,12 +232,12 @@ cost of memoization: it is surely not for free.
 Minor comments
 --------------
 
-TODO-D5:
+TODO-D5: DONE[KT]
 p1, abstract,
  "and enables to use them later" ~>
  "and enables them to be used later"
 
-TODO-D6:
+TODO-D6: DONE[KT]
 p1 line -5,
  ... "original source s. get is a" ... ~>
  ... "original source s. The function get is a" ... ~>
@@ -248,26 +248,26 @@ p2 The composition get_{bx1 . bx2} uses a composition in the reverse order
  community but it is so unusual that perhaps a simple line to justify or point
  this out would be useful.
 
-TODO-D8:
+TODO-D8: DONE[KT]
 p6 two occurences of "match bx with": there should be space between "bx" and
  "with"
 
-TODO-D9:
+TODO-D9: DONE[KT]
 p7, line 1,
  "s v, function get_m,h" ~>
  "s v, the function get_m,h"
 
-TODO-D10
+TODO-D10: DONE[KT]
 p7 line 2,
  "the key (bx, s), bx == bx1 . bx2" ~>
  "the key (bx, s), where bx == bx1 . bx2"
 
-TODO-D11:
+TODO-D11: DONE[KT]
 p7, sec 4.1, para 1
  "it is potential to" ~>
  "there is the potential to" ~>
 
-TODO-D12:
+TODO-D12: 
 p7, Def 6
  "Now, let us see how to construct pg respectively."
  Respective of what?
@@ -290,7 +290,7 @@ TODO-D16:
 p7/p8: some of the definitions end in a `return` and others don't. I'm unclear
  about the difference.
 
-TODO-D17:
+TODO-D17: DONE[KT]
 p7, line -2
  "paring" ~>
  "pairing"
@@ -310,7 +310,7 @@ p10, S4.3
  this needs to be reworded, perhaps something like "To prevent such redundant
  computations from occuring"
 
-TODO-D21:
+TODO-D21: DONE[KT]
 p10, S4.3
  "Every values are" ~>
  "Every value is"
@@ -320,12 +320,12 @@ p10, Def 8
  I found this definition somewhat overwhelming. Could you break it down and
  explain more carefully?
 
-TODO-D23:
+TODO-D23: DONE[KT]
 p11, para 2
  "First is in kpg" ~>
  "The first is in kpg"
 
-TODO-D24:
+TODO-D24: DONE[KT]
 p11, "a function that is used to produce" ~>
     "a function that are used to produce"
 
@@ -334,7 +334,7 @@ p13, last para
  "Then we simply omit ..."
  I'm not sure I understand the logic of the "Then"
 
-TODO-D26:
+TODO-D26: DONE[KT]
 p14
  "Since the pioneer work of lens" ~>
  "Since the pioneering work on lenses"
