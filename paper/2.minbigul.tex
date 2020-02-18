@@ -134,7 +134,11 @@ $\tab \text{if } E_1 \text{ then } X_1 \text{ else } X_2 \text{ fi } E_2; S\\
 \tabs{2} \ \equiv \text{if }E_1 = \textit{true} \text{ then } \{ X_1; \text{ if } E_2 = true \text{ then } S \text{ else } \textit{undefined}\}\\
     \tabs{4} \text{else } \{ X_2; \text{ if } E_2 = \textit{false} \text{ then } S \text{ else } \textit{undefined} \}$
 \smallvspace
-    
+
+Also in the semantics of $\putbxinline{Case}$ and $\getbxinline{Case}$, the return statements are used to express clearly the value of functions. Variables $s'$ and $v'$ wrapped in these returns are neccessary for checking the fi conditions.
+
+\subsection{Examples}
+
 \noindent As an example of minBiGUL program, consider the definition of $phead$ :\\
 \smallvspace
 $\tab phead = RearrS \ f_1 \ f_2 \ bx_s \ \text{where: } f_1 = \lambda (s::ss).(s,ss), \, f_2 = \lambda (s,ss).(s::ss),\\
@@ -144,11 +148,20 @@ $\tab phead = RearrS \ f_1 \ f_2 \ bx_s \ \text{where: } f_1 = \lambda (s::ss).(
         
 The above program rearranges the source, a non-empty list, to a pair of its head element $s$ and its tail $ss$, and the view to a pair $(v, ())$, then we can use $v$ to replace $s$ and $()$ to keep $ss$. Intuitively, $\putbx{phead}{s_0}{v_0}$ returns a list whose head is $v_0$ and tail is the tail of $s_0$, and $\getbx{phead}{s_0}$ returns the head of the list $s_0$. For instance, $\putbx{phead}{[1,2,3]}{100} = [100,2,3]$ and $\getbx{phead}{[1,2,3]} = 1$. If we want to update the head element of the head element of a list of lists by using the view, we can define a composition like $phead \circ phead$. For example:
 
-\smallvspace
 $\tab \putbx{phead \circ phead}{[[1,2,3],[\,],[4,5]]}{100} = [[100,2,3],[\,],[4,5]]$
 
 $\tab \getbx{phead \circ phead}{[[1,2,3],[\,],[4,5]]} = 1$
-\smallvspace
+
+Next let us look at another more complex example using a case combinator:
+
+    $\tab bsnoc = Case \ cond_{sv} \ cond_s \ bx_1 \ bx_2$ where:\\
+    $\tabs{3} \ cond_{sv} = \lambda s.\lambda v.(\textnormal{length } v = 1), \ cond_s = \lambda (s_1,s_2).(s_2 = [\ ])$\\
+    $\tabs{3} \ bx_1 =  Replace$\\
+    $\tabs{3} \ bx_2 = RearrS \ f_1 \ f_2 \ bx_s$ where:\\
+        $\tabs{4} f_1 = f_2^{-1} = \lambda (x:y:ys).(y,(x:ys))$, \\
+        $\tabs{4} bx_s = RearrV \ g_1 \ g_2 \ bx_v$ where:\\
+            $\tabs{5} g_1 = g_2^{-1} = \lambda (v:vs).(v,vs)$\\
+            $\tabs{5} bx_v = Replace \times bsnoc$
 
 To close this section,
 % In the end of this section, 

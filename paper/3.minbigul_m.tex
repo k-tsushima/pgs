@@ -13,45 +13,33 @@ To keep it simple, the intermediate state of a composition is saved in a key-val
 % Then, instead of recomputing the value, the value in the table is used.
 Later the value in the table is used instead of recomputing it. 
 
-The memoizing version, minBiGUL$_m$, needs only two modifications: $get_m$ and $put_m$ (Definitions~\ref{def:putm} and~\ref{def:getm}). The auxiliary function, $get_{mh}$, is used to retrieve the value of an already evaluated $get$ from the table or to compute an unevaluated $get$ by $get_m$ and store the key-value tuple in the table (Definition~\ref{def:getmh}).
+The memoizing version, minBiGUL$_m$, needs only two modifications: $get_m$ and $put_m$ (Definitions~\ref{def:putm} and~\ref{def:getm}).
 
 \begin{definition} \label{def:putm} $\text{Memo version of } put$
 
     \noindent $\putm{bx}{s}{v} = \match{bx}\\
-        \tab \vert \ bx_1 \circ bx_2 \to \putm{bx_1}{s}{(\putm{bx_2}{(\getmh{bx_1}{s})}{v})} \\
+        \tab \vert \ bx_1 \circ bx_2 \to \\
+            \tabs{2} \putm{bx_1}{s}{(\putm{bx_2}{(\getm{bx_1}{s})}{v})} \\
         \tab \vert \ \_ \to \text{similar to } put$
 \end{definition}
 
-\begin{multicols}{2}
-    \begin{definition} \label{def:getm} $\text{Memo version of } get$
+\begin{definition} \label{def:getm} $\text{Memo version of } get$
 
-        \noindent $\getm{bx}{s} = \match{bx}\\
-            \tab \ \vert \ bx_1 \circ bx_2 \to\\
-            \tabs{2} \textnormal{try } (\text{Hashtbl.find} \ table_g \ (bx, s))\\
-            \tabs{2} \textnormal{with } \text{Not\_found } \to\\
-                \tabs{3} v \Leftarrow \getmh{bx_2}{(\getmh{bx_1}{s})}\\
-                \tabs{3} \text{Hashtbl.add } \ table_g \ (bx, s) \ v\\
-                \tabs{3} v \\
-            \tab \ \vert \ \_ \to \text{similar to } get$
-    \end{definition}
-\columnbreak
-    \begin{definition} \label{def:getmh} $\text{Interface for } get_m$
+    \noindent $\getm{bx}{s} = \match{bx}\\
+    \tab \ \vert \ bx_1 \circ bx_2 \to\\
+    \tabs{2} \textnormal{try } (\text{Hashtbl.find} \ table_g \ (bx, s))\\
+    \tabs{2} \textnormal{with } \text{Not\_found } \to\\
+        \tabs{3} i \Leftarrow \getm{bx_1}{s}; \tab \text{Hashtbl.add } \ table_g \ (bx_1, s) \ i;\\
+        \tabs{3} v \Leftarrow \getm{bx_2}{i}; \tab \text{Hashtbl.add } \ table_g \ (bx_2, i) \ v;\\
+        \tabs{3} \text{Hashtbl.add } \ table_g \ (bx, s) \ v\\
+        \tabs{3} v \\
+    \tab \ \vert \ \_ \to \text{similar to } get$
+\end{definition}
 
-        \noindent $\getmh{bx}{s} =\\
-            \tab \textnormal{try } (\text{Hashtbl.find} \ table_g \ (bx, s))\\
-            \tab \textnormal{with } \text{Not\_found } \to\\
-                \tabs{2} v \Leftarrow \getm{bx}{s}\\
-                \tabs{2} \match{bx} \\
-                \tabs{2} \ \vert \ bx_1 \circ bx_2 \to v \\
-                \tabs{2} \ \vert \ \_ \to \text{Hashtbl.add } \ table_g \ (bx, s) \ v\\
-                \qtabs{2} \ v$
-    \end{definition}
-\end{multicols}
-
+The evaluation of $\putm{bx_1 \circ bx_2}{s}{v}$ includes two recursive calls of $put_m$ and an external call of $get_m$, which is relatively similar to the evaluation of $\putbx{bx_1 \circ bx_2}{s}{v}$. 
+Meanwhile, the evaluation of $\getm{bx_1 \circ bx_2}{s}$ does not merely invoke $get_m$ recursively twice. In case that $bx$ is a composition, the key ($bx,s$) needs to be looked up in the table and the corresponding value would be used for the next steps in the evaluation. If there is no such key, the value of the intermediate state $i$ and the value of $\getbx{bx}{s}$ in $v$ will be calculated. These values along with the corresponding keys will also be stored in the table where the interpreter may later 
+leverage instead of reevaluating some states.
 % Note as a special point 
 % It should be noted 
 Note in particular 
-that the interpreter does not save all states when evaluating a program, only the intermediate states of a composition. When evaluating $\putm{bx_1 \circ bx_2}{s}{v}$, the function $get_{mh}$ is used, not $get$ or $get_m$.
-% appears to indicate the saving. 
-When evaluating $\getm{bx_1 \circ bx_2}{s}$, the key ($bx,s$), where $bx \equiv bx_1 \circ bx_2$, is looked up in the table and the corresponding value is used for the next steps in the evaluation. If there is no such key, the value $v$ will be calculated by using $get_{mh}$. This key-value insertion is necessary because the interpreter may later need to reevaluate $\getm{bx_1 \circ bx_2}{s}$.
-% reevaluate <--> evaluate one more time.
+that the interpreter does not save all states when evaluating a program, only the intermediate states of a composition.

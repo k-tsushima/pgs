@@ -39,14 +39,31 @@ The first equality is simply based on the definitions of $pg$, $\putbxinline{Ski
         \tab \qtab \overset{2}{=} (s, v) \Leftarrow \pg{bx}{s}{g_1 \ v}; \\
         \tab \qtabs{2} (s, g_2 \ v)$
 
-Constructions of $pg$ for the replacement, the product and the source/view rearrangements are very clear when just pairing $put$ and $get$ respectively, then doing basic changes.\\
+Constructions of $pg$ for the replacement, the product and the source/view rearrangements are very clear when just pairing $put$ and $get$ respectively, then doing basic changes.
+%
+The values of these $pg$ functions are the values of final expressions respectively. We only use the return keyword to express explicitly the evaluated value of a function in the situation of $Case$.
 
     \noindent $\tabs{2} \pg{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s}{v} \\
     \tabs{3} \overset{1}{=} (\text{if} \ {cond_{sv} \ s \ v} \qtabs{3} \tab \text{if} \ {cond_{s} \ s} \\
     \tabs{2} \qtab \text{then} \ s' \Leftarrow \putbx{bx_1}{s}{v} \qtab \tab \, \text{then} \ v' \Leftarrow \getbx{bx_1}{s} \\
     \tabs{2} \qtab \text{else} \ s' \Leftarrow \putbx{bx_2}{s}{v} \qtab \tab \ \, \text{else} \ v' \Leftarrow \getbx{bx_2}{s}\\
     \tabs{2} \qtab \text{fi} \ cond_{s} \ s'; \text{ return } s' \qtab , \tab \ \ \text{fi} \ {cond_{sv} \ s \ v'}; \text{ return } v')\\
-    \tabs{3} \overset{2}{=} \text{if} \ {cond_{sv} \ s \ v} \ \&\& \ {cond_{s} \ s}\\
+    %
+    \tabs{3} \overset{2}{=} \text{if} \ {cond_{sv} \ s \ v} \ \&\& \ {cond_{s} \ s} \ \text{then}\\
+        \qtabs{2} \tab (s', v') \Leftarrow (\putbx{bx_1}{s}{v}, \getbx{bx_1}{s});\\
+        \qtabs{2} \tab \text{if} \ cond_{s} \ s' \ \&\& \ cond_{sv} \ s \ v' \ \text{then return } (s',v') \ \text{else } \textit{undefined}\\
+        \tabs{2} \qtab \text{else if} \ {cond_{sv} \ s \ v} \ \&\& \ not \ ({cond_{s} \ s}) \ \text{then}\\
+        \qtabs{2} \tab (s', v') \Leftarrow (\putbx{bx_1}{s}{v}, \getbx{bx_2}{s});\\
+        \qtabs{2} \tab \text{if} \ cond_{s} \ s' \ \&\& \ not \ (cond_{sv} \ s \ v') \ \text{then return } (s',v') \ \text{else } \textit{undefined}\\
+        \tabs{2} \qtab \text{else if} \ not \ ({cond_{sv} \ s \ v}) \ \&\& \ {cond_{s} \ s} \ \text{then}\\
+        \qtabs{2} \tab (s', v') \Leftarrow (\putbx{bx_2}{s}{v}, \getbx{bx_1}{s});\\
+        \qtabs{2} \tab \text{if} \ not \ (cond_{s} \ s') \ \&\& \ cond_{sv} \ s \ v' \ \text{then return } (s',v') \ \text{else } \textit{undefined}\\
+        \tabs{2} \qtab \text{else if} \ not \ ({cond_{sv} \ s \ v}) \ \&\& \ not \ ({cond_{s} \ s}) \ \text{then}\\
+        \qtabs{2} \tab (s', v') \Leftarrow (\putbx{bx_2}{s}{v}, \getbx{bx_2}{s});\\
+        \qtabs{2} \tab \text{if} \ not \ (cond_{s} \ s') \ \&\& \ not \ (cond_{sv} \ s \ v') \ \text{then return } (s',v') \ \text{else } \textit{undefined}\\
+    %
+    \tabs{3} \overset{3}{=} (* \text{ with restriction } *)\\
+    \tabs{2} \qtab \text{if} \ {cond_{sv} \ s \ v} \ \&\& \ {cond_{s} \ s}\\
     \tabs{2} \qtab \text{then} \ (s', v') \Leftarrow \pg{bx_1}{s}{v}\\
     \tabs{2} \qtab \text{else} \ (s', v') \Leftarrow \pg{bx_2}{s}{v}\\
     \tabs{2} \qtab \text{fi} \ cond_{s} \ s' \ \&\& \ cond_{sv} \ s \ v'; \text{ return } (s',v')$
@@ -61,12 +78,14 @@ A restriction for $\pginline{Case}$ needs to be introduced here. We know that th
             \qtab \tabs{3} (s_3, v_2) \qtabs{6} (s_3, v_2)\\
     \tabs{3} \overset{4}{=} (s_1, v_1) \Leftarrow \pg{bx_1}{s}{construct\_dummy \ s}; \\
         \tabs{2} \qtab (s_2, v_2) \Leftarrow \pg{bx_2}{v_1}{v}; \\
-        \tabs{2} \qtab (s_3, v_3) \Leftarrow \pg{bx_1}{s_1}{s_2}; \\
+        \tabs{2} \qtab (s_3, v_3') \Leftarrow \pg{bx_1}{s_1}{s_2}; \\
             \qtab \tabs{3} (s_3, v_2)$
             
 The construction of $\pginline{bx_1 \circ bx_2}$ can be considered as the soul of the $pg$ function. The first two equalities comes from mentioned definitions and some basic transformations. The third one rewrites $v_1 \Leftarrow \getbx{bx_1}{s}$ into $(s_1, v_1) \Leftarrow \pg{bx_1}{s}{dummy}$. This is possible when we consider $\getbx{bx_1}{s}$ as the second element of $\pg{bx_1}{s}{dummy}$ where $dummy$ is a special value that makes the $put \, [\![bx_1]\!]$ valid.
 %We can construct a $dummy$ from the source by \textsc{GetPut} law in some cases or require programmers to give a valid view.
-Since there is no real view, this $dummy$ is necessary. The last equality changes two. First is a change from $dummy$ to an application $construct\_dummy \ s$. This means we need a way to construct $dummy$ from the current source, $s$. We can require programmers to give this $construct\_dummy$ function. Second is a substitution under the \textsc{PutPut} law on $s$ of $(s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2}$ by $s_1$ which equals to $\putbx{bx_1}{s}{(construct\_dummy \ s)}$. $v_3$ in the result pair $(s_3,v_3)$ equals $dummy$. So we realize that there is no loss information when computing a composition.
+Since there is no real view, this $dummy$ is necessary to pair with original source $s$ to form the input of $put \, [\![bx_1]\!]$. The last equality changes two. The first is a change from $dummy$ to an application $construct\_dummy \ s$. This means we need a way to construct $dummy$ from the current source, $s$. Programmers can be required to give this $construct\_dummy$ function, but it may be inessential for ill-typed systems where choosing $dummy$ as $v$ is the easiest way to meet our expectation. We set up that choice in our experiments but still use the $construct\_dummy$ function in the later definitions to provide a more general meanning.
+%
+The second is the change from $(s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2}$ to $(s_3, v_3') \Leftarrow \pg{bx_1}{s_1}{s_2}$, where $s$ and $v_3$ are replaced with $s_1$ and $v_3'$ respectively. Because $s_1$ is a source update of $\putbx{bx_1}{s}{dummy}$, so under the \textsc{PutPut} law, it is possible to substitute $s$ by $s_1$ is possible. The substitution of $v_3$ by $v_3'$ is simply replacing the variable name since $v_3$ and $v_3'$ hold different results of $\getbx{bx_1}{s}$ and $\getbx{bx_1}{s_1}$ respectively. Because both variables are no longer used later, this substitution does not affect the outcome of the function.
 
 \subsection{Lazy Update: cpg} 
 
