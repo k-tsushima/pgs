@@ -46,7 +46,7 @@ TODO-A3: DONE [KT]
    p9: Missing space before else in cpg skip
    p12: missing space after construct_dummy
 
-TODO-A4: DONE [BNT]
+TODO-A4: DONE [BNT], added explanation and example of bfoldr
  - p6: The bfoldr definition is essentially opaque without additional
    explanation or an example.
 
@@ -139,13 +139,13 @@ TODO-C1:
  know what they are from the literature to understand this
  discussion.
 
-TODO-C2: DONE[BNT]
+TODO-C2: DONE[BNT], changed definitions and explanations of put_m and get_m
 * It's unclear (on p6) why we need BOTH get_m and get_mh... indeed,
  the call to get_m from get_mh repeats the same table-lookup, and
  performs the same table addition, for the composition case, that
  get_mh does next for all the other cases. Why this complexity?
 
-TODO-C3: ALMOST DONE [BNT]
+TODO-C3: ALMOST DONE [BNT], renamed variables --> need more checking
 * On p7 and later, I think the same names are being rebound in
  non-recursive definitions... e.g. (s_1,v_1) <= pg [[bx_1]]
  (s_1,v_1), which I think is binding new s_1 and v_1 and shadowing
@@ -153,13 +153,13 @@ TODO-C3: ALMOST DONE [BNT]
  updates, then a recursive definition might make sense, so it is
  confusing to reuse the same names.
 
-TODO-C4: DONE[BNT]
+TODO-C4: DONE[BNT], added 4 combinations of conditions in the def.
 * p8 discusses case programs, which test a condition both before and
  after the case. In this paper, both conditions must take the same
  value. This restriction is mentioned on page 8, but I do not see how
  it is enforced by the definitions at the top of the page.
 
-TODO-C5: DONE[BNT]
+TODO-C5: DONE[BNT], rewrote explanations
 * Dummy values are introduced on p8 and p9, which are used when a value
  is needed for a hitherto unknown component. But it's very unclear how
  they are to be constructed.
@@ -267,7 +267,7 @@ p7, sec 4.1, para 1
  "it is potential to" ~>
  "there is the potential to" ~>
 
-TODO-D12: DONE [BNT]
+TODO-D12: DONE [BNT], changed respectively to recursively
 p7, Def 6
  "Now, let us see how to construct pg respectively."
  Respective of what?
@@ -277,7 +277,7 @@ p7
  "The last equality is relatively obvious" 
  It wouldn't be too onerous to just say that it's a function application
 
-TODO-D14: DONE [BNT]
+TODO-D14: DONE [BNT], removed redundant parentheses
 p7, def pg, `pg [[ bx1 x bx2]]((s1,s2,),(v1,v2))`:
  on the following line the type returned looks like a quadruple rather than a
  pair, so I think there are some missing parentheses.
@@ -286,7 +286,7 @@ TODO-D15:
 p7, line -2 "rearrangements are very clear" ... "then doing basic changes"
  If I'm right about the typo above, I think that it's perhaps not so clear.
 
-TODO-D16: DONE [BNT]
+TODO-D16: DONE [BNT], added explanation of `return`
 p7/p8: some of the definitions end in a `return` and others don't. I'm unclear
  about the difference.
 
@@ -304,7 +304,7 @@ p9 "Therefore, the runtime inefficiency is inevitable:"
  As an unqualified statement this is surely false, as demonstrated by the
 results of your paper.
 
-TODO-D20: DONE [BNT]
+TODO-D20: DONE [BNT], rewrote as suggested 
 p10, S4.3
  "For keeping away such computations" 
  this needs to be reworded, perhaps something like "To prevent such redundant
