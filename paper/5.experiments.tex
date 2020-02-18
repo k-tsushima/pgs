@@ -23,10 +23,10 @@ left associative compositions because we focus on this kind of inefficiency in t
 % Although the number of cases is small, 
 %% they are not trivial and can be completely used in practice. 
 % they represent non-trivial cases of practical significance.
-In the last two columns, $s_r$ and $v_r$ are the updated source and view, respectively. They are produced by applying $put$ and $get$ to the original source $s_0$ and view $v_0$. That is, $s_r = \putbx{bx}{s_0}{v_0}$ and $v_r = \getbx{bx}{s_0}$, where $bx$ is the program indicated in the second column of the table. 
+In the last two columns, $s$ and $v$ are the updated source and view, respectively. They are produced by applying $put$ and $get$ to the original source $s_0$ and view $v_0$. That is, $s = \putbx{bx}{s_0}{v_0}$ and $v = \getbx{bx}{s_0}$, where $bx$ is the program indicated in the second column of the table. 
 % are only interested in this kind of programs in the paper. 
 % Please note that the results
-Results $s_r$ and $v_r$ are independent of the associativity 
+Results $s$ and $v$ are independent of the associativity 
 % style 
 of the composition.
 
@@ -37,7 +37,7 @@ of the composition.
     \begin{tabular*}{\textwidth}{|l @{\extracolsep{\fill}}|l|l|c|c|c|c|}
         \hline
         \multirow{2}{*}{No} & \multicolumn{1}{c|}{\multirow{2}{*}{Name}} & \multicolumn{1}{c|}{\multirow{2}{*}{Type}} & \multicolumn{2}{c|}{Input} & \multicolumn{2}{c|}{Output} \\ \cline{4-7} 
-        & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{$s_0$} & \multicolumn{1}{c|}{$v_0$} & \multicolumn{1}{c|}{$s_r$} & \multicolumn{1}{c|}{$v_r$} \\ \hline
+        & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{$s_0$} & \multicolumn{1}{c|}{$v_0$} & \multicolumn{1}{c|}{$s$} & \multicolumn{1}{c|}{$v$} \\ \hline
         1 & lcomp-phead-ldata & straight line & $\underbrace{[[\ldots[1]\ldots]]}_{\text{n+1 times}}$ & 100 & $\underbrace{[[\ldots[100]\ldots]]}_{\text{n+1 times}}$ & 1 \\ \hline
         2 & lcomp-ptail & straight line & [1,$\ldots$,n+1] & [1,$\ldots$,10] & $s_0 \ @ \ v_0$ & [\ ] \\ \hline
         3 & lcomp-ptail-ldata & straight line & $\underbrace{[L,\ldots,L]}_{\text{n+1 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{10 times}}$ & $\underbrace{[L,\ldots,L]}_{\text{n+11 times}}$ & [\ ] \\ \hline

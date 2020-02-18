@@ -171,11 +171,11 @@ Thanks to these accumulations, there are only two $cpg$ calls in $\cpginline{bx_
 Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated source and view $(s, v)$ where $s = \putbx{bx}{s_0}{v_0}$ and $v = \getbx{bx}{s_0}$ can be obtained using $cpg$ as follows:
 
 \smallvspace
-    $\tab s \Leftarrow s_0; v \Leftarrow v_0; (ks, kv, s, v) \Leftarrow \cpg{bx}{\lambda \_.s}{id}{s}{v};\\
+    $\tab (ks, kv, s, v) \Leftarrow \cpg{bx}{\lambda \_.s_0}{id}{s_0}{v_0};\\
         \tab \qtab (s; v)$
 \smallvspace
         
-In general, the beginning of a continuation should be an identity function. However, to be able to use the function application to get the result of $\cpginline{bx_1 \circ bx_2}$, the accumulative function on the source $s$ needs to be initiated as $\lambda \_.s$. This constant function helps to retain the discarded things in the source.
+In general, the beginning of a continuation should be an identity function. However, to be able to use the function application to get the result of $\cpginline{bx_1 \circ bx_2}$, the accumulative function on the source needs to be initiated as the constant function from that source. This constant function helps to retain the discarded things in the source.
 
 
 
@@ -197,7 +197,7 @@ The problem for $cpg$ lies in redundant computations during the evaluation. To p
 Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated source and view $(s, v)$ where $s = \putbx{bx}{s_0}{v_0}$ and $v = \getbx{bx}{s_0}$ can be obtained using $kpg$ as follows:
 
 \smallvspace
-    $\tab s \Leftarrow s_0; v \Leftarrow v_0; (ks, kv, lks, lkv, s, v) \Leftarrow \kpg{bx}{\lambda \_.s}{id}{id}{id}{s}{v};\\
+    $\tab (ks, kv, lks, lkv, s, v) \Leftarrow \kpg{bx}{\lambda \_.s_0}{id}{id}{id}{s_0}{v_0};\\
         \tab \qtab (lks \ s; lkv \ v)$
 \smallvspace
         
