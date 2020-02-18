@@ -24,3 +24,5 @@ paper/main.synctex.gz
 **/*.json
 **/~*
 **/_*
+
+qtest
