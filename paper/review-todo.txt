@@ -139,7 +139,7 @@ TODO-C1:
  know what they are from the literature to understand this
  discussion.
 
-TODO-C2:
+TODO-C2: DONE[BNT]
 * It's unclear (on p6) why we need BOTH get_m and get_mh... indeed,
  the call to get_m from get_mh repeats the same table-lookup, and
  performs the same table addition, for the composition case, that
@@ -153,13 +153,13 @@ TODO-C3:
  updates, then a recursive definition might make sense, so it is
  confusing to reuse the same names.
 
-TODO-C4:
+TODO-C4: DONE[BNT]
 * p8 discusses case programs, which test a condition both before and
  after the case. In this paper, both conditions must take the same
  value. This restriction is mentioned on page 8, but I do not see how
  it is enforced by the definitions at the top of the page.
 
-TODO-C5:
+TODO-C5: DONE[BNT]
 * Dummy values are introduced on p8 and p9, which are used when a value
  is needed for a hitherto unknown component. But it's very unclear how
  they are to be constructed.
@@ -286,7 +286,7 @@ TODO-D15:
 p7, line -2 "rearrangements are very clear" ... "then doing basic changes"
  If I'm right about the typo above, I think that it's perhaps not so clear.
 
-TODO-D16:
+TODO-D16: DONE
 p7/p8: some of the definitions end in a `return` and others don't. I'm unclear
  about the difference.
 
