@@ -57,11 +57,13 @@ let rec get_m (bx:bigul) s env =
   | Compose(bx1, bx2) ->
     try (Hashtbl.find table_g (s, name_for_comp bx)) 
     with Not_found ->
-      let v1 = get_m_h bx1 s env in
-      let v2 = get_m_h bx2 v1 env in
-      Hashtbl.add table_g (s, name_for_comp bx) v2;
-      v2
-and
+      let v1 = get_m bx1 s env in
+        Hashtbl.add table_g (s, name_for_comp bx1) v1;
+      let v2 = get_m bx2 v1 env in
+        Hashtbl.add table_g (v1, name_for_comp bx2) v2;
+        Hashtbl.add table_g (s, name_for_comp bx) v2;
+        v2
+(* and
   get_m_h bx s env = 
   try (Hashtbl.find table_g (s, name_for_comp bx)) 
   with Not_found ->
@@ -70,7 +72,7 @@ and
     | Compose(bx1, bx2) -> v
     | _ -> 
       Hashtbl.add table_g (s, name_for_comp bx) v;
-      v
+      v *)
 
 let rec put_m (bx:bigul) s v env =
   match bx with
@@ -115,7 +117,7 @@ let rec put_m (bx:bigul) s v env =
       else
         assert false
   | Compose(bx1, bx2) ->
-    let v1 = get_m_h bx1 s env in
+    let v1 = get_m bx1 s env in
     let s2 = put_m bx2 v1 v env in
     let s3 = put_m bx1 s s2 env in
     s3
