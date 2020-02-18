@@ -172,7 +172,7 @@ Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated so
 
 \smallvspace
     $\tab (ks, kv, s, v) \Leftarrow \cpg{bx}{\lambda \_.s_0}{id}{s_0}{v_0};\\
-        \tab \qtab (s; v)$
+        \tab \qtab (s, v)$
 \smallvspace
         
 In general, the beginning of a continuation should be an identity function. However, to be able to use the function application to get the result of $\cpginline{bx_1 \circ bx_2}$, the accumulative function on the source needs to be initiated as the constant function from that source. This constant function helps to retain the discarded things in the source.
@@ -198,7 +198,7 @@ Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated so
 
 \smallvspace
     $\tab (ks, kv, lks, lkv, s, v) \Leftarrow \kpg{bx}{\lambda \_.s_0}{id}{id}{id}{s_0}{v_0};\\
-        \tab \qtab (lks \ s; lkv \ v)$
+        \tab \qtab (lks \ s, lkv \ v)$
 \smallvspace
         
 The beginning of accumulative functions $lks$ and $lkv$ are set as identity function, while $ks$ and $kv$ are initiated as the same with the corresponding ones in $cpg$.
