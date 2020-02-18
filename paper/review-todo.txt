@@ -46,7 +46,7 @@ TODO-A3: DONE [KT]
    p9: Missing space before else in cpg skip
    p12: missing space after construct_dummy
 
-TODO-A4:
+TODO-A4: DONE [BNT]
  - p6: The bfoldr definition is essentially opaque without additional
    explanation or an example.
 

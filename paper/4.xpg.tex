@@ -76,14 +76,14 @@ A restriction for $\pginline{Case}$ needs to be introduced here. We know that th
         \tabs{2} \qtab (s_2, v_2) \Leftarrow \pg{bx_2}{v_1}{v}; \qtabs{2} (s_2, v_2) \Leftarrow \pg{bx_2}{v_1}{v};\\
         \tabs{2} \qtab (s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2}; \qtabs{2} (s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2};\\
             \qtab \tabs{3} (s_3, v_2) \qtabs{6} (s_3, v_2)\\
-    \tabs{3} \overset{4}{=} (s_1, v_1) \Leftarrow \pg{bx_1}{s}{construct\_dummy \ s}; \\
+    \tabs{3} \overset{4}{=} (s_1, v_1) \Leftarrow \pg{bx_1}{s}{construct\_dummy \ v}; \\
         \tabs{2} \qtab (s_2, v_2) \Leftarrow \pg{bx_2}{v_1}{v}; \\
         \tabs{2} \qtab (s_3, v_3') \Leftarrow \pg{bx_1}{s_1}{s_2}; \\
             \qtab \tabs{3} (s_3, v_2)$
             
 The construction of $\pginline{bx_1 \circ bx_2}$ can be considered as the soul of the $pg$ function. The first two equalities comes from mentioned definitions and some basic transformations. The third one rewrites $v_1 \Leftarrow \getbx{bx_1}{s}$ into $(s_1, v_1) \Leftarrow \pg{bx_1}{s}{dummy}$. This is possible when we consider $\getbx{bx_1}{s}$ as the second element of $\pg{bx_1}{s}{dummy}$ where $dummy$ is a special value that makes the $put \, [\![bx_1]\!]$ valid.
 %We can construct a $dummy$ from the source by \textsc{GetPut} law in some cases or require programmers to give a valid view.
-Since there is no real view, this $dummy$ is necessary to pair with original source $s$ to form the input of $put \, [\![bx_1]\!]$. The last equality changes two. The first is a change from $dummy$ to an application $construct\_dummy \ s$. This means we need a way to construct $dummy$ from the current source, $s$. Programmers can be required to give this $construct\_dummy$ function, but it may be inessential for ill-typed systems where choosing $dummy$ as $v$ is the easiest way to meet our expectation. We set up that choice in our experiments but still use the $construct\_dummy$ function in the later definitions to provide a more general meanning.
+Since there is no real view, this $dummy$ is necessary to pair with original source $s$ to form the input of $put \, [\![bx_1]\!]$. The last equality changes two. The first is a change from $dummy$ to an application $construct\_dummy \ v$. This means we need a way to construct $dummy$ from the original view $v$. Programmers can be required to give this $construct\_dummy$ function, but it may be inessential for ill-typed systems where choosing $dummy$ as $v$ is the easiest way to meet our expectation. We set up that choice in our experiments but still use the $construct\_dummy$ function in the later definitions to provide a more general meanning.
 %
 The second is the change from $(s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2}$ to $(s_3, v_3') \Leftarrow \pg{bx_1}{s_1}{s_2}$, where $s$ and $v_3$ are replaced with $s_1$ and $v_3'$ respectively. Because $s_1$ is a source update of $\putbx{bx_1}{s}{dummy}$, so under the \textsc{PutPut} law, it is possible to substitute $s$ by $s_1$. The substitution of $v_3$ by $v_3'$ is simply replacing the variable name since $v_3$ and $v_3'$ hold different results of $\getbx{bx_1}{s}$ and $\getbx{bx_1}{s_1}$ respectively. Because both variables are no longer used later, this substitution does not affect the outcome of the function.
 
@@ -118,14 +118,14 @@ $\cpg{bx}{ks}{kv}{s}{v}$
         \tab \textnormal{fi} \ cond_{s} \ s' \ \&\& \ cond_{sv} \ s \ v'; \ \textnormal{return} \ (ks, kv, s', v')$
 
     \noindent $\cpg{bx_1 \circ bx_2}{ks}{kv}{s}{v} =\\
-        \tab (ks_1, kv_1, \underline{s_1}, v_1) \Leftarrow \cpg{bx_1}{ks}{id}{s}{construct\_dummy \ s};\\
+        \tab (ks_1, kv_1, \underline{s_1}, v_1) \Leftarrow \cpg{bx_1}{ks}{id}{s}{construct\_dummy \ v};\\
         \tab (ks_2, kv_2, s_2, v_2) \Leftarrow \cpg{bx_2}{kv_1}{kv}{v_1}{v};\\
             \qtab (ks_1 \circ ks_2, kv_2,  ks_1 \ s_2, v_2)$
 \end{definition}
 
 In the places where third and/or fourth argument ($s$ and $v$) are updated by applications, the computations are also accumulated in $ks$ and/or $kv$.
 %Apart from the last construction, the others are quite similar to the corresponding ones of $pg$, but have some updates over the source and the view on accumulative functions $ks$ and $kv$ respectively.
-Thanks to these accumulations, there are only two $cpg$ calls in $\cpginline{bx_1 \circ bx_2}$. The first call $\cpginline{bx_1}$ requires parameter $(ks, id, s, construct\_dummy \ s)$ where $s$ and $ks$ are corresponding to the source and the update over source. Since there is no real view here, we need to construct a dummy from the source same as $pg$. Then the continuation updating on this dummy should be initiated as an identity function. The first $cpg$ call is assigned to a 4-tuple $(ks_1, kv_1, s_1, v_1)$. In the next assignment, a 4-tuple $(ks_2, kv_2, s_2, v_2)$ is assigned by the second $cpg$ call which uses the input as $(kv_1, kv, v_1, v)$ where $kv_1$ and $v_1$ are obtained from the result of the first assignment, and $kv$ and $v$ come from the input. It is relatively similar to the second $pg$ call assignment in $\pginline{bx_1 \circ bx_2}$. After two $cpg$ calls, a function application, $ks_1 \ s_2$, is used to produce the updated source instead of calling recursively one more time like in $\pginline{bx_1 \circ bx_2}$.
+Thanks to these accumulations, there are only two $cpg$ calls in $\cpginline{bx_1 \circ bx_2}$. The first call $\cpginline{bx_1}$ requires parameter $(ks, id, s, construct\_dummy \ v)$ where $s$ and $ks$ are corresponding to the source and the update over source. Since there is no real view here, we need to construct a dummy from the source same as $pg$. Then the continuation updating on this dummy should be initiated as an identity function. The first $cpg$ call is assigned to a 4-tuple $(ks_1, kv_1, s_1, v_1)$. In the next assignment, a 4-tuple $(ks_2, kv_2, s_2, v_2)$ is assigned by the second $cpg$ call which uses the input as $(kv_1, kv, v_1, v)$ where $kv_1$ and $v_1$ are obtained from the result of the first assignment, and $kv$ and $v$ come from the input. It is relatively similar to the second $pg$ call assignment in $\pginline{bx_1 \circ bx_2}$. After two $cpg$ calls, a function application, $ks_1 \ s_2$, is used to produce the updated source instead of calling recursively one more time like in $\pginline{bx_1 \circ bx_2}$.
 
 Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated source and view $(s, v)$ where $s = \putbx{bx}{s_0}{v_0}$ and $v = \getbx{bx}{s_0}$ can be obtained using $cpg$ as follows:
 
@@ -195,7 +195,7 @@ $\kpg{bx}{ks}{kv}{ks'}{kv'}{s}{v}$
         \tab \underline{\textnormal{fi}} \ cond_s \ (ks' \ s') \ \&\& \ cond_{sv} \ s \ (kv' \ v'); \ \textnormal{return} \ (ks, kv, ks', kv', s', v')$
 
     \noindent $\kpg{bx_1 \circ bx_2}{ks}{kv}{ks'}{kv'}{s}{v} =\\
-        \tab (ks_1, kv_1, \underline{ks_1'}, kv_1', \underline{s_1}, v_1) \Leftarrow \kpg{bx_1}{ks}{id}{ks'}{id}{s}{construct\_dummy \ s};\\
+        \tab (ks_1, kv_1, \underline{ks_1'}, kv_1', \underline{s_1}, v_1) \Leftarrow \kpg{bx_1}{ks}{id}{ks'}{id}{s}{construct\_dummy \ v};\\
         \tab (ks_2, kv_2, ks_2', kv_2', s_2, v_2) \Leftarrow \kpg{bx_2}{kv_1}{kv}{kv_1'}{kv'}{v_1}{v};\\
         \qtab (ks_1 \circ ks_2, kv_2, ks_1 \circ ks_2', kv_2', s_2, v_2)$
 \end{definition}
@@ -218,7 +218,7 @@ $\xpg{bx}{s}{v}$
 
     \noindent $\xpg{bx}{s}{v} = \match{bx}\\
     \tab \vert \ bx_1 \circ bx_2 \to \\
-        \tabs{2} (ks_1,kv_1, ks_1', kv_1', s_1, v_1) \Leftarrow \kpg{bx_1}{\lambda \_.s}{id}{id}{id}{s}{construct\_dummy \ s};\\
+        \tabs{2} (ks_1,kv_1, ks_1', kv_1', s_1, v_1) \Leftarrow \kpg{bx_1}{\lambda \_.s}{id}{id}{id}{s}{construct\_dummy \ v};\\
         \tabs{2} (s_2, v_2) \Leftarrow \xpg{bx_2}{kv_1' \ v_1}{v};\\
         \tabs{3} (ks_1 \ s_2, v_2)\\
     \tab \vert \ \_ \to \text{similar to } pg$

@@ -139,7 +139,7 @@ Also in the semantics of $\putbxinline{Case}$ and $\getbxinline{Case}$, the retu
 
 \subsection{Examples}
 
-\noindent As an example of minBiGUL program, consider the definition of $phead$ :\\
+\noindent As an example of minBiGUL program, consider the definition of $\textit{phead}$ :\\
 \smallvspace
 $\tab phead = RearrS \ f_1 \ f_2 \ bx_s \ \text{where: } f_1 = \lambda (s::ss).(s,ss), \, f_2 = \lambda (s,ss).(s::ss),\\
     \qtab bx_s = RearrV \ g_1 \ g_2 \ bx_v \ \text{where: } g_1 = \lambda v.(v,()), \, g_2 = \lambda (v,()).v,\\
@@ -152,30 +152,44 @@ $\tab \putbx{phead \circ phead}{[[1,2,3],[\,],[4,5]]}{100} = [[100,2,3],[\,],[4,
 
 $\tab \getbx{phead \circ phead}{[[1,2,3],[\,],[4,5]]} = 1$
 
-Next let us look at another more complex example using a case combinator:
+In the same way with $\textit{phead}$, we can define $\textit{ptail}$ in minBiGUL. $\putbx{ptail}{s}{v}$ accepts a source list $s$ and a view list $v$ to produce a new list by replacing the tail of $s$ with $v$. $\getbx{ptail}{s}$ returns the tail of the source list $s$
 
-    $\tab bsnoc = Case \ cond_{sv} \ cond_s \ bx_1 \ bx_2$ where:\\
-    $\tabs{3} \ cond_{sv} = \lambda s.\lambda v.(\textnormal{length } v = 1), \ cond_s = \lambda (s_1,s_2).(s_2 = [\ ])$\\
-    $\tabs{3} \ bx_1 =  Replace$\\
-    $\tabs{3} \ bx_2 = RearrS \ f_1 \ f_2 \ bx_s$ where:\\
+Next let us look at another more complex example, $\textit{bsnoc}$:
+
+    $\tab \textit{bsnoc} = Case \ cond_{sv} \ cond_s \ bx_1 \ bx_2$ where:\\
+    $\tabs{3} \ cond_{sv} = \lambda s.\lambda v.(\textnormal{length } v = 1), \ cond_s = \lambda s.(\textnormal{length } s = 1)$\\
+    $\tabs{3} \ bx_1 =  Replace, \tab bx_2 = RearrS \ f_1 \ f_2 \ bx_s$ where:\\
         $\tabs{4} f_1 = f_2^{-1} = \lambda (x:y:ys).(y,(x:ys))$, \\
         $\tabs{4} bx_s = RearrV \ g_1 \ g_2 \ bx_v$ where:\\
-            $\tabs{5} g_1 = g_2^{-1} = \lambda (v:vs).(v,vs)$\\
-            $\tabs{5} bx_v = Replace \times bsnoc$
+            $\tabs{5} g_1 = g_2^{-1} = \lambda (v:vs).(v,vs), \tab bx_v = Replace \times \textit{bsnoc}$
 
-To close this section,
-% In the end of this section, 
-let us see the minBiGUL definition of $\mathit{bfoldr}$ which is a putback function of an important higher-order function on lists, $\mathit{foldr}$:
+$\putbxinline{bsnoc}$ requires the source $s$ and the view $v$ are non-empty lists and the length of $v$ is not larger than the length of $s$. If $cond_{sv}$ is true, i.e. $v$ is singleton, a replacement will be executed to produce a new list which should be equal to $v$. Because the length of the new list is 1, the exit condition $cond_s$ comes true, so we obtain the updated source. If $v$ is a list of more than one elements, there will be two rearrangements on the source and the view before conducting a product. The program rearranges the source $x:y:ys$ to a pair of its second element $y$ and a list $x:ys$ created from the remaining elements in the original order, and the view to a pair of its head and tail. Then we can use $y$ to replace the head of the view and pair $(x:ys)$ with the tail of the view to form the input of a recursive call $\textit{bsnoc}$. The obtained source update in this case should be non-singleton since the value of the exit condition $cond_s$ needs to be false. We omit the behavior description of $\getbxinline{bsnoc}$ that accepts a source list $s$, checks $cond_s$ to know how to evaluate the view $v$, then does one more checking, $cond_{sv}$, before resulting. 
+%
+Intuitively, $\putbx{bsnoc}{s_0}{v_0}$ produces a new list by moving the last element of $v_0$ to its first position if the length of $v_0$ is not larger than the length of $s_0$. $\getbx{bsnoc}{s_0}$ returns another list by moving the first element of the list $s_0$ to its end position. For instance, $\putbx{bsnoc}{[1,2,3]}{[4,5,6]} = [6,4,5]$ and $\getbx{bsnoc}{[1,2,3]} = [2,3,1]$.
 
-\smallvspace
-$\tab \mathit{bfoldr} \ bx = Case \ cond_{sv} \ cond_s \ bx_1 \ bx_2$ where:\\
+Now, let us see the minBiGUL definition of $\textit{bfoldr}$ which is a putback function of an important higher-order function on lists, $\textit{foldr}$:
+
+$\tab \textit{bfoldr} \ bx = Case \ cond_{sv} \ cond_s \ bx_1 \ bx_2$ where:\\
 $\tabs{3} \ cond_{sv} = \lambda (s_1,s_2).\lambda v.(s_1 = [\ ]), \ cond_s = \lambda (s_1,s_2).(s_1 = [\ ])$\\
 $\tabs{3} \ bx_1 = RearrV \ g_1 \ g_2 \ bx_v$ where: \\
     $\tabs{4} g_1 = g_2^{-1} = \lambda [v].(v,[\ ]), bx_v = (Skip \ (\lambda \_.())) \times Replace$\\
 $\tabs{3} \ bx_2 = RearrS \ f_1 \ f_2 \ bx_s$ where:\\
     $\tabs{4} f_1 = f_2^{-1} = \lambda ((x:xs),e).(x,(xs,e))$, 
 $bx_s = ((Replace \times bfoldr \ bx) \circ bx)$
-\smallvspace
 
-\noindent In $\mathit{bfoldr}$, the composition is inherently left associative, and the number of composition is dynamically determined by the length of the source list. Because~$\circ$ has a higher priority than~$\times$, it is in general not possible to transform $\mathit{bfoldr}$ from the left associative composition style to the right one. 
-%will look like a composition of many programs at some points in the evaluation if we slow down this process. Since $\circ$ has a higher priority than $\times$, it is seemingly impossible to transform $bfoldr$ from the left associative composition style to the right one. 
+If we think that a minBiGUL program $bx$ has a type of $\textit{MinBiGUL} \ s \ v$, the type of $bfoldr$ will be look like $\textit{MinBiGUL} \ (a, b) \ a \to \textit{MinBiGUL} \ ([a], b) \ b$. You can easily find the similarity between the above definition of $\textit{bfoldr}$ with the following definition of $\textit{foldr}$:
+
+$\tab foldr :: (a \to b \to b) \to b \to [a] \to b \\
+\tabs{2} \ \ foldr \ f \ e \ [\ ] = e \\ 
+\tabs{2} \ \ foldr \ f \ e \ (x:xs) = f \ x \ (foldr \ f \ e \ xs)$
+
+Each branch in a case of $\textit{bfoldr}$ corresponds to a pattern of $foldr$. In $\textit{bfoldr}$, the composition is inherently left associative, and the number of composition is dynamically determined by the length of the source list. Because~$\circ$ has a higher priority than~$\times$, it is in general not possible to transform $\textit{bfoldr}$ from the left associative composition style to the right one. 
+
+Using $\textit{foldr}$, we can define other functions, for example: 
+
+$\tab reverse = foldr \ snoc \ [\ ]$
+
+With $\textit{bfoldr}$, we can also write the bidirectional version $breverse$ as follows:
+
+$\tab breverse = RearrS \ f_1 \ f_2 \ bx$ where:\\
+    $\tabs{4} f_1 = f_2^{-1} = \lambda s \to (s, [\ ]), \tab bx = bfoldr \ bsnoc$

@@ -89,14 +89,11 @@ categorized as a \textit{ldata} case.
 Next, we briefly explain the behavior of the remaining compositions in 
 \mbox{Table\,\ref{tab:test-cases}.}%HACK!
 
-$\putbx{ptail}{s}{v}$ accepts a source list $s$ and a view list $v$ to produce a new list by replacing the tail of $s$ with $v$. $\getbx{ptail}{s}$ returns the tail of the source list $s$. The composition of many $ptail$s, in the \textit{put} direction, replaces a part of the tail of the source list by the view list and, in the \textit{get} direction, returns such a tail from the source.
+The composition of many $ptail$s, in the \textit{put} direction, replaces a part of the tail of the source list by the view list and, in the \textit{get} direction, returns such a tail from the source.
 
-$\putbx{bsnoc}{s}{v}$ accepts a source $s$ and a view $v$, 
-%as two same length lists, 
-which are two lists of the same length,
-and produces a new list by moving the last element of $v$ to its first position. $\getbx{bsnoc}{s}$ returns another list by moving the first element of the list $s$ to its end position. The composition of many \textit{bsnoc}s, in the \textit{put} direction, creates a permutation of the view list if the source list has a same length as the view and, in the \textit{get} direction, produces a permutation of the source list.
+The composition of many \textit{bsnoc}s, in the \textit{put} direction, creates a permutation of the view list if its length is not larger than the length of the source list and, in the \textit{get} direction, produces a permutation of the source list.
 
-\textit{breverse} is defined in terms of \textit{bfoldr}. In the \textit{put} direction, it produces a reverse of the view list if the source list has a same length as the view and, in the \textit{get} direction, produces a reverse of the source list. Note that compositions are by the recursions of $breverse$ and 
+\textit{breverse} is defined in terms of \textit{bfoldr}. In the \textit{put} direction, it produces a reverse of the view list if its length is not larger than the length of the source list and, in the \textit{get} direction, produces a reverse of the source list. Note that compositions are by the recursions of \textit{breverse} and 
 the number of compositions are dynamically determined by the length of the source list.
 
 \subsection{Results}
