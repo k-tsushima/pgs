@@ -27,6 +27,8 @@ Another solution for saving intermediate states is tupling. If $put$ and $get$ a
 The first equality is simply based on the definitions of $pg$, $\putbxinline{Skip \ h}$ and $\getbxinline{Skip \ h}$. The second one tuples two results of $put$ and $get$ in the body of the if-expression. This is a trick since in some cases, the result of $pg$ may be undefined although the result is not undefined when evaluating $\getbxinline{Skip \ h}$. The last equality is relatively obvious.
 
     \noindent $\tabs{2} \pg{Replace}{s}{v} = (v, s)$\\
+%-{
+    \textcolor{red}{
     $\tabs{2} \pg{\product{bx_1}{bx_2}}{(s_1,s_2)}{(v_1,v_2)}\\
         \tab \qtab \overset{1}{=} ((\putbx{bx_1}{s_1}{v_1},\putbx{bx_2}{s_2}{v_2}), (\getbx{bx_1}{s_1}, \getbx{bx_2}{s_2})) \\
         \tab \qtab \overset{2}{=} (s_1, v_1) \Leftarrow \pg{bx_1}{s_1}{v_1}; \\
@@ -38,6 +40,21 @@ The first equality is simply based on the definitions of $pg$, $\putbxinline{Ski
     $\tabs{2} \pg{\rearrv{g_1}{g_2}{bx}}{s}{v} \overset{1}{=} (\putbx{bx}{s}{(g_1 \ v)}, g_2 \ (\getbx{bx}{s})) \\
         \tab \qtab \overset{2}{=} (s, v) \Leftarrow \pg{bx}{s}{g_1 \ v}; \\
         \tab \qtabs{2} (s, g_2 \ v)$
+    }\\
+%-}
+    %+{
+    $\tabs{2} \pg{\product{bx_1}{bx_2}}{(s_1,s_2)}{(v_1,v_2)}\\
+        \tab \qtab \overset{1}{=} ((\putbx{bx_1}{s_1}{v_1},\putbx{bx_2}{s_2}{v_2}), (\getbx{bx_1}{s_1}, \getbx{bx_2}{s_2})) \\
+        \tab \qtab \overset{2}{=} (s_1', v_1') \Leftarrow \pg{bx_1}{s_1}{v_1}; \\
+            \qtab \tabs{2} \ \, (s_2', v_2') \Leftarrow \pg{bx_2}{s_2}{v_2}; \\
+            \tab \qtabs{2} ((s_1',s_2'), (v_1',v_2'))$\\
+    $\tabs{2} \pg{\rearrs{f_1}{f_2}{bx}}{s}{v} \overset{1}{=} (f_2 \ (\putbx{bx}{(f_1 \ s)}{v}), \getbx{bx}{(f_1 \ s)}) \\
+        \tab \qtab \overset{2}{=} (s', v') \Leftarrow \pg{bx}{f_1 \ s}{v};\\
+            \tab \qtabs{2} (f_2 \ s', v')$\\
+    $\tabs{2} \pg{\rearrv{g_1}{g_2}{bx}}{s}{v} \overset{1}{=} (\putbx{bx}{s}{(g_1 \ v)}, g_2 \ (\getbx{bx}{s})) \\
+        \tab \qtab \overset{2}{=} (s', v') \Leftarrow \pg{bx}{s}{g_1 \ v}; \\
+        \tab \qtabs{2} (s', g_2 \ v')$
+    %+}
 
 Constructions of $pg$ for the replacement, the product and the source/view rearrangements are very clear when just pairing $put$ and $get$ respectively, then doing basic changes.
 %
@@ -103,19 +120,43 @@ $\cpg{bx}{ks}{kv}{s}{v}$
         \tab (ks_2, kv_2, s_2, v_2) \Leftarrow \cpg{bx_2}{snd \circ ks}{snd \circ kv}{snd \ s}{snd \ v};\\
         \qtab (con \ ks_1 \ ks_2, con \ kv_1 \ kv_2, (s_1,s_2), (v_1,v_2))$
 
-    \noindent $\cpg{RearrS \ f_1 \ f_2 \ bx}{ks}{kv}{s}{v} =\\
+%-{
+    \noindent \textcolor{red}{
+    $\cpg{RearrS \ f_1 \ f_2 \ bx}{ks}{kv}{s}{v} =\\
         \tab (ks, kv, s, v) \Leftarrow \cpg{bx}{f_1 \circ ks}{kv}{f_1 \ s}{v};\\
         \qtab (f_2 \circ ks, kv, s, v)$
+    }
 
-    \noindent $\cpg{RearrV \ g_1 \ g_2 \ bx}{ks}{kv}{s}{v} =\\
+    \noindent \textcolor{red}{
+    $\cpg{RearrV \ g_1 \ g_2 \ bx}{ks}{kv}{s}{v} =\\
         \tab (ks, kv, s, v) \Leftarrow \cpg{bx}{ks}{g_1 \circ kv}{s}{g_1 \ v};\\
         \qtab (ks, g_2 \circ kv, ks, g_2 \ v)$
+    }
 
-    \noindent $\cpg{Case \ cond_{sv} \ cond_{s} \ bx_1 \ bx_2}{ks}{kv}{s}{v} =\\
+    \noindent \textcolor{red}{
+    $\cpg{Case \ cond_{sv} \ cond_{s} \ bx_1 \ bx_2}{ks}{kv}{s}{v} =\\
         \tab \textnormal{if} \ cond_{sv} \ s \ v \ \&\& \ cond_{s} \ s\\
         \tab \textnormal{then} \ (ks, kv, s', v') \Leftarrow \cpg{bx_1}{ks}{kv}{s}{v}\\
         \tab \textnormal{else} \ (ks, kv, s', v') \Leftarrow \cpg{bx_2}{ks}{kv}{s}{v}\\
         \tab \textnormal{fi} \ cond_{s} \ s' \ \&\& \ cond_{sv} \ s \ v'; \ \textnormal{return} \ (ks, kv, s', v')$
+    }
+%-}
+
+    %+{
+    \noindent $\cpg{RearrS \ f_1 \ f_2 \ bx}{ks}{kv}{s}{v} =\\
+        \tab (ks', kv', s', v') \Leftarrow \cpg{bx}{f_1 \circ ks}{kv}{f_1 \ s}{v};\\
+        \qtab (f_2 \circ ks', kv', s', v')$
+
+    \noindent $\cpg{RearrV \ g_1 \ g_2 \ bx}{ks}{kv}{s}{v} =\\
+        \tab (ks', kv', s', v') \Leftarrow \cpg{bx}{ks}{g_1 \circ kv}{s}{g_1 \ v};\\
+        \qtab (ks', g_2 \circ kv', ks', g_2 \ v')$
+
+    \noindent $\cpg{Case \ cond_{sv} \ cond_{s} \ bx_1 \ bx_2}{ks}{kv}{s}{v} =\\
+        \tab \textnormal{if} \ cond_{sv} \ s \ v \ \&\& \ cond_{s} \ s\\
+        \tab \textnormal{then} \ (ks', kv', s', v') \Leftarrow \cpg{bx_1}{ks}{kv}{s}{v}\\
+        \tab \textnormal{else} \ (ks', kv', s', v') \Leftarrow \cpg{bx_2}{ks}{kv}{s}{v}\\
+        \tab \textnormal{fi} \ cond_{s} \ s' \ \&\& \ cond_{sv} \ s \ v'; \ \textnormal{return} \ (ks', kv', s', v')$
+    %+}
 
     \noindent $\cpg{bx_1 \circ bx_2}{ks}{kv}{s}{v} =\\
         \tab (ks_1, kv_1, \underline{s_1}, v_1) \Leftarrow \cpg{bx_1}{ks}{id}{s}{construct\_dummy \ v};\\
@@ -152,65 +193,128 @@ In the next session, we will optimize this redundancy.
 
 \subsection{Lazy Computation: kpg}
 
-The problem for $cpg$ lies in redundant computations during the evaluation. To prevent such redundant computations from occuring, we introduce an extension named $kpg$. While $cpg$ evaluates values eagerly, $kpg$ does the opposite. Every value is evaluated lazily in a computation of $kpg$. The input of $\kpginline{bx}$ is expanded to a 6-tuple $(ks, kv, ks', kv', s, v)$ where $ks$ and $kv$ keep the modification information same as $cpg$, $s$ and $v$ hold evaluated values, and $ks'$ and $kv'$ are used for lazy evaluation of actual values. The output of this function is also a 6-tuple $(ks, kv, ks', kv', s, v)$.\\
+The problem for $cpg$ lies in redundant computations during the evaluation. To prevent such redundant computations from occuring, we introduce an extension named $kpg$. While $cpg$ evaluates values eagerly, $kpg$ does the opposite. Every value is evaluated lazily in a computation of $kpg$. The input of $\kpginline{bx}$ is expanded to a 6-tuple $(ks, kv, lks, lkv, s, v)$ where $ks$ and $kv$ keep the modification information same as $cpg$, $s$ and $v$ hold evaluated values, and $lks$ and $lkv$ are used for lazy evaluation of actual values. The output of this function is also a 6-tuple $(ks, kv, lks, lkv, s, v)$.\\
 Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated source and view $(s, v)$ where $s = \putbx{bx}{s_0}{v_0}$ and $v = \getbx{bx}{s_0}$ can be obtained using $kpg$ as follows:
 
 \smallvspace
-    $\tab s \Leftarrow s_0; v \Leftarrow v_0; (ks, kv, ks', kv', s, v) \Leftarrow \kpg{bx}{\lambda \_.s}{id}{id}{id}{s}{v};\\
-        \tab \qtab (ks' \ s; kv' \ v)$
+    $\tab s \Leftarrow s_0; v \Leftarrow v_0; (ks, kv, lks, lkv, s, v) \Leftarrow \kpg{bx}{\lambda \_.s}{id}{id}{id}{s}{v};\\
+        \tab \qtab (lks \ s; lkv \ v)$
 \smallvspace
         
-The beginning of accumulative functions $ks'$ and $kv'$ are set as identity function, while $ks$ and $kv$ are initiated as the same with the corresponding ones in $cpg$.
+The beginning of accumulative functions $lks$ and $lkv$ are set as identity function, while $ks$ and $kv$ are initiated as the same with the corresponding ones in $cpg$.
 
 \begin{definition}
-$\kpg{bx}{ks}{kv}{ks'}{kv'}{s}{v}$
+$\kpg{bx}{ks}{kv}{lks}{lkv}{s}{v}$
 
-    \noindent $\kpg{Skip \ h}{ks}{kv}{ks'}{kv'}{s}{v} =\\
-        \tab s \Leftarrow ks' \ s; \quad v \Leftarrow kv' \ v; \quad ks' \Leftarrow id; \quad kv' \Leftarrow id;\\
-        \tab \textnormal{if} \ h \ s = v \ \textnormal{then} \ (ks, kv, ks', kv', s, v) \ \textnormal{else } \text{undefined}$
+%-{
+    \noindent 
+    \textcolor{red}{
+        $\kpg{Skip \ h}{ks}{kv}{lks}{lkv}{s}{v} =\\
+        \tab s \Leftarrow lks \ s; \quad v \Leftarrow lkv \ v; \quad lks \Leftarrow id; \quad lkv \Leftarrow id;\\
+        \tab \textnormal{if} \ h \ s = v \ \textnormal{then} \ (ks, kv, lks, lkv, s, v) \ \textnormal{else } \text{undefined}$
+    }
 
-    \noindent $\kpg{Replace}{ks}{kv}{ks'}{kv'}{s}{v} = (kv, ks, kv', ks', v, s)$
+    \noindent 
+    \textcolor{red}{
+        $\kpg{Replace}{ks}{kv}{lks}{lkv}{s}{v} = (kv, ks, lkv, lks, v, s)$
+    }
 
-    \noindent $\kpg{\product{bx_1}{bx_2}}{ks}{kv}{ks'}{kv'}{s}{v} =\\
-        \tab s \Leftarrow ks' \ s; \quad v \Leftarrow kv' \ v; \quad ks' \Leftarrow id; \quad kv' \Leftarrow id;\\
-        \tab (ks_1, kv_1, ks_1', kv_1', s_1, v_1) \Leftarrow \\
-            \tabs{5} \kpg{bx_1}{fst \circ ks}{fst \circ kv}{fst \circ ks'}{fst \circ kv'}{s}{v};\\
-        \tab (ks_2, kv_2, ks_2', kv_2', s_2, v_2) \Leftarrow \\ 
-            \tabs{5} \kpg{bx_2}{snd \circ ks}{snd \circ kv}{snd \circ ks'}{snd \circ kv'}{s}{v};\\
+    \noindent 
+    \textcolor{red}{
+        $\kpg{\product{bx_1}{bx_2}}{ks}{kv}{lks}{lkv}{s}{v} =\\
+        \tab s \Leftarrow lks \ s; \quad v \Leftarrow lkv \ v; \quad lks \Leftarrow id; \quad lkv \Leftarrow id;\\
+        \tab (ks_1, kv_1, lks_1, lkv_1, s_1, v_1) \Leftarrow \\
+            \tabs{5} \kpg{bx_1}{fst \circ ks}{fst \circ kv}{fst \circ lks}{fst \circ lkv}{s}{v};\\
+        \tab (ks_2, kv_2, lks_2, lkv_2, s_2, v_2) \Leftarrow \\ 
+            \tabs{5} \kpg{bx_2}{snd \circ ks}{snd \circ kv}{snd \circ lks}{snd \circ lkv}{s}{v};\\
         \qtab ( \ con \ ks_1 \ ks_2, \ con \ kv_1 \ kv_2, \\
-        \qtab \tab con \ (ks_1' \circ fst) \ (ks_2' \circ snd), \ con \ (kv_1' \circ fst) \ (kv_2' \circ snd), \\
+        \qtab \tab con \ (lks_1 \circ fst) \ (lks_2 \circ snd), \ con \ (lkv_1 \circ fst) \ (lkv_2 \circ snd), \\
+        \qtab \tab (s_1, s_2), \ (v_1,v_2) \ )$
+    }
+
+    \noindent 
+    \textcolor{red}{
+        $\kpg{RearrS \ f_1 \ f_2 \ bx}{ks}{kv}{lks}{lkv}{s}{v} =\\
+        \tab (ks, kv, lks, lkv, s, v) \Leftarrow \kpg{bx}{f_1 \circ ks}{kv}{f_1 \circ lks}{lkv}{s}{v};\\
+        \qtab (f_2 \circ ks, kv, f_2 \circ lks, lkv, s, v)$
+    }
+
+    \noindent 
+    \textcolor{red}{
+        $\kpg{RearrV \ g_1 \ g_2 \ bx}{ks}{kv}{lks}{lkv}{s}{v} =\\
+        \tab (ks, kv, lks, lkv, s, v) \Leftarrow \kpg{bx}{ks}{g_1 \circ kv}{lks}{g_1 \circ lkv}{s}{v};\\
+        \qtab (ks, g_2 \circ kv, lks, g_2 \circ lkv, s, v)$
+    }
+
+    \noindent 
+    \textcolor{red}{
+        $\kpg{Case \ cond_{sv} \ cond_{s} \ bx_1 \ bx_2}{ks}{kv}{lks}{lkv}{s}{v} =\\
+        \tab s \Leftarrow lks \ s; \quad v \Leftarrow lkv \ v; \quad lks \Leftarrow id; \quad lkv \Leftarrow id;\\
+        \tab \textnormal{if} \ cond_{sv} \ s \ v \ \&\& \ cond_{s} \ s\\
+        \tab \textnormal{then} \ (ks, kv, lks, lkv, s', v') \Leftarrow \kpg{bx_1}{ks}{kv}{lks}{lkv}{s}{v}\\
+        \tab \textnormal{else} \ (ks, kv, lks, lkv, s', v') \Leftarrow \kpg{bx_2}{ks}{kv}{lks}{lkv}{s}{v}\\
+        \tab \underline{\textnormal{fi}} \ cond_s \ (lks \ s') \ \&\& \ cond_{sv} \ s \ (lkv \ v'); \ \textnormal{return} \ (ks, kv, lks, lkv, s', v')$
+    }
+
+    \noindent 
+    \textcolor{red}{
+        $\kpg{bx_1 \circ bx_2}{ks}{kv}{lks}{lkv}{s}{v} =\\
+        \tab (ks_1, kv_1, \underline{lks_1}, lkv_1, \underline{s_1}, v_1) \Leftarrow \kpg{bx_1}{ks}{id}{lks}{id}{s}{construct\_dummy \ v};\\
+        \tab (ks_2, kv_2, lks_2, lkv_2, s_2, v_2) \Leftarrow \kpg{bx_2}{kv_1}{kv}{lkv_1}{lkv}{v_1}{v};\\
+        \qtab (ks_1 \circ ks_2, kv_2, ks_1 \circ lks_2, lkv_2, s_2, v_2)$
+    }
+%-}
+
+    %+{
+    \noindent $\kpg{Skip \ h}{ks}{kv}{lks}{lkv}{s}{v} =\\
+        \tab es \Leftarrow lks \ s; \quad ev \Leftarrow lkv \ v; \quad elks \Leftarrow id; \quad elkv \Leftarrow id;\\
+        \tab \textnormal{if} \ h \ es = ev \ \textnormal{then} \ (ks, kv, elks, elkv, es, ev) \ \textnormal{else } \text{undefined}$
+
+    \noindent $\kpg{Replace}{ks}{kv}{lks}{lkv}{s}{v} = (kv, ks, lkv, lks, v, s)$
+
+    \noindent $\kpg{\product{bx_1}{bx_2}}{ks}{kv}{lks}{lkv}{s}{v} =\\
+        \tab es \Leftarrow lks \ s; \quad ev \Leftarrow lkv \ v; \quad elks \Leftarrow id; \quad elkv \Leftarrow id;\\
+        \tab (ks_1, kv_1, lks_1, lkv_1, s_1, v_1) \Leftarrow \\
+            \tabs{5} \kpg{bx_1}{fst \circ ks}{fst \circ kv}{fst \circ elks}{fst \circ elkv}{es}{ev};\\
+        \tab (ks_2, kv_2, lks_2, lkv_2, s_2, v_2) \Leftarrow \\ 
+            \tabs{5} \kpg{bx_2}{snd \circ ks}{snd \circ kv}{snd \circ elks}{snd \circ elkv}{es}{ev};\\
+        \qtab ( \ con \ ks_1 \ ks_2, \ con \ kv_1 \ kv_2, \\
+        \qtab \tab con \ (lks_1 \circ fst) \ (lks_2 \circ snd), \ con \ (lkv_1 \circ fst) \ (lkv_2 \circ snd), \\
         \qtab \tab (s_1, s_2), \ (v_1,v_2) \ )$
 
-    \noindent $\kpg{RearrS \ f_1 \ f_2 \ bx}{ks}{kv}{ks'}{kv'}{s}{v} =\\
-        \tab (ks, kv, ks', kv', s, v) \Leftarrow \kpg{bx}{f_1 \circ ks}{kv}{f_1 \circ ks'}{kv'}{s}{v};\\
-        \qtab (f_2 \circ ks, kv, f_2 \circ ks', kv', s, v)$
+    \noindent $\kpg{RearrS \ f_1 \ f_2 \ bx}{ks}{kv}{lks}{lkv}{s}{v} =\\
+        \tab (ks', kv', lks', lkv', s', v') \Leftarrow \kpg{bx}{f_1 \circ ks}{kv}{f_1 \circ lks}{lkv}{s}{v};\\
+        \qtab (f_2 \circ ks', kv', f_2 \circ lks', lkv', s', v')$
 
-    \noindent $\kpg{RearrV \ g_1 \ g_2 \ bx}{ks}{kv}{ks'}{kv'}{s}{v} =\\
-        \tab (ks, kv, ks', kv', s, v) \Leftarrow \kpg{bx}{ks}{g_1 \circ kv}{ks'}{g_1 \circ kv'}{s}{v};\\
-        \qtab (ks, g_2 \circ kv, ks', g_2 \circ kv', s, v)$
+    \noindent $\kpg{RearrV \ g_1 \ g_2 \ bx}{ks}{kv}{lks}{lkv}{s}{v} =\\
+        \tab (ks', kv', lks', lkv', s', v') \Leftarrow \kpg{bx}{ks}{g_1 \circ kv}{lks}{g_1 \circ lkv}{s}{v};\\
+        \qtab (ks', g_2 \circ kv', lks', g_2 \circ lkv', s', v')$
+    
+    \noindent $\kpg{Case \ cond_{sv} \ cond_{s} \ bx_1 \ bx_2}{ks}{kv}{lks}{lkv}{s}{v} =\\
+        \tab es \Leftarrow lks \ s; \quad ev \Leftarrow lkv \ v; \quad elks \Leftarrow id; \quad elkv \Leftarrow id;\\
+        \tab \textnormal{if} \ cond_{sv} \ es \ ev \ \&\& \ cond_{s} \ es\\
+        \tab \textnormal{then} \ (ks', kv', lks', lkv', s', v') \Leftarrow \kpg{bx_1}{ks}{kv}{elks}{elkv}{es}{ev}\\
+        \tab \textnormal{else} \ (ks', kv', lks', lkv', s', v') \Leftarrow \kpg{bx_2}{ks}{kv}{elks}{elkv}{es}{ev}\\
+        \tab \underline{\textnormal{fi}} \ cond_s \ (lks' \ s') \ \&\& \ cond_{sv} \ \textbf{es} \ (lkv' \ v'); \ \textnormal{return} \ (ks', kv', lks', lkv', s', v')$
 
-    \noindent $\kpg{Case \ cond_{sv} \ cond_{s} \ bx_1 \ bx_2}{ks}{kv}{ks'}{kv'}{s}{v} =\\
-        \tab s \Leftarrow ks' \ s; \quad v \Leftarrow kv' \ v; \quad ks' \Leftarrow id ; \quad kv' \Leftarrow id;\\
-        \tab \textnormal{if} \ cond_{sv} \ s \ v \ \&\& \ cond_{s} \ s\\
-        \tab \textnormal{then} \ (ks, kv, ks', kv', s', v') \Leftarrow \kpg{bx_1}{ks}{kv}{ks'}{kv'}{s}{v}\\
-        \tab \textnormal{else} \ (ks, kv, ks', kv', s', v') \Leftarrow \kpg{bx_2}{ks}{kv}{ks'}{kv'}{s}{v}\\
-        \tab \underline{\textnormal{fi}} \ cond_s \ (ks' \ s') \ \&\& \ cond_{sv} \ s \ (kv' \ v'); \ \textnormal{return} \ (ks, kv, ks', kv', s', v')$
-
-    \noindent $\kpg{bx_1 \circ bx_2}{ks}{kv}{ks'}{kv'}{s}{v} =\\
-        \tab (ks_1, kv_1, \underline{ks_1'}, kv_1', \underline{s_1}, v_1) \Leftarrow \kpg{bx_1}{ks}{id}{ks'}{id}{s}{construct\_dummy \ v};\\
-        \tab (ks_2, kv_2, ks_2', kv_2', s_2, v_2) \Leftarrow \kpg{bx_2}{kv_1}{kv}{kv_1'}{kv'}{v_1}{v};\\
-        \qtab (ks_1 \circ ks_2, kv_2, ks_1 \circ ks_2', kv_2', s_2, v_2)$
+    \noindent $\kpg{bx_1 \circ bx_2}{ks}{kv}{lks}{lkv}{s}{v} =\\
+        \tab (ks_1, kv_1, \underline{lks_1}, lkv_1, \underline{s_1}, v_1) \Leftarrow \kpg{bx_1}{ks}{id}{lks}{id}{s}{construct\_dummy \ v};\\
+        \tab (ks_2, kv_2, lks_2, lkv_2, s_2, v_2) \Leftarrow \kpg{bx_2}{kv_1}{kv}{lkv_1}{lkv}{v_1}{v};\\
+        \qtab (ks_1 \circ ks_2, kv_2, ks_1 \circ lks_2, lkv_2, s_2, v_2)$
+    %+}
 \end{definition}
 
-In $kpg$, basically, functions for the updates will be kept in $ks'$ and $kv'$.
-$\kpginline{Skip}$ and $\kpginline{Case}$ are special cases, because they require the actual values for evaluation. Therefore we evaluate the values by application of $ks' \ s$ and $kv' \ v$ and update $ks'$ and $kv'$ with the identity functions.
+\textcolor{red}{
+In $kpg$, basically, functions for the updates will be kept in $lks$ and $lkv$.
+$\kpginline{Skip}$ and $\kpginline{Case}$ are special cases, because they require the actual values for evaluation. Therefore we evaluate the values by application of $lks \ s$ and $lkv \ v$ and update $lks$ and $lkv$ with the identity functions.
 %Except $\kpginline{Skip}$ and $\kpginline{Case}$ where $s$ and $v$ hold actual values, functions for the computation will be kept in $ks'$ and $kv'$.
-When evaluating $\kpginline{bx_1 \circ bx_2}$, $\underline{ks_1'}$ and $\underline{s_1}$ in the result of the first assignment are still redundant but not evaluated.
-
-Additionally we did two optimizations in $kpg$. The first is in $\kpginline{bx_1 \times bx_2}$. The evaluation of $ks'$ and $kv'$ will be done independently in two assignments using $\kpginline{bx_1}$ and $\kpginline{bx_2}$. There may be same computations in $fst \circ ks'$ and $snd \circ ks'$ as well as $fst \circ kv'$ and $snd \circ kv'$.
+When evaluating $\kpginline{bx_1 \circ bx_2}$, $\underline{lks_1}$ and $\underline{s_1}$ in the result of the first assignment are still redundant but not evaluated.
+\\
+Additionally we did two optimizations in $kpg$. The first is in $\kpginline{bx_1 \times bx_2}$. The evaluation of $lks$ and $lkv$ will be done independently in two assignments using $\kpginline{bx_1}$ and $\kpginline{bx_2}$. There may be same computations in $fst \circ lks$ and $snd \circ lks$ as well as $fst \circ lkv$ and $snd \circ lkv$.
 To remove duplicate evaluations, we evaluate actual values in $s$ and $v$ before calling $\kpginline{bx_1}$.
 %It is possible to evaluate actual values in $s$ and $v$ before calling $\kpginline{bx_1}$ to remove the redundancy like that. One more thing,
-Second is in $\kpginline{Case}$. We need to evaluate $ks' \ s'$ and $kv' \ v'$ to check the \underline{fi} condition before returning the 6-tuple. Such evaluations can be done lazily to make programs run faster. We use the above small optimizations in our implementation.
+Second is in $\kpginline{Case}$. We need to evaluate $lks \ s'$ and $lkv \ v'$ to check the \underline{fi} condition before returning the 6-tuple. Such evaluations can be done lazily to make programs run faster. We use the above small optimizations in our implementation.
+}
 
 \subsection{Combination of pg and kpg: xpg}
 The most important thing when using $kpg$ to evaluate a composition $bx_1 \circ bx_2$ is keeping the dropped parts from the source in a function that are used to produce new source instead of using more recursive call. This is reflected in the first call $\kpginline{bx_1}$ and the last application in $\kpginline{bx_1 \circ bx_2}$. The second call $\kpginline{bx_2}$ just play a syntactic role while it requires many parameters. We can completely reduce this number to 2, including one for the source and one for the view as in a $pg$ call. This idea is realized by function $xpg$ as follows:
@@ -220,8 +324,8 @@ $\xpg{bx}{s}{v}$
 
     \noindent $\xpg{bx}{s}{v} = \match{bx}\\
     \tab \vert \ bx_1 \circ bx_2 \to \\
-        \tabs{2} (ks_1,kv_1, ks_1', kv_1', s_1, v_1) \Leftarrow \kpg{bx_1}{\lambda \_.s}{id}{id}{id}{s}{construct\_dummy \ v};\\
-        \tabs{2} (s_2, v_2) \Leftarrow \xpg{bx_2}{kv_1' \ v_1}{v};\\
+        \tabs{2} (ks_1,kv_1, lks_1, lkv_1, s_1, v_1) \Leftarrow \kpg{bx_1}{\lambda \_.s}{id}{id}{id}{s}{construct\_dummy \ v};\\
+        \tabs{2} (s_2, v_2) \Leftarrow \xpg{bx_2}{lkv_1 \ v_1}{v};\\
         \tabs{3} (ks_1 \ s_2, v_2)\\
     \tab \vert \ \_ \to \text{similar to } pg$
 \end{definition}
