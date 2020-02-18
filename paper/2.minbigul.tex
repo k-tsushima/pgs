@@ -79,7 +79,7 @@ use~$v$ below. The later definitions also follow this convention.
         \noindent $\putbx{Replace}{s}{v} = v$
     
         \noindent $\putbx{\product{bx_1}{bx_2}}{(s_1, s_2)}{(v_1, v_2)} = \\
-            \tab ((\putbx{bx_1}{s_1}{v_1}),(\putbx{bx_2}{s_2}{v_2}))$
+            \tab (\putbx{bx_1}{s_1}{v_1},\putbx{bx_2}{s_2}{v_2})$
     
         \noindent $\putbx{\rearrs{f_1}{f_2}{bx}}{s}{v} = \\
             \tab f_2 \ (\putbx{bx}{(f_1 \ s)}{v})$
@@ -106,7 +106,7 @@ use~$v$ below. The later definitions also follow this convention.
         \noindent $\getbx{Replace}{s} = s$
 
         \noindent $\getbx{\product{bx_1}{bx_2}}{(s_1,s_2)} = \\
-            \tab ((\getbx{bx_1}{s_1}),(\getbx{bx_2}{s_2}))$
+            \tab (\getbx{bx_1}{s_1},\getbx{bx_2}{s_2})$
 
         \noindent $\getbx{\rearrs{f_1}{f_2}{bx}}{s} = \\ 
             \tab \getbx{bx}{(f_1 \ s)}$
@@ -175,21 +175,17 @@ $\tabs{3} \ bx_1 = RearrV \ g_1 \ g_2 \ bx_v$ where: \\
     $\tabs{4} g_1 = g_2^{-1} = \lambda [v].(v,[\ ]), bx_v = (Skip \ (\lambda \_.())) \times Replace$\\
 $\tabs{3} \ bx_2 = RearrS \ f_1 \ f_2 \ bx_s$ where:\\
     $\tabs{4} f_1 = f_2^{-1} = \lambda ((x:xs),e).(x,(xs,e))$, 
-$bx_s = ((Replace \times bfoldr \ bx) \circ bx)$
+$bx_s = ((Replace \times \textit{bfoldr} \ bx) \circ bx)$
 
 If we think that a minBiGUL program $bx$ has a type of $\textit{MinBiGUL} \ s \ v$, the type of $bfoldr$ will be look like $\textit{MinBiGUL} \ (a, b) \ a \to \textit{MinBiGUL} \ ([a], b) \ b$. You can easily find the similarity between the above definition of $\textit{bfoldr}$ with the following definition of $\textit{foldr}$:
 
-$\tab foldr :: (a \to b \to b) \to b \to [a] \to b \\
-\tabs{2} \ \ foldr \ f \ e \ [\ ] = e \\ 
-\tabs{2} \ \ foldr \ f \ e \ (x:xs) = f \ x \ (foldr \ f \ e \ xs)$
+$\tab \textit{foldr} :: (a \to b \to b) \to b \to [a] \to b \\
+\tabs{2} \ \ \textit{foldr} \ f \ e \ [\ ] = e \\ 
+\tabs{2} \ \ \textit{foldr} \ f \ e \ (x:xs) = f \ x \ (\textit{foldr} \ f \ e \ xs)$
 
 Each branch in a case of $\textit{bfoldr}$ corresponds to a pattern of $foldr$. In $\textit{bfoldr}$, the composition is inherently left associative, and the number of composition is dynamically determined by the length of the source list. Because~$\circ$ has a higher priority than~$\times$, it is in general not possible to transform $\textit{bfoldr}$ from the left associative composition style to the right one. 
 
-Using $\textit{foldr}$, we can define other functions, for example: 
+Using $\textit{foldr}$, we can define other functions like $reverse = \textit{foldr} \ snoc \ [\ ]$. With $\textit{bfoldr}$, we can also write the bidirectional version $breverse$ as follows:
 
-$\tab reverse = foldr \ snoc \ [\ ]$
-
-With $\textit{bfoldr}$, we can also write the bidirectional version $breverse$ as follows:
-
-$\tab breverse = RearrS \ f_1 \ f_2 \ bx$ where:\\
-    $\tabs{4} f_1 = f_2^{-1} = \lambda s \to (s, [\ ]), \tab bx = bfoldr \ bsnoc$
+$\tab breverse = RearrS \ f_1 \ f_2 \ bx$ where: \\
+$\tabs{4} f_1 = f_2^{-1} = \lambda s \to (s, [\ ]), \tab bx = \textit{bfoldr} \ bsnoc$

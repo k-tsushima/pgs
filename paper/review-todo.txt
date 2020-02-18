@@ -267,7 +267,7 @@ p7, sec 4.1, para 1
  "it is potential to" ~>
  "there is the potential to" ~>
 
-TODO-D12: 
+TODO-D12: DONE [BNT]
 p7, Def 6
  "Now, let us see how to construct pg respectively."
  Respective of what?
@@ -277,7 +277,7 @@ p7
  "The last equality is relatively obvious" 
  It wouldn't be too onerous to just say that it's a function application
 
-TODO-D14:
+TODO-D14: DONE [BNT]
 p7, def pg, `pg [[ bx1 x bx2]]((s1,s2,),(v1,v2))`:
  on the following line the type returned looks like a quadruple rather than a
  pair, so I think there are some missing parentheses.
@@ -286,7 +286,7 @@ TODO-D15:
 p7, line -2 "rearrangements are very clear" ... "then doing basic changes"
  If I'm right about the typo above, I think that it's perhaps not so clear.
 
-TODO-D16: DONE
+TODO-D16: DONE [BNT]
 p7/p8: some of the definitions end in a `return` and others don't. I'm unclear
  about the difference.
 
@@ -304,7 +304,7 @@ p9 "Therefore, the runtime inefficiency is inevitable:"
  As an unqualified statement this is surely false, as demonstrated by the
 results of your paper.
 
-TODO-D20:
+TODO-D20: DONE [BNT]
 p10, S4.3
  "For keeping away such computations" 
  this needs to be reworded, perhaps something like "To prevent such redundant
