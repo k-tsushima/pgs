@@ -272,7 +272,7 @@ p7, Def 6
  "Now, let us see how to construct pg respectively."
  Respective of what?
 
-TODO-D13:
+TODO-D13: DONE [KT], change to "function application"
 p7 
  "The last equality is relatively obvious" 
  It wouldn't be too onerous to just say that it's a function application
@@ -329,7 +329,7 @@ TODO-D24: DONE[KT]
 p11, "a function that is used to produce" ~>
     "a function that are used to produce"
 
-TODO-D25:
+TODO-D25: DONE[KT] changing : "Then" -> "Therefore"
 p13, last para
  "Then we simply omit ..."
  I'm not sure I understand the logic of the "Then"

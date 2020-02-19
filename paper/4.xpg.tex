@@ -24,7 +24,7 @@ Another solution for saving intermediate states is tupling. If $put$ and $get$ a
         \tab \qtab \overset{2}{=} \sif{h \ s = v}{(s, h \ s)}{\textit{undefined}} \\
         \tab \qtab \overset{3}{=} \sif{h \ s = v}{(s, v)}{\textit{undefined}}$
         
-The first equality is simply based on the definitions of $pg$, $\putbxinline{Skip \ h}$ and $\getbxinline{Skip \ h}$. The second one tuples two results of $put$ and $get$ in the body of the if-expression. This is a trick since in some cases, the result of $pg$ may be undefined although the result is not undefined when evaluating $\getbxinline{Skip \ h}$. The last equality is relatively obvious.
+The first equality is simply based on the definitions of $pg$, $\putbxinline{Skip \ h}$ and $\getbxinline{Skip \ h}$. The second one tuples two results of $put$ and $get$ in the body of the if-expression. This is a trick since in some cases, the result of $pg$ may be undefined although the result is not undefined when evaluating $\getbxinline{Skip \ h}$. The last equality is a function application.
 
     \noindent $\tabs{2} \pg{Replace}{s}{v} = (v, s)$\\
 %-{
