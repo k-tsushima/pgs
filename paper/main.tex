@@ -80,6 +80,15 @@
 
 \newcommand{\match}[1]{\textnormal{match } #1 \ \textnormal{ with }}
 
+\makeatletter
+\newcommand{\AlignFootnote}[1]{%
+    \ifmeasuring@
+    \else
+        \footnote{#1}%
+    \fi
+}
+\makeatother
+
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
 \newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
@@ -103,14 +112,14 @@
 % an abbreviated paper title here
 %
 
-%\author{{Kanae Tsushima\inst{1}\orcidID{0000-0002-3383-3389}} \and
-%  {Bach-Trong Nguyen\inst{1}\orcidID{0000-0002-6342-6020}} \and
-%  {Robert Gl\"{u}ck\inst{2}\orcidID{0000-0001-6990-3935}} \and
-%  {Zhenjiang Hu\inst{3}\orcidID{0000-0002-9034-205X}}}
+\author{{Kanae Tsushima\inst{1}\orcidID{0000-0002-3383-3389}} \and \break
+  {Bach-Trong Nguyen\inst{1}\orcidID{0000-0002-6342-6020}} \and \break
+  {Robert Gl\"{u}ck\inst{2}\orcidID{0000-0001-6990-3935}} \and
+  {Zhenjiang Hu\inst{3}\orcidID{0000-0002-9034-205X}}}
 
-\author{anonymous authors}
+%\author{anonymous authors}
 
-%\authorrunning{K. Tsushima et al.}
+\authorrunning{K. Tsushima et al.}
 
 \authorrunning{anonymous authors}
 
@@ -118,12 +127,12 @@
 % If there are more than two authors, 'et al.' is used.
 %
 
-%\institute{National Institute of Informatics, Japan
-%  \email{\{k\_tsushima,bach\}@nii.ac.jp} \and
-%  University of Copenhagen, Denmark
-%  \email{glueck@di.ku.dk } \and
-%  Peking University, China
-%  \email{huzj@pku.edu.cn}}
+\institute{National Institute of Informatics, Japan
+  \email{\{k\_tsushima,bach\}@nii.ac.jp} \and
+  University of Copenhagen, Denmark
+  \email{glueck@di.ku.dk } \and
+  Peking University, China
+  \email{huzj@pku.edu.cn}}
 
 %\institute{anonymous}
 
