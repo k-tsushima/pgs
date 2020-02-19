@@ -145,7 +145,7 @@ TODO-C2: DONE[BNT], changed definitions and explanations of put_m and get_m
  performs the same table addition, for the composition case, that
  get_mh does next for all the other cases. Why this complexity?
 
-TODO-C3: ALMOST DONE [BNT], renamed variables --> need more checking
+TODO-C3: DONE [BNT], renamed variables
 * On p7 and later, I think the same names are being rebound in
  non-recursive definitions... e.g. (s_1,v_1) <= pg [[bx_1]]
  (s_1,v_1), which I think is binding new s_1 and v_1 and shadowing
