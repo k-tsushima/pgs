@@ -92,20 +92,22 @@ The composition of many $ptail$s, in the \textit{put} direction, replaces a part
 
 The composition of many \textit{bsnoc}s, in the \textit{put} direction, creates a permutation of the view list if its length is not larger than the length of the source list and, in the \textit{get} direction, produces a permutation of the source list.
 
-\textit{breverse} is defined in terms of \textit{bfoldr}. In the \textit{put} direction, it produces a reverse of the view list if its length is not larger than the length of the source list and, in the \textit{get} direction, produces a reverse of the source list. Note that compositions are by the recursions of \textit{breverse} and 
+\textit{breverse} is defined in terms of \textit{bfoldr}, that appeared in Section \ref{sect:minbigul}. In the \textit{put} direction, it produces a reverse of the view list if its length is not larger than the length of the source list and, in the \textit{get} direction, produces a reverse of the source list. Note that compositions are by the recursions of \textit{breverse} and 
 the number of compositions are dynamically determined by the length of the source list.
 
 \subsection{Results}
 
 \input{result.tex}
 
+\textcolor{red}{TODO-D4: emphasize overhead of memoization. it is not for free.}
 Figure \ref{fig:result} 
 % illustrates 
 shows the evaluation times for each of the seven test cases using the three methods: $put$ in minBiGUL, $put_m$ in minBiGUL$_m$ and $xpg$.
 We also did similar experiments with $pg$, $cpg$ and $kpg$, but their results are slower than the corresponding ones of $xpg$. The slowness was caused by the exponential number of $pg$ calls in the case of $pg$, redundant evaluations ($cpg$), and redundant overhead for constructing closures ($kpg$).
-Then we simply omit these results in Figure \ref{fig:result}.
+Therefore we simply omit these results in Figure \ref{fig:result}.
 As we all know, $put$ works poorly for left associative compositions because of the number of reevaluated $get$s.
 %The figure shows $put_m$ and $xpg$ are better than $put$ in some cases.
 The left part of the figure contains tests using not-large inputs, and we see that $put_m$ is the fastest method for them. However if the input size is large enough, in the cases of the right part of the figure, $put_m$ will be slower quickly due to time for manipulating data in the table. At that time, $xpg$ is 
 % proved to be
 the most effective method.
+\textcolor{red}{TODO-B2: add short evaluation result of memory.}
