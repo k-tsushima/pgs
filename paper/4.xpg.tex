@@ -221,7 +221,7 @@ Second is in $\kpginline{Case}$. We need to evaluate $lks \ s'$ and $lkv \ v'$ t
 
 
 \subsection{Combination of pg and kpg: xpg}
-\textcolor{red}{TODO-D3: change explanation clearer.}
+\textcolor{red}{TODO-D3/D22: change explanation clearer.}
 The most important thing when using $kpg$ to evaluate a composition $bx_1 \circ bx_2$ is keeping the dropped parts from the source in a function that are used to produce new source instead of using more recursive call. This is reflected in the first call $\kpginline{bx_1}$ and the last application in $\kpginline{bx_1 \circ bx_2}$. The second call $\kpginline{bx_2}$ just play a syntactic role while it requires many parameters. We can completely reduce this number to 2, including one for the source and one for the view as in a $pg$ call. This idea is realized by function $xpg$ as follows:
 
 \begin{definition}

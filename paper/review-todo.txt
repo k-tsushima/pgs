@@ -82,7 +82,7 @@ Questions:
 TODO-B1: almost DONE [KT] added future work.
 - it is not quite clear from the paper what the context of miniBiGUL is, but I assume it's a strict language: how would this work look in an explicitly lazy language like Haskell?
 
-TODO-B2:
+TODO-B2: 
 - timing measurements are presented: what are the *space* consequences of the transformations presented: it would be good to see data on that as well?
 
 Detailed points:
@@ -213,7 +213,7 @@ this is largely guesswork because I'm aware of how the quadratic function
 application problem is generally solved. This really ought to be explained in
 the paper itself.
 
-TODO-D2:
+TODO-D2: almost DONE [KT] add explanation to kpg.
 The claim is that kpg does this more lazily, and I assumed that this had
 something to do with the underlined values in the final case of kpg. But it
 turns out that it is to do with when the compositisions are applied in the
