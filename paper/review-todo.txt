@@ -82,7 +82,7 @@ Questions:
 TODO-B1: almost DONE [KT] added future work.
 - it is not quite clear from the paper what the context of miniBiGUL is, but I assume it's a strict language: how would this work look in an explicitly lazy language like Haskell?
 
-TODO-B2: 
+TODO-B2: putting this to future work
 - timing measurements are presented: what are the *space* consequences of the transformations presented: it would be good to see data on that as well?
 
 Detailed points:

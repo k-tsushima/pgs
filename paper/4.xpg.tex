@@ -208,7 +208,7 @@ $\kpg{bx}{ks}{kv}{lks}{lkv}{s}{v}$
 \textcolor{red}{
 In $kpg$, basically, functions for the updates will be kept in $lks$ and $lkv$.
 In $\kpginline{RearrS}$ and $\kpginline{RearrV}$, $f_1$ and $g_1$ are accumulated in $lks$ and $lkv$.
-The kept functions are evaluated in $\kpginline{Skip}$ and $\kpginline{Case}$ by application of $lks \ s$ and $lkv \ v$. At the same time, $lks$ and $lkv$ are updated with the identity functions.
+The kept functions are evaluated in $\kpginline{Skip}$ and $\kpginline{Case}$ by application of $lks \ s$ and $lkv \ v$. At the same time, the third argument and fourth argument are updated with the identity functions.
 This evaluation is needed, because these definitions require the actual values, $es$ and $ev$.
 Thanks to this accumulation in $kpg$, $\underline{lks_1}$ and $\underline{s_1}$ in $\kpginline{bx_1 \circ bx_2}$ are not evaluated as possible.}
 %Except $\kpginline{Skip}$ and $\kpginline{Case}$ where $s$ and $v$ hold actual values, functions for the computation will be kept in $ks'$ and $kv'$.}
@@ -217,7 +217,7 @@ Thanks to this accumulation in $kpg$, $\underline{lks_1}$ and $\underline{s_1}$ 
   Because $es$ and $ev$ are not used in this definition, we do not need to evaluate.
   However, if we accumulate $lks$ and $lkv$, both might be evlauated independently in two assignments using $\kpginline{bx_1}$ and $\kpginline{bx_2}$. This includes the same computation. To remove duplicate evaluations, we evaluate actual values $es$ and $ev$ before calling $\kpginline{bx_1}$. and $\kpginline{bx_2}$}
 %It is possible to evaluate actual values in $s$ and $v$ before calling $\kpginline{bx_1}$ to remove the redundancy like that. One more thing,
-Second is in $\kpginline{Case}$. We need to evaluate $lks \ s'$ and $lkv \ v'$ to check the \underline{fi} condition before returning the 6-tuple. Such evaluations can be done lazily to make programs run faster. We use the above small optimizations in our implementation.
+Second is in $\kpginline{Case}$ and not shown in the definition. We need to evaluate $lks' \ s'$ and $lkv' \ v'$ to check the \underline{fi} condition before returning the 6-tuple. Such evaluations can be done lazily to make programs run faster. We use the above small optimizations in our implementation.
 
 
 \subsection{Combination of pg and kpg: xpg}
