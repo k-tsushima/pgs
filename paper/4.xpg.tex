@@ -68,7 +68,7 @@ The values of these $pg$ functions are obtained from the final expression in the
     \tabs{2} \qtab \text{else} \ (s', v') \Leftarrow \pg{bx_2}{s}{v}\\
     \tabs{2} \qtab \text{fi} \ cond_{s} \ s' \ \&\& \ cond_{sv} \ s \ v'; \text{ return } (s',v')$
 
-A restriction for $\pginline{Case}$ needs to be introduced here. We know that there is one entering condition and one exit condition when evaluating $\putbxinline{Case}$ as well as $\getbxinline{Case}$. If a tupling occurs, there will be 4 combinations from these conditions. This means two entering conditions of $\putbxinline{Case}$ and $\getbxinline{Case}$ are not always simultaneously satisfied. The evaluated branches are distinct in the $put$ and $get$ directions for combinations $((cond_{sv} \ s \ v) \ \&\& \ (not (cond_{s} \ s)))$ and $((not (cond_{sv} \ s \ v)) \ \&\& \ (cond_{s} \ s))$, which are restricted in this paper\footnote{\textcolor{red}{If the BX programs have efficient inverse way of evaluation, they are not affected by this restriction. Of course, some programs does not have such efficient way. An example restricted by this is evaluating $snoc$ with different length of a source and a view.}}. This does not happen for the others which is used in the construction of $\pginline{Case}$.
+    A restriction for $\pginline{Case}$ needs to be introduced here. We know that there is one entering condition and one exit condition when evaluating $\putbxinline{Case}$ as well as $\getbxinline{Case}$. If a tupling occurs, there will be 4 combinations from these conditions. This means two entering conditions of $\putbxinline{Case}$ and $\getbxinline{Case}$ are not always simultaneously satisfied. The evaluated branches are distinct in the $put$ and $get$ directions for combinations $((cond_{sv} \ s \ v) \ \&\& \ (not (cond_{s} \ s)))$ and $((not (cond_{sv} \ s \ v)) \ \&\& \ (cond_{s} \ s))$, which are restricted in this paper\footnote{\textcolor{red}{If the BX programs have efficient inverse way for evaluation, they are not affected by this restriction. Of course, all BX programs do not always have such efficient way. An example restricted by this is evaluating $bsnoc$ with different length of a source and a view.}}. This does not happen for the others which is used in the construction of $\pginline{Case}$.
 
     \noindent $\tabs{2} \pg{bx_1 \circ bx_2}{s}{v} \\
     \tabs{3} \overset{1}{=} (\putbx{bx_1}{s}{(\putbx{bx_2}{(\getbx{bx_1}{s})}{v})}, \getbx{bx_2}{(\getbx{bx_1}{s})}) \\
@@ -205,14 +205,17 @@ $\kpg{bx}{ks}{kv}{lks}{lkv}{s}{v}$
     %+}
 \end{definition}
 
-\textcolor{red}{TODO-C6: RearrS, RearrV just keeping, Really evaluated is skip, product}
+\textcolor{red}{
 In $kpg$, basically, functions for the updates will be kept in $lks$ and $lkv$.
-$\kpginline{Skip}$ and $\kpginline{Case}$ are special cases, because they require the actual values for evaluation. Therefore we evaluate the values by application of $lks \ s$ and $lkv \ v$ and update $lks$ and $lkv$ with the identity functions.
-%Except $\kpginline{Skip}$ and $\kpginline{Case}$ where $s$ and $v$ hold actual values, functions for the computation will be kept in $ks'$ and $kv'$.
-When evaluating $\kpginline{bx_1 \circ bx_2}$, $\underline{lks_1}$ and $\underline{s_1}$ in the result of the first assignment are still redundant but not evaluated.
-\\
-Additionally we did two optimizations in $kpg$. The first is in $\kpginline{bx_1 \times bx_2}$. The evaluation of $lks$ and $lkv$ will be done independently in two assignments using $\kpginline{bx_1}$ and $\kpginline{bx_2}$. There may be same computations in $fst \circ lks$ and $snd \circ lks$ as well as $fst \circ lkv$ and $snd \circ lkv$.
-To remove duplicate evaluations, we evaluate actual values in $s$ and $v$ before calling $\kpginline{bx_1}$.
+In $\kpginline{RearrS}$ and $\kpginline{RearrV}$, $f_1$ and $g_1$ are accumulated in $lks$ and $lkv$.
+The kept functions are evaluated in $\kpginline{Skip}$ and $\kpginline{Case}$ by application of $lks \ s$ and $lkv \ v$. At the same time, $lks$ and $lkv$ are updated with the identity functions.
+This evaluation is needed, because these definitions require the actual values, $es$ and $ev$.
+Thanks to this accumulation in $kpg$, $\underline{lks_1}$ and $\underline{s_1}$ in $\kpginline{bx_1 \circ bx_2}$ are not evaluated as possible.}
+%Except $\kpginline{Skip}$ and $\kpginline{Case}$ where $s$ and $v$ hold actual values, functions for the computation will be kept in $ks'$ and $kv'$.}
+
+\textcolor{red}{Additionally we did two optimizations in $kpg$. The first is in $\kpginline{bx_1 \times bx_2}$.
+  Because $es$ and $ev$ are not used in this definition, we do not need to evaluate.
+  However, if we accumulate $lks$ and $lkv$, both might be evlauated independently in two assignments using $\kpginline{bx_1}$ and $\kpginline{bx_2}$. This includes the same computation. To remove duplicate evaluations, we evaluate actual values $es$ and $ev$ before calling $\kpginline{bx_1}$. and $\kpginline{bx_2}$}
 %It is possible to evaluate actual values in $s$ and $v$ before calling $\kpginline{bx_1}$ to remove the redundancy like that. One more thing,
 Second is in $\kpginline{Case}$. We need to evaluate $lks \ s'$ and $lkv \ v'$ to check the \underline{fi} condition before returning the 6-tuple. Such evaluations can be done lazily to make programs run faster. We use the above small optimizations in our implementation.
 
