@@ -150,7 +150,7 @@ In the next session, we will optimize this redundancy.
 
 \subsection{Lazy Computation: kpg}
 
-The problem for $cpg$ lies in redundant computations during the evaluation. To prevent such redundant computations from occuring, we introduce an extension named $kpg$. While $cpg$ evaluates values eagerly, $kpg$ does the opposite. Every value is evaluated lazily in a computation of $kpg$. The input of $\kpginline{bx}$ is expanded to a 6-tuple $(ks, kv, lks, lkv, s, v)$ where $ks$ and $kv$ keep the modification information same as $cpg$, $s$ and $v$ hold evaluated values, and $lks$ and $lkv$ are used for lazy evaluation of actual values. The output of this function is also a 6-tuple $(ks, kv, lks, lkv, s, v)$.\\
+The problem for $cpg$ lies in redundant computations during the evaluation. To prevent such redundant computations from occurring, we introduce an extension named $kpg$. While $cpg$ evaluates values eagerly, $kpg$ does the opposite. Every value is evaluated lazily in a computation of $kpg$. The input of $\kpginline{bx}$ is expanded to a 6-tuple $(ks, kv, lks, lkv, s, v)$ where $ks$ and $kv$ keep the modification information same as $cpg$, $s$ and $v$ hold evaluated values, and $lks$ and $lkv$ are used for lazy evaluation of actual values. The output of this function is also a 6-tuple $(ks, kv, lks, lkv, s, v)$.\\
 Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated source and view $(s, v)$ where $s = \putbx{bx}{s_0}{v_0}$ and $v = \getbx{bx}{s_0}$ can be obtained using $kpg$ as follows:
 
 \smallvspace
@@ -215,7 +215,7 @@ Thanks to this accumulation in $kpg$, $\underline{lks_1}$ and $\underline{s_1}$ 
 
 \textcolor{red}{Additionally we did two optimizations in $kpg$. The first is in $\kpginline{bx_1 \times bx_2}$.
   Because $es$ and $ev$ are not used in this definition, we do not need to evaluate.
-  However, if we accumulate $lks$ and $lkv$, both might be evlauated independently in two assignments using $\kpginline{bx_1}$ and $\kpginline{bx_2}$. This includes the same computation. To remove duplicate evaluations, we evaluate actual values $es$ and $ev$ before calling $\kpginline{bx_1}$. and $\kpginline{bx_2}$}
+  However, if we accumulate $lks$ and $lkv$, both might be evaluated independently in two assignments using $\kpginline{bx_1}$ and $\kpginline{bx_2}$. This includes the same computation. To remove duplicate evaluations, we evaluate actual values $es$ and $ev$ before calling $\kpginline{bx_1}$. and $\kpginline{bx_2}$}
 %It is possible to evaluate actual values in $s$ and $v$ before calling $\kpginline{bx_1}$ to remove the redundancy like that. One more thing,
 Second is in $\kpginline{Case}$ and not shown in the definition. We need to evaluate $lks' \ s'$ and $lkv' \ v'$ to check the \underline{fi} condition before returning the 6-tuple. Such evaluations can be done lazily to make programs run faster. We use the above small optimizations in our implementation.
 
