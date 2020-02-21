@@ -140,8 +140,8 @@ The first method uses straightforward memoization: ``keeping \emph{intermediate 
 To treat large inputs, we propose the second method based on memoization: ``keeping \emph{complements in a closure} and using them when needed''.
 \textcolor{red}{Here, complements are information from sources that makes $get$ injective, which is in turn needed to evaluate $put$.
   In the middle $put$ and $get$ of Figure \ref{fig:eval-comp-phead},
-  we use $i_1$, $[[1,2],[3]]$ and $i_2'$, $[100,2]$ to obtain the updated source $[[100,2],[3]]$. However, $[1,2]$ is simply replaced by $[100,2]$ and not used to construct the result. In this case we can use $[..., [3]]$ as a complement.}
-The key idea is straightforward: Complements are smaller
+  we use $i_1$, $[[1,2],[3]]$ and $i_2'$, $[100,2]$ to obtain the updated source $[[100,2],[3]]$. However, $[1,2]$ is simply replaced by $[100,2]$ and not used to construct the result of $put$. In this case we can use $[..., [3]]$ as a complement.}
+The key idea of the second approach is straightforward: Complements are smaller
 % program fragments
 than
 % the original

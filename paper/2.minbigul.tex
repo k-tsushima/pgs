@@ -177,7 +177,7 @@ $\tabs{3} \ bx_2 = RearrS \ f_1 \ f_2 \ bx_s$ where:\\
     $\tabs{4} f_1 = f_2^{-1} = \lambda ((x:xs),e).(x,(xs,e))$, 
 $bx_s = ((Replace \times \textit{bfoldr} \ bx) \circ bx)$
 
-If we think that a minBiGUL program $bx$ has a type of $\textit{MinBiGUL} \ s \ v$, the type of $bfoldr$ will be look like $\textit{MinBiGUL} \ (a, b) \ a \to \textit{MinBiGUL} \ ([a], b) \ b$. You can easily find the similarity between the above definition of $\textit{bfoldr}$ with the following definition of $\textit{foldr}$:
+If we think that a minBiGUL program $bx$ has a type of $\textit{MinBiGUL} \ s \ v$, the type of $bfoldr$ will be look like $\textit{MinBiGUL} \ (a, b) \ b \to \textit{MinBiGUL} \ ([a], b) \ b$. You can easily find the similarity between the above definition of $\textit{bfoldr}$ with the following definition of $\textit{foldr}$:
 
 $\tab \textit{foldr} :: (a \to b \to b) \to b \to [a] \to b \\
 \tabs{2} \ \ \textit{foldr} \ f \ e \ [\ ] = e \\ 

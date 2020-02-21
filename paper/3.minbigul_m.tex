@@ -15,7 +15,7 @@ Later the value in the table is used instead of recomputing it.
 
 The memoizing version, minBiGUL$_m$, needs only two modifications: $get_m$ and $put_m$ (Definitions~\ref{def:putm} and~\ref{def:getm}).
 
-\begin{definition} \label{def:putm} $\text{Memo version of } put$
+\begin{definition} \label{def:putm} $\text{Memoization version of } put$
 
     \noindent $\putm{bx}{s}{v} = \match{bx}\\
         \tab \vert \ bx_1 \circ bx_2 \to \\
@@ -23,7 +23,7 @@ The memoizing version, minBiGUL$_m$, needs only two modifications: $get_m$ and $
         \tab \vert \ \_ \to \text{similar to } put$
 \end{definition}
 
-\begin{definition} \label{def:getm} $\text{Memo version of } get$
+\begin{definition} \label{def:getm} $\text{Memoization version of } get$
 
     \noindent $\getm{bx}{s} = \match{bx}\\
     \tab \ \vert \ bx_1 \circ bx_2 \to\\
