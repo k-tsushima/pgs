@@ -72,7 +72,7 @@ put_{bx_1 \tilde{\circ} bx_2}~s~v' &= put_{bx_1} s~(put_{bx_2}~ (get_{bx_1}~s)~v
 \minusvspace
 
 \noindent
-\textcolor{red}{Unlike function composition, the composition of bidirectional programs is read left-to-right. We use this order because it is helpful to understand the behavior if we consider data goes from left to right.}
+Unlike function composition, the composition of bidirectional programs is read left-to-right. We use this order because it is helpful to understand the behavior if we consider data goes from left to right.
 %\textcolor{red}{Note that the order of composition is the reverse order compared to function composition. We use this order, because it is standard in BX community.}
 One feature of this composition is that $put_{bx_1 \tilde{\circ} bx_2}$ needs to call $get_{bx_1}$ to compute the intermediate result for $put_{bx_2}$ to use, which would introduce an efficiency problem if we compute $put$ for composition of many bidirectional programs. Generally, for a composition of $O(n)$ bidirectional programs, we need to call $get$ for $O(n^2)$ times. To be concrete, consider the evaluation of the following composition (which will be used as our running example in this paper):
 
@@ -139,9 +139,9 @@ solve the problem by introducing two methods based on memoization to gain fast e
 The first method uses straightforward memoization: ``keeping \emph{intermediate states in a table} and using them when needed''. This avoids repeated $get$ computations and improves the runtime in many cases. However, this simple memoization needs to keep and search values in a table, which may introduce big cost for large inputs. We explain this method in Section~\ref{sect:minbigulm}.
 
 To treat large inputs, we propose the second method based on memoization: ``keeping \emph{complements in a closure} and using them when needed''.
-\textcolor{red}{Here, complements are information from sources that makes $get$ injective, which is in turn needed to evaluate $put$.
+Here, complements are information from sources that makes $get$ injective, which is in turn needed to evaluate $put$.
   In the middle $put$ and $get$ of Figure \ref{fig:eval-comp-phead},
-  we use $i_1$, $[[1,2],[3]]$ and $i_2'$, $[100,2]$ to obtain the updated source $[[100,2],[3]]$. However, $[1,2]$ is simply replaced by $[100,2]$ and not used to construct the result of $put$. In this case we can use $[..., [3]]$ as a complement.}
+  we use $i_1$, $[[1,2],[3]]$ and $i_2'$, $[100,2]$ to obtain the updated source $[[100,2],[3]]$. However, $[1,2]$ is simply replaced by $[100,2]$ and not used to construct the result of $put$. In this case we can use $[..., [3]]$ as a complement.
 The key idea of the second approach is straightforward: Complements are smaller
 % program fragments
 than
