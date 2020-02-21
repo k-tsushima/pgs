@@ -22,12 +22,12 @@ The paper presents two optimizations based on memoization and
  appreciated the incremental buildup to xpg, motivating each step
  along the way as optimizing away unnecessary calls.
 
-TODO-A1: almost DONE [KT] add footnote to Sect 4.1.
+TODO-A1: DONE [KT] add footnote to Sect 4.1.
  One thing that is not entirely clear from the presentation is how
  important the restriction on Case (presented in 4.1) is. What kinds
  of programs does it rule out? An example could go a long way.  
 
-TODO-A2: almost DONE [KT] add explanation in related work
+TODO-A2: DONE [KT] add explanation in related work
  This ties in with a weakness in the evaluation of the paper: while it is
  clear that for left-associative programs the optimizations presented
  are very effective, it's not clear how put_m and xpg perform in
@@ -79,15 +79,15 @@ Negatives:
 
 Questions:
 
-TODO-B1: almost DONE [KT] added future work.
+TODO-B1: DONE [KT] added future work.
 - it is not quite clear from the paper what the context of miniBiGUL is, but I assume it's a strict language: how would this work look in an explicitly lazy language like Haskell?
 
-TODO-B2: putting this to future work
+TODO-B2: DONE [KT] putting this to our future work
 - timing measurements are presented: what are the *space* consequences of the transformations presented: it would be good to see data on that as well?
 
 Detailed points:
 
-TODO-B3:almost DONE [KT] add explanation of complement
+TODO-B3:DONE [KT] add explanation of complement
 p3: what are complements here? Not clear from the informal account: please explain explicitly.
 
 TODO-B4: DONE [KT]
@@ -134,7 +134,7 @@ complexity problem in the Haskell Lens library. So the problem does
 seem to be rather specialized. The paper is hard to follow in places,
 also.
 
-TODO-C1: almost done [KT] add explanation of complement
+TODO-C1: DONE [KT] add explanation of complement
 * "Complements" are discussed on p3, but not explained--you have to
  know what they are from the literature to understand this
  discussion.
@@ -164,7 +164,7 @@ TODO-C5: DONE[BNT], rewrote explanations
  is needed for a hitherto unknown component. But it's very unclear how
  they are to be constructed.
 
-TODO-C6: almost DONE[KT], add explanation in Sect 4.3
+TODO-C6: DONE[KT], add explanation in Sect 4.3
 * On page 9, it's clear what the pg function is, but it's unclear what
  the *specification* of cpg is. As a result, it's hard to understand,
  or judge the correctness of, the following definition. Is there an
@@ -202,7 +202,7 @@ The work itself is well motivated and introduced and the central result of this
 paper is good, so I recommend acceptance. On the whole the paper does a good
 job of motivating the development of the required functions, 
 
-TODO-D1:
+TODO-D1: almost DONE [KT][BNT] added explanation of relationship
 My main reason for rejection is that although on a cursory glance the functions
 seem to be well explained, the crucial functions "cpg", "kpg" and "xpg" need
 more detailed explanation of *why* they work rather than stating what they do.
@@ -213,7 +213,7 @@ this is largely guesswork because I'm aware of how the quadratic function
 application problem is generally solved. This really ought to be explained in
 the paper itself.
 
-TODO-D2: almost DONE [KT] add explanation to kpg.
+TODO-D2: DONE [KT] add explanation to kpg.
 The claim is that kpg does this more lazily, and I assumed that this had
 something to do with the underlined values in the final case of kpg. But it
 turns out that it is to do with when the compositisions are applied in the
@@ -224,7 +224,7 @@ TODO-D3:
 As for xpg, I don't have a good sense of *why* it is better, and this isn't
 clear from the text.
 
-TODO-D4: almost DONE [KT] add explanation about overhead in Sect 5.
+TODO-D4: DONE [KT] add explanation about overhead in Sect 5.
 One aspect that appears to be missing is a discussion of the overhead
 introduced by the technique. I would have liked to see cases where we see the
 cost of memoization: it is surely not for free.
@@ -282,7 +282,7 @@ p7, def pg, `pg [[ bx1 x bx2]]((s1,s2,),(v1,v2))`:
  on the following line the type returned looks like a quadruple rather than a
  pair, so I think there are some missing parentheses.
 
-TODO-D15:
+TODO-D15: 
 p7, line -2 "rearrangements are very clear" ... "then doing basic changes"
  If I'm right about the typo above, I think that it's perhaps not so clear.
 
@@ -295,7 +295,7 @@ p7, line -2
  "paring" ~>
  "pairing"
 
-TODO-D18:
+TODO-D18: DONE[KT] changed notation.
 p8 "considered as the soul": I'm not sure that this metaphor works too well
 here
 
