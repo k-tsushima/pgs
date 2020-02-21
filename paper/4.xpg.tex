@@ -217,7 +217,7 @@ $\kpg{bx}{ks}{kv}{lks}{lkv}{s}{v}$
 In $kpg$, basically, functions for the updates are kept (but not evaluated) in $lks$ and $lkv$.
 In $\kpginline{RearrS}$ and $\kpginline{RearrV}$, $f_1$ and $g_1$ are accumulated in $lks$ and $lkv$.
 The kept functions are evaluated in $\kpginline{Skip}$ and $\kpginline{Case}$ by applications of $lks \ s$ and $lkv \ v$. At the same time, the third and fourth argument of recursive calls are updated with the identity function.
-This evaluation is needed, because these definitions require the actual values, $es$ and $ev$.
+This evaluation is needed because these definitions require the actual values, $es$ and $ev$.
 Thanks to this update, accumulation in $kpg$, $\underline{lks_1}$ and $\underline{s_1}$ in $\kpginline{bx_1 \circ bx_2}$ are not evaluated as much as possible.}
 %Except $\kpginline{Skip}$ and $\kpginline{Case}$ where $s$ and $v$ hold actual values, functions for the computation will be kept in $ks'$ and $kv'$.}
 
