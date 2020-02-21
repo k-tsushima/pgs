@@ -72,7 +72,8 @@ put_{bx_1 \circ bx_2}~s~v' &= put_{bx_1} s~(put_{bx_2}~ (get_{bx_1}~s)~v')
 \minusvspace
 
 \noindent
-\textcolor{red}{Note that the order of composition is different from that of the common function composition. We use this order, because it is helpful to understand the behavior if we consider data goes from left to right.}
+\textcolor{red}{Unlike function composition, the composition of bidirectional programs is read left-to-right. We use this order because it is helpful to understand the behavior if we consider data goes from left to right.}
+%\textcolor{red}{Note that the order of composition is the reverse order compared to function composition. We use this order, because it is standard in BX community.}
 One feature of this composition is that $put_{bx_1 \circ bx_2}$ needs to call $get_{bx_1}$ to compute the intermediate result for $put_{bx_2}$ to use, which would introduce an efficiency problem if we compute $put$ for composition of many bidirectional programs. Generally, for a composition of $O(n)$ bidirectional programs, we need to call $get$ for $O(n^2)$ times. To be concrete, consider the evaluation of the following composition (which will be used as our running example in this paper):
 
 \minusvspacetwo
