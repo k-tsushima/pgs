@@ -282,7 +282,7 @@ p7, def pg, `pg [[ bx1 x bx2]]((s1,s2,),(v1,v2))`:
  on the following line the type returned looks like a quadruple rather than a
  pair, so I think there are some missing parentheses.
 
-TODO-D15: 
+TODO-D15: DONE [KT], changed explanation
 p7, line -2 "rearrangements are very clear" ... "then doing basic changes"
  If I'm right about the typo above, I think that it's perhaps not so clear.
 
@@ -315,7 +315,7 @@ p10, S4.3
  "Every values are" ~>
  "Every value is"
 
-TODO-D22:
+TODO-D22: DONE [KT]. Modified explanation. I'm not sure this is enough..
 p10, Def 8
  I found this definition somewhat overwhelming. Could you break it down and
  explain more carefully?
