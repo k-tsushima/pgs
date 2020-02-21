@@ -18,8 +18,7 @@ The memoizing version, minBiGUL$_m$, needs only two modifications: $get_m$ and $
 \begin{definition} \label{def:putm} $\text{Memoization version of } put$
 
     \noindent $\putm{bx}{s}{v} = \match{bx}\\
-        \tab \vert \ bx_1 \circ bx_2 \to \\
-            \tabs{2} \putm{bx_1}{s}{(\putm{bx_2}{(\getm{bx_1}{s})}{v})} \\
+        \tab \vert \ bx_1 \circ bx_2 \to \putm{bx_1}{s}{(\putm{bx_2}{(\getm{bx_1}{s})}{v})} \\
         \tab \vert \ \_ \to \text{similar to } put$
 \end{definition}
 

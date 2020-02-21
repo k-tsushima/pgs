@@ -59,7 +59,8 @@ For source/view rearrangement, BiGUL uses
 % just one 
 a lambda expression to express how to deconstruct as well as reconstruct data. It is a kind of bijection. However, to be able to implement it in OCaml, the environment used for developing minBiGUL and solutions in the paper, we need to require two functions which one is the inverse of the other. In the above syntax, $f_2 = f_1^{-1}$ and $g_2 = g_1^{-1}$.
 
-To help make demonstration more direct, we provide the following alternatives representation: $Prod \ bx_1 \ bx_2 \equiv bx_1 \times bx_2, \ Compose \ bx_1 \ bx_2 \equiv bx_1 \circ bx_2$. In general, $\circ$ has a higher priority than $\times$. Their associativity precedence can be either left or right or mixture, but are not set by default. We need to explicitly write programs that use these operators.
+To help make demonstration more direct, we provide the following alternatives representation: $Prod \ bx_1 \ bx_2 \equiv bx_1 \times bx_2, \ Compose \ bx_1 \ bx_2 \equiv bx_1 \circ bx_2$. \textcolor{blue}{The compose symbol $\tilde{\circ}$ used in the previous section will be replaced with the more common one, $\circ$.}
+In general, $\circ$ has a higher priority than $\times$. Their associativity precedence can be either left or right or mixture, but are not set by default. We need to explicitly write programs that use these operators.
 
 \subsection{Semantics}
 
@@ -139,29 +140,34 @@ Also in the semantics of $\putbxinline{Case}$ and $\getbxinline{Case}$, the retu
 
 \subsection{Examples}
 
-\noindent As an example of minBiGUL program, consider the definition of $\textit{phead}$ :\\
+\noindent As an example of minBiGUL program, consider the definition of $\textit{phead}$:
+
 \smallvspace
-$\tab phead = RearrS \ f_1 \ f_2 \ bx_s \ \text{where: } f_1 = \lambda (s::ss).(s,ss), \, f_2 = \lambda (s,ss).(s::ss),\\
+\noindent $\tab phead = RearrS \ f_1 \ f_2 \ bx_s \ \text{where: } f_1 = \lambda (s::ss).(s,ss), \, f_2 = \lambda (s,ss).(s::ss),\\
     \qtab bx_s = RearrV \ g_1 \ g_2 \ bx_v \ \text{where: } g_1 = \lambda v.(v,()), \, g_2 = \lambda (v,()).v,\\
         \qtabs{2} bx_v = \product{Replace}{(Skip \ (\lambda \_.())}$
 \smallvspace
-        
+
 The above program rearranges the source, a non-empty list, to a pair of its head element $s$ and its tail $ss$, and the view to a pair $(v, ())$, then we can use $v$ to replace $s$ and $()$ to keep $ss$. Intuitively, $\putbx{phead}{s_0}{v_0}$ returns a list whose head is $v_0$ and tail is the tail of $s_0$, and $\getbx{phead}{s_0}$ returns the head of the list $s_0$. For instance, $\putbx{phead}{[1,2,3]}{100} = [100,2,3]$ and $\getbx{phead}{[1,2,3]} = 1$. If we want to update the head element of the head element of a list of lists by using the view, we can define a composition like $phead \circ phead$. For example:
 
+\smallvspace
 $\tab \putbx{phead \circ phead}{[[1,2,3],[\,],[4,5]]}{100} = [[100,2,3],[\,],[4,5]]$
 
 $\tab \getbx{phead \circ phead}{[[1,2,3],[\,],[4,5]]} = 1$
+\smallvspace
 
 In the same way with $\textit{phead}$, we can define $\textit{ptail}$ in minBiGUL. $\putbx{ptail}{s}{v}$ accepts a source list $s$ and a view list $v$ to produce a new list by replacing the tail of $s$ with $v$. $\getbx{ptail}{s}$ returns the tail of the source list $s$
 
 Next let us look at another more complex example, $\textit{bsnoc}$:
 
+\smallvspace
     $\tab \textit{bsnoc} = Case \ cond_{sv} \ cond_s \ bx_1 \ bx_2$ where:\\
     $\tabs{3} \ cond_{sv} = \lambda s.\lambda v.(\textnormal{length } v = 1), \ cond_s = \lambda s.(\textnormal{length } s = 1)$\\
     $\tabs{3} \ bx_1 =  Replace, \tab bx_2 = RearrS \ f_1 \ f_2 \ bx_s$ where:\\
         $\tabs{4} f_1 = f_2^{-1} = \lambda (x:y:ys).(y,(x:ys))$, \\
         $\tabs{4} bx_s = RearrV \ g_1 \ g_2 \ bx_v$ where:\\
             $\tabs{5} g_1 = g_2^{-1} = \lambda (v:vs).(v,vs), \tab bx_v = Replace \times \textit{bsnoc}$
+\smallvspace
 
 $\putbxinline{bsnoc}$ requires the source $s$ and the view $v$ are non-empty lists and the length of $v$ is not larger than the length of $s$. If $cond_{sv}$ is true, i.e. $v$ is singleton, a replacement will be executed to produce a new list which should be equal to $v$. Because the length of the new list is 1, the exit condition $cond_s$ comes true, so we obtain the updated source. If $v$ is a list of more than one elements, there will be two rearrangements on the source and the view before conducting a product. The program rearranges the source $x:y:ys$ to a pair of its second element $y$ and a list $x:ys$ created from the remaining elements in the original order, and the view to a pair of its head and tail. Then we can use $y$ to replace the head of the view and pair $(x:ys)$ with the tail of the view to form the input of a recursive call $\textit{bsnoc}$. The obtained source update in this case should be non-singleton since the value of the exit condition $cond_s$ needs to be false. We omit the behavior description of $\getbxinline{bsnoc}$ that accepts a source list $s$, checks $cond_s$ to know how to evaluate the view $v$, then does one more checking, $cond_{sv}$, before resulting. 
 %
@@ -169,6 +175,7 @@ Intuitively, $\putbx{bsnoc}{s_0}{v_0}$ produces a new list by moving the last el
 
 Now, let us see the minBiGUL definition of $\textit{bfoldr}$ which is a putback function of an important higher-order function on lists, $\textit{foldr}$:
 
+\smallvspace
 $\tab \textit{bfoldr} \ bx = Case \ cond_{sv} \ cond_s \ bx_1 \ bx_2$ where:\\
 $\tabs{3} \ cond_{sv} = \lambda (s_1,s_2).\lambda v.(s_1 = [\ ]), \ cond_s = \lambda (s_1,s_2).(s_1 = [\ ])$\\
 $\tabs{3} \ bx_1 = RearrV \ g_1 \ g_2 \ bx_v$ where: \\
@@ -176,16 +183,20 @@ $\tabs{3} \ bx_1 = RearrV \ g_1 \ g_2 \ bx_v$ where: \\
 $\tabs{3} \ bx_2 = RearrS \ f_1 \ f_2 \ bx_s$ where:\\
     $\tabs{4} f_1 = f_2^{-1} = \lambda ((x:xs),e).(x,(xs,e))$, 
 $bx_s = ((Replace \times \textit{bfoldr} \ bx) \circ bx)$
+\smallvspace
 
 If we think that a minBiGUL program $bx$ has a type of $\textit{MinBiGUL} \ s \ v$, the type of $bfoldr$ will be look like $\textit{MinBiGUL} \ (a, b) \ b \to \textit{MinBiGUL} \ ([a], b) \ b$. You can easily find the similarity between the above definition of $\textit{bfoldr}$ with the following definition of $\textit{foldr}$:
 
+\smallvspace
 $\tab \textit{foldr} :: (a \to b \to b) \to b \to [a] \to b \\
 \tabs{2} \ \ \textit{foldr} \ f \ e \ [\ ] = e \\ 
 \tabs{2} \ \ \textit{foldr} \ f \ e \ (x:xs) = f \ x \ (\textit{foldr} \ f \ e \ xs)$
+\smallvspace
 
 Each branch in a case of $\textit{bfoldr}$ corresponds to a pattern of $foldr$. In $\textit{bfoldr}$, the composition is inherently left associative, and the number of composition is dynamically determined by the length of the source list. Because~$\circ$ has a higher priority than~$\times$, it is in general not possible to transform $\textit{bfoldr}$ from the left associative composition style to the right one. 
 
 Using $\textit{foldr}$, we can define other functions like $reverse = \textit{foldr} \ snoc \ [\ ]$. With $\textit{bfoldr}$, we can also write the bidirectional version $breverse$ as follows:
 
+\smallvspace
 $\tab breverse = RearrS \ f_1 \ f_2 \ bx$ where: \\
 $\tabs{4} f_1 = f_2^{-1} = \lambda s \to (s, [\ ]), \tab bx = \textit{bfoldr} \ bsnoc$

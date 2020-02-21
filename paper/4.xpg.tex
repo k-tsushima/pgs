@@ -20,12 +20,15 @@ Another solution for saving intermediate states is tupling. If $put$ and $get$ a
 
 \noindent Now, let us see how we construct $pg$ recursively.
 
+\smallvspace
     \noindent $\tabs{2} \pg{Skip \ h}{s}{v} \overset{1}{=} (\sif{h \ s = v}{s}{\textit{undefined}}, h \ s) \\
         \tab \qtab \overset{2}{=} \sif{h \ s = v}{(s, h \ s)}{\textit{undefined}} \\
         \tab \qtab \overset{3}{=} \sif{h \ s = v}{(s, v)}{\textit{undefined}}$
-        
+\smallvspace
+
 The first equality is simply based on the definitions of $pg$, $\putbxinline{Skip \ h}$ and $\getbxinline{Skip \ h}$. The second one tuples two results of $put$ and $get$ in the body of the if-expression. This is a trick since in some cases, the result of $pg$ may be undefined although the result is not undefined when evaluating $\getbxinline{Skip \ h}$. The last equality is a function application.
 
+\smallvspace
     \noindent $\tabs{2} \pg{Replace}{s}{v} = (v, s)$\\
     $\tabs{2} \pg{\product{bx_1}{bx_2}}{(s_1,s_2)}{(v_1,v_2)}\\
         \tab \qtab \overset{1}{=} ((\putbx{bx_1}{s_1}{v_1},\putbx{bx_2}{s_2}{v_2}), (\getbx{bx_1}{s_1}, \getbx{bx_2}{s_2})) \\
@@ -38,11 +41,13 @@ The first equality is simply based on the definitions of $pg$, $\putbxinline{Ski
     $\tabs{2} \pg{\rearrv{g_1}{g_2}{bx}}{s}{v} \overset{1}{=} (\putbx{bx}{s}{(g_1 \ v)}, g_2 \ (\getbx{bx}{s})) \\
         \tab \qtab \overset{2}{=} (s', v') \Leftarrow \pg{bx}{s}{g_1 \ v}; \\
         \tab \qtabs{2} (s', g_2 \ v')$
+\smallvspace
 
 Constructions of $pg$ for the replacement, the product and the source/view rearrangements are very clear when just pairing $put$ and $get$ respectively, then doing basic changes.
 %
 The values of these $pg$ functions are obtained from the final expression in the corresponding sequences. We only use the return keyword to express explicitly the evaluated value of a function in the situation of $Case$.
 
+\smallvspace
     \noindent $\tabs{2} \pg{\casebx{cond_{sv}}{cond_{s}}{bx_1}{bx_2}}{s}{v} \\
     \tabs{3} \overset{1}{=} (\text{if} \ {cond_{sv} \ s \ v} \qtabs{3} \tab \text{if} \ {cond_{s} \ s} \\
     \tabs{2} \qtab \text{then} \ s' \Leftarrow \putbx{bx_1}{s}{v} \qtab \tab \, \text{then} \ v' \Leftarrow \getbx{bx_1}{s} \\
@@ -67,12 +72,14 @@ The values of these $pg$ functions are obtained from the final expression in the
     \tabs{2} \qtab \text{then} \ (s', v') \Leftarrow \pg{bx_1}{s}{v}\\
     \tabs{2} \qtab \text{else} \ (s', v') \Leftarrow \pg{bx_2}{s}{v}\\
     \tabs{2} \qtab \text{fi} \ cond_{s} \ s' \ \&\& \ cond_{sv} \ s \ v'; \text{ return } (s',v')$
+\smallvspace
 
     A restriction for $\pginline{Case}$ needs to be introduced here. We know that there is one entering condition and one exit condition when evaluating $\putbxinline{Case}$ as well as $\getbxinline{Case}$. If a tupling occurs, there will be 4 combinations from these conditions. This means two entering conditions of $\putbxinline{Case}$ and $\getbxinline{Case}$ are not always simultaneously satisfied. The evaluated branches are distinct in the $put$ and $get$ directions for combinations $((cond_{sv} \ s \ v) \ \&\& \ (not (cond_{s} \ s)))$ and $((not (cond_{sv} \ s \ v)) \ \&\& \ (cond_{s} \ s))$, which are restricted in this paper. Because they evaluate different $bx$ for $put$ and $get$, we can not evaluate them efficiently. This does not happen for the others which is used in the construction of $\pginline{Case}$.
 % {\textcolor{red}{If the BX programs have efficient inverse way for evaluation, they are not affected by this restriction. Of course, all BX programs do not always have such efficient way. An example restricted by this is evaluating $bsnoc$ with different length of a source and a view.}}
 
     %{\textcolor{red}{BX programs that have an efficient inverse evaluation are not affected by this restriction, but not all BX programs have this property. An example restricted by this is evaluating $bsnoc$ with different length of a source and a view.}}
 
+\smallvspace
     \noindent $\tabs{2} \pg{bx_1 \circ bx_2}{s}{v} \\
     \tabs{3} \overset{1}{=} (\putbx{bx_1}{s}{(\putbx{bx_2}{(\getbx{bx_1}{s})}{v})}, \getbx{bx_2}{(\getbx{bx_1}{s})}) \\
     \tabs{3} \overset{2}{=} v_1 \Leftarrow \getbx{bx_1}{s}; \qtabs{3} \ \, \overset{3}{=} (s_1, v_1) \Leftarrow \pg{bx_1}{s}{dummy};\\
@@ -83,7 +90,8 @@ The values of these $pg$ functions are obtained from the final expression in the
         \tabs{2} \qtab (s_2, v_2) \Leftarrow \pg{bx_2}{v_1}{v}; \\
         \tabs{2} \qtab (s_3, v_3') \Leftarrow \pg{bx_1}{s_1}{s_2}; \\
             \qtab \tabs{3} (s_3, v_2)$
-            
+\smallvspace
+           
 The construction of $\pginline{bx_1 \circ bx_2}$ is the most important part in the $pg$ function. The first two equalities comes from mentioned definitions and some basic transformations. The third one rewrites $v_1 \Leftarrow \getbx{bx_1}{s}$ into $(s_1, v_1) \Leftarrow \pg{bx_1}{s}{dummy}$. This is possible when we consider $\getbx{bx_1}{s}$ as the second element of $\pg{bx_1}{s}{dummy}$ where $dummy$ is a special value that makes the $put \, [\![bx_1]\!]$ valid. Since there is no real view, this $dummy$ is necessary to pair with the original source $s$ to form the input of $put \, [\![bx_1]\!]$. In general, $dummy$ depends on the source $s$, the view $v$ and/or the program $bx_1$. Programmers can be required to give a way to construct $dummy$, but it may be inessential for ill-typed systems where choosing $dummy$ as $v$ is one of the easiest ways to meet our expectation. That setting is used in our experiments. The last equality changes from $(s_3, v_3) \Leftarrow \pg{bx_1}{s}{s_2}$ to $(s_3, v_3') \Leftarrow \pg{bx_1}{s_1}{s_2}$, where $s$ and $v_3$ are replaced with $s_1$ and $v_3'$ respectively. Because $s_1$ is a source update of $\putbx{bx_1}{s}{dummy}$, so under the \textsc{PutPut} law, it is possible to substitute $s$ by $s_1$. The substitution of $v_3$ by $v_3'$ is simply replacing the variable name since $v_3$ and $v_3'$ hold different results of $\getbx{bx_1}{s}$ and $\getbx{bx_1}{s_1}$ respectively. Because both variables are no longer used later, this substitution does not affect the outcome of the function.
 
 \subsection{Lazy Update: cpg} 
@@ -137,7 +145,9 @@ In general, the beginning of a continuation should be an identity function. Howe
 
 The result pair $(s, v)$ obtained from $cpg$ as above should be same with the result of $\pg{bx}{s_0}{v_0}$. More generally, we have the following relationship:
 
+\smallvspace
 $\tab \cpg{bx}{ks}{kv}{s}{v} = \pg{bx}{ks \ s}{kv \ v}$
+\smallvspace
 
 Note that, in $\cpginline{bx_1 \circ bx_2}$, $\underline{s_1}$ is redundant because this evaluated variable is not used in the later steps.
 In the next session, we will optimize this redundancy.
@@ -163,8 +173,10 @@ Suppose that we have a source $s_0$ and a view $v_0$. The pair of the updated so
         
 The beginning of accumulative functions $lks$ and $lkv$ are set as identity function, while $ks$ and $kv$ are initiated as the same with the corresponding ones in $cpg$. The relationship among $kpg$, $cpg$ and $pg$ can be shown as follows:
 
+\smallvspace
 $\tab \kpg{bx}{ks}{kv}{lks}{lkv}{s}{v} = \cpg{bx}{ks \circ lks}{kv \circ lkv}{s}{v}\\
     \tabs{5} = \pg{bx}{ks \ (lks \ s)}{kv \ (lkv \ v)}$
+\smallvspace
 
 \begin{definition}
 $\kpg{bx}{ks}{kv}{lks}{lkv}{s}{v}$

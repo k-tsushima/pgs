@@ -55,30 +55,30 @@ $put$ of $phead$ will construct a new source $s'$ of ${[100,2]}$ from the update
   \begin{minipage}{0.7\textwidth}
     \centering
     \includegraphics[height=3.5cm]{./fig/fig2.eps}
-    \caption{Evaluating $phead \circ phead \circ phead$}
+    \caption{Evaluating $phead~\tilde{\circ}~phead~\tilde{\circ}~phead$}
     \label{fig:eval-comp-phead}
   \end{minipage}
 \end{figure}
 %\vspace*{-5.5mm}
 
 
-The composition of BX programs is a fundamental construct to build more complex BX programs \cite{Bohannon06relationallenses:, Bohannon:2008:BRL:1328438.1328487}. Let $bx_1$ (defined by $get_{bx_1}$ and $put_{bx_1}$) and $bx_2$ (defined by $get_{bx_2}$ and $put_{bx_2}$) be two bidirectional programs, then their composition $bx_1 \circ bx_2$ is defined by
+The composition of BX programs is a fundamental construct to build more complex BX programs \cite{Bohannon06relationallenses:, Bohannon:2008:BRL:1328438.1328487}. Let $bx_1$ (defined by $get_{bx_1}$ and $put_{bx_1}$) and $bx_2$ (defined by $get_{bx_2}$ and $put_{bx_2}$) be two bidirectional programs, then their composition $bx_1 \,\tilde{\circ}\, bx_2$ is defined by
 
 \minusvspace
 \begin{align}
-get_{bx_1 \circ bx_2}~s &= get_{bx_2} (get_{bx_1}~s)\\
-put_{bx_1 \circ bx_2}~s~v' &= put_{bx_1} s~(put_{bx_2}~ (get_{bx_1}~s)~v')
+get_{bx_1 \tilde{\circ} bx_2}~s &= get_{bx_2} (get_{bx_1}~s)\\
+put_{bx_1 \tilde{\circ} bx_2}~s~v' &= put_{bx_1} s~(put_{bx_2}~ (get_{bx_1}~s)~v')
 \end{align}
 \minusvspace
 
 \noindent
 \textcolor{red}{Unlike function composition, the composition of bidirectional programs is read left-to-right. We use this order because it is helpful to understand the behavior if we consider data goes from left to right.}
 %\textcolor{red}{Note that the order of composition is the reverse order compared to function composition. We use this order, because it is standard in BX community.}
-One feature of this composition is that $put_{bx_1 \circ bx_2}$ needs to call $get_{bx_1}$ to compute the intermediate result for $put_{bx_2}$ to use, which would introduce an efficiency problem if we compute $put$ for composition of many bidirectional programs. Generally, for a composition of $O(n)$ bidirectional programs, we need to call $get$ for $O(n^2)$ times. To be concrete, consider the evaluation of the following composition (which will be used as our running example in this paper):
+One feature of this composition is that $put_{bx_1 \tilde{\circ} bx_2}$ needs to call $get_{bx_1}$ to compute the intermediate result for $put_{bx_2}$ to use, which would introduce an efficiency problem if we compute $put$ for composition of many bidirectional programs. Generally, for a composition of $O(n)$ bidirectional programs, we need to call $get$ for $O(n^2)$ times. To be concrete, consider the evaluation of the following composition (which will be used as our running example in this paper):
 
 \minusvspacetwo
 \[
-lp3 = (phead \circ phead) \circ phead
+lp3 = (phead~\tilde{\circ}~phead)~\tilde{\circ}~phead
 \]
 \minusvspacetwo
 
@@ -88,10 +88,10 @@ To obtain the final updated source $s'$, $put$ for $lp3$ needs to evaluate $put$
 %In BX programs, composition of programs is essential for writing various interesting evaluations.
 %Because recursions are achieved by compositions, large number of programs include compositions.
 %In the BX lens papers \cite{Bohannon06relationallenses:, Bohannon:2008:BRL:1328438.1328487} compositions are also known as central part of BX programs.
-%In this section we use a small BX program that contains compositions as a running example, because the programs including recursions can be complicated easily. The running examples are two versions of two composition of $phead$: ($phead \circ phead) \circ phead$ (we call lp3) and $phead \circ (phead \circ phead$) (we call rp3).
+%In this section we use a small BX program that contains compositions as a running example, because the programs including recursions can be complicated easily. The running examples are two versions of two composition of $phead$: ($phead \tilde{\circ} phead) \tilde{\circ} phead$ (we call lp3) and $phead \tilde{\circ} (phead \tilde{\circ} phead$) (we call rp3).
 
 
-%For more various evaluations, we can use the composition of programs. Let us consider another example, a composition of 3 $pHead$s: $pHead \circ pHead \circ pHead$. Figure \ref{fig:eval-comp-phead} illustrates the evaluation of this program where the original source \texttt{s} is \texttt{[[[1,2],[3]],[4]]} and the updated view is \texttt{100}.
+%For more various evaluations, we can use the composition of programs. Let us consider another example, a composition of 3 $pHead$s: $pHead \tilde{\circ} pHead \tilde{\circ} pHead$. Figure \ref{fig:eval-comp-phead} illustrates the evaluation of this program where the original source \texttt{s} is \texttt{[[[1,2],[3]],[4]]} and the updated view is \texttt{100}.
 %By repetitious evaluation of $get$s of $pHead$, we can obtain the view $v$, \texttt{1}. To obtain the final updated source \texttt{s'}, we need to evaluate $put$ three times. The first put evaluation is from \texttt{i2} and \texttt{v'} and we can obtain \texttt{i2'}.
 
 
@@ -104,7 +104,7 @@ One direct solution to avoid this repeated $get$ computation is to compute compo
 \minusvspacetwo
 \vspace{-3mm}
 \[
-rp3 = phead \circ (phead \circ phead)
+rp3 = phead~\tilde{\circ}~(phead~\tilde{\circ}~phead)
 \]
 \minusvspacetwo
 \vspace{-0mm}
@@ -115,20 +115,20 @@ However, this transformation is not always easy to do. For instance, let us cons
 \vspace{1mm}
 \minusvspacetwo
  \[
- \mbox{\it bfoldr}~bx~\cdots = \cdots  (\mbox{\it bfoldr}~\cdots) \circ bx \cdots
+ \mbox{\it bfoldr}~bx~\cdots = \cdots  (\mbox{\it bfoldr}~\cdots)~\tilde{\circ}~bx \cdots
  \]
  \minusvspacetwo
 
 \noindent where the composition is inherently left associative, and the number of composition is dynamically determined by the length of the source list. This makes it hard to do the above transformation statically. The same efficiency problem occurs in all BX languages.
 
 
-%A part of the definition of $\mbox{\it bfoldr}$, we have $(\product{Replace}{(\mbox{\it bfoldr} \ bx)}) \circ bx$. In this program, recursion occurs on the left-hand side of composition. Because of priority, it is impossible to transform this program to right associative compositions. At the same time, we can not apply program fusion \cite{Wadler:1988:DTP:80099.80104} to this program because actual program is dynamically produced by recursions depending on the length of the input list. Therefore, it is important to have a fast evaluation method for left associative compositions.
+%A part of the definition of $\mbox{\it bfoldr}$, we have $(\product{Replace}{(\mbox{\it bfoldr} \ bx)}) \tilde{\circ} bx$. In this program, recursion occurs on the left-hand side of composition. Because of priority, it is impossible to transform this program to right associative compositions. At the same time, we can not apply program fusion \cite{Wadler:1988:DTP:80099.80104} to this program because actual program is dynamically produced by recursions depending on the length of the input list. Therefore, it is important to have a fast evaluation method for left associative compositions.
 
 \begin{figure}[!t]
   \centering
   \includegraphics[height=5cm]{./fig/fig3.eps}
   \vspace{-0.25cm}
-  \caption{Evaluating $phead \ \circ \ phead \ \circ \ phead$ by keeping complements}
+  \caption{Evaluating $phead \ \tilde{\circ} \ phead \ \tilde{\circ} \ phead$ by keeping complements}
   \vspace{-0.5cm}
   \label{fig:eval-comp-phead-2}
 \end{figure}
@@ -157,7 +157,7 @@ intermediate states.
 %\vspace{2mm}
 %
 For obtaining complements, we tuple $put$ and $get$, and produce a new function $pg$. Because $put$ produces new complements for $get$, we can shrink the size.
-Let us reconsider our example $phead \circ phead \circ phead$ in Figure \ref{fig:eval-comp-phead-2}, where $c_1$ and $c_2$ are complements and $d_1$ and $d_2$ are valid views for $s$ and~$i_1$. Here, two points are worth noting. First, after evaluating the leftmost $pg$, the original source $s$ need not be kept because its complete contents are in $c_1$ and~$i_1$. Second, the complements are smaller than the intermediate states in Figure~\ref{fig:eval-comp-phead}.
+Let us reconsider our example $phead~\tilde{\circ}~phead~\tilde{\circ}~phead$ in Figure \ref{fig:eval-comp-phead-2}, where $c_1$ and $c_2$ are complements and $d_1$ and $d_2$ are valid views for $s$ and~$i_1$. Here, two points are worth noting. First, after evaluating the leftmost $pg$, the original source $s$ need not be kept because its complete contents are in $c_1$ and~$i_1$. Second, the complements are smaller than the intermediate states in Figure~\ref{fig:eval-comp-phead}.
 %This evaluation looks better than previous two strategies: this does not require repeated evaluation and require smaller storage than the original sources.
 Actually, this simple
 % combined
