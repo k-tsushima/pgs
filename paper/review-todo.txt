@@ -220,7 +220,7 @@ turns out that it is to do with when the compositisions are applied in the
 RearrV and RearrS cases. Admittedly this is not in the main text and ought to
 be explained, and this is just an educated guess.
 
-TODO-D3:
+TODO-D3: 
 As for xpg, I don't have a good sense of *why* it is better, and this isn't
 clear from the text.
 
@@ -299,7 +299,7 @@ TODO-D18: DONE[KT] changed notation.
 p8 "considered as the soul": I'm not sure that this metaphor works too well
 here
 
-TODO-D19:
+TODO-D19: DONE [KT] modified explanation
 p9 "Therefore, the runtime inefficiency is inevitable:"
  As an unqualified statement this is surely false, as demonstrated by the
 results of your paper.
