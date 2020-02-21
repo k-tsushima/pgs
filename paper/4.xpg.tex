@@ -68,16 +68,11 @@ The values of these $pg$ functions are obtained from the final expression in the
     \tabs{2} \qtab \text{else} \ (s', v') \Leftarrow \pg{bx_2}{s}{v}\\
     \tabs{2} \qtab \text{fi} \ cond_{s} \ s' \ \&\& \ cond_{sv} \ s \ v'; \text{ return } (s',v')$
 
-<<<<<<< HEAD
     A restriction for $\pginline{Case}$ needs to be introduced here. We know that there is one entering condition and one exit condition when evaluating $\putbxinline{Case}$ as well as $\getbxinline{Case}$. If a tupling occurs, there will be 4 combinations from these conditions. This means two entering conditions of $\putbxinline{Case}$ and $\getbxinline{Case}$ are not always simultaneously satisfied. The evaluated branches are distinct in the $put$ and $get$ directions for combinations $((cond_{sv} \ s \ v) \ \&\& \ (not (cond_{s} \ s)))$ and $((not (cond_{sv} \ s \ v)) \ \&\& \ (cond_{s} \ s))$, which are restricted in this paper. Because they evaluate different $bx$ for $put$ and $get$, we can not evaluate them efficiently. This does not happen for the others which is used in the construction of $\pginline{Case}$.
 % {\textcolor{red}{If the BX programs have efficient inverse way for evaluation, they are not affected by this restriction. Of course, all BX programs do not always have such efficient way. An example restricted by this is evaluating $bsnoc$ with different length of a source and a view.}}
-    
-=======
-    A restriction for $\pginline{Case}$ needs to be introduced here. We know that there is one entering condition and one exit condition when evaluating $\putbxinline{Case}$ as well as $\getbxinline{Case}$. If a tupling occurs, there will be 4 combinations from these conditions. This means two entering conditions of $\putbxinline{Case}$ and $\getbxinline{Case}$ are not always simultaneously satisfied. The evaluated branches are distinct in the $put$ and $get$ directions for combinations $((cond_{sv} \ s \ v) \ \&\& \ (not (cond_{s} \ s)))$ and $((not (cond_{sv} \ s \ v)) \ \&\& \ (cond_{s} \ s))$, which are restricted in this paper\footnote{\textcolor{red}{BX programs that have an efficient inverse evaluation are not affected by this restriction, but not all BX programs have this property. An example restricted by this is evaluating $bsnoc$ with different length of a source and a view.}}
-% If the BX programs have efficient inverse way for evaluation, they are not affected by this restriction. Of course, all BX programs do not always have such efficient way. An example restricted by this is evaluating $bsnoc$ with different length of a source and a view.}}. 
-This does not happen for the others which is used in the construction of $\pginline{Case}$.
 
->>>>>>> eb4091502c9ab4c6eae198cca56e5f15745add82
+    %{\textcolor{red}{BX programs that have an efficient inverse evaluation are not affected by this restriction, but not all BX programs have this property. An example restricted by this is evaluating $bsnoc$ with different length of a source and a view.}}
+
     \noindent $\tabs{2} \pg{bx_1 \circ bx_2}{s}{v} \\
     \tabs{3} \overset{1}{=} (\putbx{bx_1}{s}{(\putbx{bx_2}{(\getbx{bx_1}{s})}{v})}, \getbx{bx_2}{(\getbx{bx_1}{s})}) \\
     \tabs{3} \overset{2}{=} v_1 \Leftarrow \getbx{bx_1}{s}; \qtabs{3} \ \, \overset{3}{=} (s_1, v_1) \Leftarrow \pg{bx_1}{s}{dummy};\\
